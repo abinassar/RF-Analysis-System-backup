@@ -1,0 +1,28 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Tab 2
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tab 2</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- <plotly-plot [data]="graph.data" [layout]="graph.layout"
+[useResizeHandler]="true" [style]="{position: 'relative', width: '100%', height: '100%'}">
+</plotly-plot> -->
+  
+  <div *ngIf="elevationGraph">
+
+      <plotly-plot [data]="elevationData.data"
+                   [layout]="elevationData.layout"
+                   [useResizeHandler]="true"
+                   [style]="{position: 'relative', width: '100%', height: '100%'}">
+      </plotly-plot>
+  </div>
+</ion-content>

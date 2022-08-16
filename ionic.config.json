@@ -1,0 +1,7 @@
+{
+  "name": "RF-Analysis-System",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AlertController } from '@ionic/angular';
 import { DataService } from '../services/data.service';
 
 @Component({
@@ -11,9 +12,9 @@ export class Tab2Page {
   lambda: number = 200;
   distance1!: number;
   distance2!: number;
-  datax: number[] = [];
-  datay: number[] = [];
-  datayInverted: number[] = [];
+  dataFresnelx: number[] = [];
+  dataFresnely: number[] = [];
+  dataFresnelyInverted: number[] = [];
   graph: any;
 
   elevationData: any;
@@ -29,38 +30,30 @@ export class Tab2Page {
   requestArray: any[] = [];
   firstIteration: boolean = true;
 
-  constructor( private dataService: DataService ) {}
+  elevationTotalDataX: number[] = [];
+  elevationTotalDataY: number[] = [];
+
+  constructor( private dataService: DataService,
+               private alertController: AlertController ) {}
 
   ngOnInit(): void {
 
+    this.presentAlert();
+
     this.getFresnelZoneData(40.851445, -3.360259, 40.852399, -3.364143);
-
-    // this.createElipseData();
-
-    // this.graph = {
-    //   data: [
-    //     { x: this.datax,
-    //       y: this.datay,
-    //       type: 'scatter'},
-    //     {
-    //       x: this.datax,
-    //       y: this.datayInverted
-    //     },
-    //     {
-    //       x: [-10, 1010],
-    //       y: [-10, -10]
-    //     },
-    //   ],
-    //   layout: {width: 800, 
-    //            height: 400, 
-    //            title: 'A Fancy Plot'}
-    // };
-
-    // this.graph.data[0].y.push(this.datayInverted);
     
   }
 
   ngAfterViewInit() {
+  }
+
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: 'Espera',
+      subHeader: 'Cargando la data de elevacio.'
+    });
+
+    await alert.present();
   }
 
   getLatLonInAnyDistance(lat1: number, 
@@ -82,28 +75,16 @@ export class Tab2Page {
 
     const δ = distance/R;
 
-    // // ‘projected’ latitude difference
-
-    // const Δφ = δ * Math.cos(bearing);
-    // let lat2 = lat1Radian + Δφ;
-
-    // const Δψ = Math.log(Math.tan(lat2/2+Math.PI/4)/Math.tan(lat1Radian/2+Math.PI/4));
-    // const q = Math.abs(Δψ) > 10e-12 ? Δφ / Δψ : Math.cos(lat1Radian); // E-W course becomes ill-conditioned with 0/0
-
-    // const Δλ = δ*Math.sin(bearing)/q;
-    // const lon2 = lon1Radian + Δλ;
+    // ‘projected’ latitude difference
 
     const latFinal2 = Math.asin( Math.sin(lat1Radian)*Math.cos(δ) +
                       Math.cos(lat1Radian)*Math.sin(δ)*Math.cos(bearingRadian) );
     const lonFinal2 = lon1Radian + Math.atan2(Math.sin(bearingRadian)*Math.sin(δ)*Math.cos(lat1Radian),
                               Math.cos(δ)-Math.sin(lat1Radian)*Math.sin(lat2Radian));
-
     
     // check for some daft bugger going past the pole, normalise latitude if so
     // if (Math.abs(lat2) > Math.PI/2) lat2 = lat2>0 ? Math.PI-lat2 : -Math.PI-lat2;
 
-    // return [Number(latFinal2.toString().substr(0,9)),
-    //   Number(lonFinal2.toString().substr(0,10))];
       return [latFinal2 * 180/Math.PI,
               lonFinal2 * 180/Math.PI];
 
@@ -184,11 +165,6 @@ export class Tab2Page {
 
     let totalDistanceKM = this.getDistanceBetweenPoints(lat1, lon1, lat2, lon2)/1000;
 
-    // console.log('bearing entre dos puntos ', bearing);
-    
-    // console.log('distancia entre puntos ', totalDistanceKM);
-
-
     this.createLatLonData(lat1, lon1, lat2, totalDistanceKM, bearing);
   }
 
@@ -199,13 +175,15 @@ export class Tab2Page {
                    bearing:number,
                    distanceFraction: number = 1000) {
 
+    // Divide the data in fraction of 1000 parts
+
     this.distanceFraction = distanceFraction;
                     
+    //TODO Review this distance unity
     let distanceFractioned = totalDistance/distanceFraction;
     this.distanceFractioned = distanceFractioned;
 
     let finalPointDistance = distanceFractioned;
-    // console.log('distancia fraccionada ', distanceFractioned);
 
     this.elevationDataX = [];
     this.elevationDataY = [];
@@ -217,6 +195,8 @@ export class Tab2Page {
     let latlonInitial = lat1 + ',' + lon1;
 
     latlonArray.push(latlonInitial);
+
+    // Generate 10 pack of 100 requests
 
     for (let index = 0; index < 10; index++) {
 
@@ -258,6 +238,8 @@ export class Tab2Page {
   
     }
 
+    // Made the 10 reqeust and set the lat lon data
+
     let requestIndex = 0;
 
     this.requestArray[requestIndex].subscribe((response: any) => {
@@ -282,7 +264,11 @@ export class Tab2Page {
     console.log('distance fraction ', this.distanceFraction)
     console.log('Tottal responses data ', totalResponsesData)
 
-    let distanceFinal = this.distanceFractioned;
+    // Set offset to initial point
+
+    let distanceFinal = this.distanceFractioned*100;
+
+    // Get point x and y for each position in map
 
     for (let index = 0; index < this.distanceFraction; index++) {
       
@@ -292,24 +278,73 @@ export class Tab2Page {
       distanceFinal += this.distanceFractioned;
     }
 
-    console.log('elevation data X ', this.elevationDataX)
-    console.log('elevation data Y ', this.elevationDataY)
+    console.log('elevation data X ', this.elevationDataX);
+    console.log('elevation data Y ', this.elevationDataY);
+
+    // Set floor in data
+
+    let floorDataXInitial: number[] = [];
+    let floorDataXFinal: number[] = [];
+    let floorDataYInitial: number[] = [];
+    let floorDataYFinal: number[] = [];
+
+    let fractionIn200XInitial = this.elevationDataX[0]/100;
+    
+    let initialPoint = 0;
+    let finalPoint = this.elevationDataX[this.elevationDataX.length - 1];
+
+    for (let index = 0; index < 100; index++) {
+
+      floorDataXInitial.push(initialPoint);
+      floorDataYInitial.push(this.elevationDataY[0]);
+
+      floorDataXFinal.push(finalPoint);
+      floorDataYFinal.push(this.elevationDataY[this.elevationDataY.length - 1]);
+
+      initialPoint += fractionIn200XInitial;
+      finalPoint += fractionIn200XInitial;
+      
+    }
+
+    this.elevationTotalDataX = [];
+    this.elevationTotalDataY = [];
+
+    console.log("initial x data ", floorDataXInitial);
+
+    this.elevationTotalDataX = floorDataXInitial.concat(this.elevationDataX, floorDataXFinal);
+    this.elevationTotalDataY = floorDataYInitial.concat(this.elevationDataY, floorDataYFinal);
+
+    console.log("elevation x ", this.elevationTotalDataX)
+    console.log("elevation y ", this.elevationTotalDataY)
 
     this.elevationData = {
+      // data: [
+      //   { x: this.elevationDataX,
+      //     y: this.elevationDataY,
+      //     type: 'scatter'
+      //   },
+      // ],
       data: [
-        { x: this.elevationDataX,
-          y: this.elevationDataY,
+        { x: this.elevationTotalDataX,
+          y: this.elevationTotalDataY,
           type: 'scatter'
         },
       ],
       layout: { title: 'Elevation graph' }
     };
 
-    console.log('final point ', this.elevationDataX[this.elevationData.data[0].x.length - 1])
 
-    this.createElipseData(0,this.elevationDataX[this.elevationData.data[0].x.length - 1]);
+    // console.log('final point ', this.elevationDataX[this.elevationData.data[0].x.length - 1])
+
+    // this.createElipseData(0,this.elevationDataX[this.elevationData.data[0].x.length - 50]);
+    
+    console.log('final point ', this.elevationTotalDataX[this.elevationData.data[0].x.length - 1])
+
+    this.createElipseData(this.elevationTotalDataX[99],
+                          this.elevationTotalDataX[this.elevationData.data[0].x.length - 101] - this.elevationTotalDataX[99]);
 
     this.elevationGraph = true;
+    this.alertController.dismiss();
   }
 
   requestRecursive(requestIndex: number) {
@@ -333,51 +368,60 @@ export class Tab2Page {
   }
 
   fresnelRadio(lambda: number, d1: number, d2: number): number {
-    return Math.sqrt((this.lambda*this.distance1*this.distance2)/(this.distance1 + this.distance2));
+    return Math.sqrt((lambda*d1*d2)/(d1 + d2));
   }
 
-  createElipseData(distance1: number, distance2: number) {
+  createElipseData(distance1: number, 
+                   distance2: number,
+                   offSetPoints: number = 0) {
 
-    console.log('DISTANCIA 1 ', distance1)
-    console.log('DISTANCIA 2 ', distance2)
+    // console.log('DISTANCIA 1 ', distance1)
+    // console.log('DISTANCIA 2 ', distance2)
 
     this.distance1 = distance1;
     this.distance2 = distance2;
 
     let distanceFraction = distance2 / 1000;
+    let distanceInitial = 0;
 
     console.log('DISTANCIA fraccionada ', distanceFraction)
 
-
-    for (let index = 0; index <= 1000; index++) {
+    for (let index = 0; index < 1000; index++) {
       
       // this.distance1 = index;
       this.distance2 = distance2 - this.distance1;
 
-      let radio = this.fresnelRadio(this.lambda, this.distance1, this.distance2);
+      let radio = this.fresnelRadio(this.lambda, distanceInitial, this.distance2);
 
-      this.datax.push(this.distance1);
-      this.datay.push(radio + 1000);
-      // this.datay.push(-radio);
-      this.datayInverted.push(-radio + 1000);
-      this.distance1 = this.distance1 + distanceFraction;
+      // console.log("Radio de frresnel ", radio)
+
+      this.dataFresnelx.push(this.distance1);
+      this.dataFresnely.push(radio + 1000);
+      // this.dataFresnely.push(-radio);
+      this.dataFresnelyInverted.push(-radio + 1000);
+      this.distance1 += distanceFraction;
+      distanceInitial += distanceFraction;
     }
 
     this.elevationData.data.push({
-      x: this.datax,
-      y: this.datay,
+      x: this.dataFresnelx,
+      y: this.dataFresnely,
       type: 'scatter'
     })
 
     this.elevationData.data.push({
-      x: this.datax,
-      y: this.datayInverted,
+      x: this.dataFresnelx,
+      y: this.dataFresnelyInverted,
       type: 'scatter',
       colorway: "#1f77b4"
     })
 
-    console.log('data x ', this.datax)
-    console.log('data y ', this.datay)
+    // console.log("arreglo puntos de fresnel x ", this.dataFresnelx);
+    // console.log("arreglo puntos de fresnel y ", this.dataFresnely);
+    // console.log("arreglo puntos de fresnel negativos y ", this.dataFresnelyInverted);
+
+
+    this.alertController.dismiss();
 
   }
 

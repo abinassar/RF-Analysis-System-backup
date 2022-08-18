@@ -372,8 +372,7 @@ export class Tab2Page {
   }
 
   createElipseData(distance1: number, 
-                   distance2: number,
-                   offSetPoints: number = 0) {
+                   distance2: number) {
 
     // console.log('DISTANCIA 1 ', distance1)
     // console.log('DISTANCIA 2 ', distance2)
@@ -381,15 +380,20 @@ export class Tab2Page {
     this.distance1 = distance1;
     this.distance2 = distance2;
 
-    let distanceFraction = distance2 / 1000;
+    let distanceFraction = (distance2 - distance1) / 4500;
     let distanceInitial = 0;
 
     console.log('DISTANCIA fraccionada ', distanceFraction)
 
-    for (let index = 0; index < 1000; index++) {
+    for (let index = 0; index < 4500; index++) {
       
       // this.distance1 = index;
       this.distance2 = distance2 - this.distance1;
+
+      if (index > 4000) {
+        console.log("distancia initial ", distanceInitial)
+        console.log("distancia final ", this.distance2)
+      }
 
       let radio = this.fresnelRadio(this.lambda, distanceInitial, this.distance2);
 
@@ -402,6 +406,12 @@ export class Tab2Page {
       this.distance1 += distanceFraction;
       distanceInitial += distanceFraction;
     }
+
+    // Added the final point of elipse
+
+    this.dataFresnelx.push(this.distance1);
+    this.dataFresnely.push(1000);
+    this.dataFresnelyInverted.push(1000);
 
     this.elevationData.data.push({
       x: this.dataFresnelx,
@@ -416,9 +426,9 @@ export class Tab2Page {
       colorway: "#1f77b4"
     })
 
-    // console.log("arreglo puntos de fresnel x ", this.dataFresnelx);
-    // console.log("arreglo puntos de fresnel y ", this.dataFresnely);
-    // console.log("arreglo puntos de fresnel negativos y ", this.dataFresnelyInverted);
+    console.log("arreglo puntos de fresnel x ", this.dataFresnelx);
+    console.log("arreglo puntos de fresnel y ", this.dataFresnely);
+    console.log("arreglo puntos de fresnel negativos y ", this.dataFresnelyInverted);
 
 
     this.alertController.dismiss();

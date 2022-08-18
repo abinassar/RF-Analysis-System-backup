@@ -33,6 +33,11 @@ export class Tab2Page {
   elevationTotalDataX: number[] = [];
   elevationTotalDataY: number[] = [];
 
+  obstructionPointsX: number[] = [];
+  obstructionPointsInvertedX: number[] = [];
+  obstructionPointsY: number[] = [];
+  obstructionPointsInvertedY: number[] = [];
+
   constructor( private dataService: DataService,
                private alertController: AlertController ) {}
 
@@ -380,20 +385,15 @@ export class Tab2Page {
     this.distance1 = distance1;
     this.distance2 = distance2;
 
-    let distanceFraction = (distance2 - distance1) / 4500;
+    let distanceFraction = (distance2 - distance1) / 1000;
     let distanceInitial = 0;
 
     console.log('DISTANCIA fraccionada ', distanceFraction)
 
-    for (let index = 0; index < 4500; index++) {
+    for (let index = 0; index < 1000; index++) {
       
       // this.distance1 = index;
       this.distance2 = distance2 - this.distance1;
-
-      if (index > 4000) {
-        console.log("distancia initial ", distanceInitial)
-        console.log("distancia final ", this.distance2)
-      }
 
       let radio = this.fresnelRadio(this.lambda, distanceInitial, this.distance2);
 
@@ -403,9 +403,29 @@ export class Tab2Page {
       this.dataFresnely.push(radio + 1000);
       // this.dataFresnely.push(-radio);
       this.dataFresnelyInverted.push(-radio + 1000);
+
+      // Check if there are obstruction points
+
+      if (this.dataFresnely[index] <= this.elevationTotalDataY[index]) {
+        console.log("Data fresnel en index ", index)
+        console.log("Altura fresnel en index ", this.dataFresnely[index])
+        console.log("Altura de elevacion en index ", this.elevationTotalDataY[index])
+        console.log("distance 1 ", this.distance1)
+        this.obstructionPointsX.push(this.elevationTotalDataX[index]);
+        this.obstructionPointsY.push(radio + 1000);
+      }
+
+      if (this.dataFresnelyInverted[index] <= this.elevationTotalDataY[index]) {
+        this.obstructionPointsInvertedX.push(this.elevationTotalDataX[index]);
+        this.obstructionPointsInvertedY.push(-radio + 1000);
+      }
+      
       this.distance1 += distanceFraction;
       distanceInitial += distanceFraction;
     }
+
+    console.log("Obstruction points array x ", this.obstructionPointsX)
+    console.log("Obstruction points array y ", this.obstructionPointsY)
 
     // Added the final point of elipse
 
@@ -426,9 +446,35 @@ export class Tab2Page {
       colorway: "#1f77b4"
     })
 
+    this.elevationData.data.push({
+      x: this.obstructionPointsX,
+      y: this.obstructionPointsY,
+      mode: 'markers',
+      type: 'scatter',
+      colorway: "#d91313"
+    })
+
+    this.elevationData.data.push({
+      x: this.obstructionPointsInvertedX,
+      y: this.obstructionPointsInvertedY,
+      mode: 'markers',
+      type: 'scatter',
+      colorway: "#d91313"
+    })
+
     console.log("arreglo puntos de fresnel x ", this.dataFresnelx);
     console.log("arreglo puntos de fresnel y ", this.dataFresnely);
     console.log("arreglo puntos de fresnel negativos y ", this.dataFresnelyInverted);
+
+    // 383 es el primer punto de obstruccion
+    // El numero que corresponde con la obstruccion en 
+    // la el arreglo de fresnel es
+
+    // valor altura fresnel en 383 = 1120.9378943751108
+    // valor altura elevacion en 383 = 1151
+
+    // valor x fresnel en 383 = 152.5282295963755
+    // valor x elevacion en 383 = 131.5481834148379
 
 
     this.alertController.dismiss();

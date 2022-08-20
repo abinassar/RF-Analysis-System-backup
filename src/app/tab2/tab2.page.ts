@@ -437,14 +437,18 @@ export class Tab2Page {
       x: this.dataFresnelx,
       y: this.dataFresnely,
       type: 'scatter',
-      line: {color: '#17BECF'}
+      line: {
+        color: '#17BECF'
+      }
     })
 
     this.elevationData.data.push({
       x: this.dataFresnelx,
       y: this.dataFresnelyInverted,
       type: 'scatter',
-      line: {color: '#17BECF'}
+      line: {
+        color: '#17BECF'
+      }
     })
 
     this.elevationData.data.push({
@@ -452,7 +456,9 @@ export class Tab2Page {
       y: this.obstructionPointsY,
       mode: 'markers',
       type: 'scatter',
-      line: {color: '#d91313'}
+      line: {
+        color: '#d91313'
+      }
     })
 
     this.elevationData.data.push({
@@ -460,7 +466,9 @@ export class Tab2Page {
       y: this.obstructionPointsInvertedY,
       mode: 'markers',
       type: 'scatter',
-      line: {color: '#d91313'}
+      line: {
+        color: '#d91313'
+      }
     })
 
     console.log("arreglo puntos de fresnel x ", this.dataFresnelx);

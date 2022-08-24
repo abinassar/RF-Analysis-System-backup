@@ -45,6 +45,8 @@ export class Tab2Page {
 
     // this.createElipseCurve(0, 0, 4, 4);
 
+    // console.log("Actan ", Math.atan(1))
+
     this.presentAlert();
 
     this.getFresnelZoneData(40.851445, -3.360259, 40.852399, -3.364143);
@@ -290,8 +292,8 @@ export class Tab2Page {
       distanceFinal += this.distanceFractioned;
     }
 
-    console.log('elevation data X ', this.elevationDataX);
-    console.log('elevation data Y ', this.elevationDataY);
+    // console.log('elevation data X ', this.elevationDataX);
+    // console.log('elevation data Y ', this.elevationDataY);
 
     // Set floor in data
 
@@ -300,7 +302,7 @@ export class Tab2Page {
     let floorDataYInitial: number[] = [];
     let floorDataYFinal: number[] = [];
 
-    let fractionIn200XInitial = this.elevationDataX[0]/100;
+    let fractionIn200XInitial = this.elevationDataX[0];
     
     let initialPoint = 0;
     let finalPoint = this.elevationDataX[this.elevationDataX.length - 1];
@@ -326,8 +328,8 @@ export class Tab2Page {
     this.elevationTotalDataX = floorDataXInitial.concat(this.elevationDataX, floorDataXFinal);
     this.elevationTotalDataY = floorDataYInitial.concat(this.elevationDataY, floorDataYFinal);
 
-    // console.log("elevation x ", this.elevationTotalDataX)
-    // console.log("elevation y ", this.elevationTotalDataY)
+    console.log("elevation x ", this.elevationTotalDataX)
+    console.log("elevation y ", this.elevationTotalDataY)
 
     this.elevationData = {
       // data: [
@@ -355,11 +357,11 @@ export class Tab2Page {
     // this.createElipseData(this.elevationTotalDataX[99],
     //                       this.elevationTotalDataX[this.elevationData.data[0].x.length - 101] - this.elevationTotalDataX[99]);
 
-    // this.createElipseCurve(this.elevationTotalDataX[99], 
-    //                        600, 
-    //                        this.elevationTotalDataX[this.elevationData.data[0].x.length - 101] - this.elevationTotalDataX[99], 
-    //                        500,
-    //                        10);
+    this.createElipseCurve(this.elevationTotalDataX[99], 
+                           1000, 
+                           this.elevationTotalDataX[this.elevationData.data[0].x.length - 101] - this.elevationTotalDataX[99], 
+                           1500,
+                           10);
 
     this.elevationGraph = true;
     this.alertController.dismiss();
@@ -371,13 +373,13 @@ export class Tab2Page {
                     Yfinal: number,
                     fraction: number = 1000) {
 
-                      console.log("Xinitial ", Xinitial)
-                      console.log("Xfinal ", Xfinal)
-                      console.log("Yinitial ", Yinitial)
-                      console.log("Yfinal ", Yfinal)
+    console.log("Xinitial ", Xinitial)
+    console.log("Xfinal ", Xfinal)
+    console.log("Yinitial ", Yinitial)
+    console.log("Yfinal ", Yfinal)
 
-    let diferenceX = Xfinal - Xinitial;
-    let diferenceY = Yfinal - Yinitial;
+    let diferenceX = Math.abs(Xfinal - Xinitial);
+    let diferenceY = Math.abs(Yfinal - Yinitial);
 
     console.log("Diferencia puntos x ", diferenceX);
     console.log("Diferencia puntos y ", diferenceY);
@@ -386,25 +388,42 @@ export class Tab2Page {
 
     console.log('distancia de la recta ', rectDistance);
 
-    let xFractioned = Xfinal/fraction;
+    let xFractioned = Math.abs(Xfinal - Xinitial)/fraction;
 
     let mRect = (Yfinal - Yinitial)/(Xfinal - Xinitial);
-    let angleRectRadian;
+    let angleRectDegree;
+
+    console.log("pendiente de la recta ", mRect)
 
     if (mRect === 0) {
-      angleRectRadian = 0;
+      angleRectDegree = 0;
     } else {
-      angleRectRadian = Math.atan(mRect);
+      angleRectDegree = Math.atan(mRect);
     }
 
-    let angleRectDegree = (angleRectRadian*180)/Math.PI;
+    console.log("angulo de la recta en grados", angleRectDegree)
+
+    let angleRectRadian = (angleRectDegree*Math.PI)/180;
 
     let angleClkSenseTransferred = angleRectRadian + Math.PI/2;
     let angleCounterClkSenseTransferred = angleRectRadian - Math.PI/2;
 
+    if (angleClkSenseTransferred < 0) {
+      angleClkSenseTransferred += 2*Math.PI;
+    }
+
+    if (angleCounterClkSenseTransferred < 0) {
+      angleCounterClkSenseTransferred += 2*Math.PI;
+    }
+
+    console.log("Angulo de la recta ", angleRectRadian)
+
+    console.log("Angulo transladado ens entido de agujas del reloj ", angleClkSenseTransferred)
+    console.log("Angulo transladado ens entido contrario de agujas del reloj ", angleCounterClkSenseTransferred)
+
     let P1x = Xinitial;
     let P1y = Yinitial;
-    let PDiferenceFractionX = P1x + xFractioned;
+    let PFinalFractionX = P1x + xFractioned;
 
     let rectDataX: number[] = [];
     let rectDataY: number[] = [];
@@ -425,19 +444,8 @@ export class Tab2Page {
 
     // Determino la distancia que hay en cada aumento de fraccion
     // Para cada ciclo
-
-    let diferenceXInFraction = xFractioned;
-
-    // if (Yinitial === Yfinal) {
-    //   diferenceYInFraction = 0;
-    // } else {
-    // }
-    let P2yFraction = this.getFinalPointY(mRect, PDiferenceFractionX, P1x, P1y);
-    let diferenceYInFraction = P2yFraction - Yinitial;
-
-    console.log("diferenceYInFraction ", diferenceYInFraction)
     
-    let distanceFraction = Math.sqrt(Math.pow(diferenceXInFraction, 2) + Math.pow(diferenceYInFraction, 2));
+    let distanceFraction = rectDistance/fraction;
     console.log("distanceFraction ", distanceFraction)
 
     // Set initial point in fresnel elipse
@@ -474,6 +482,9 @@ export class Tab2Page {
 
       let radio = this.fresnelRadio(this.lambda, distance1, distance2);
 
+      if (radio < 0.00001) {
+        radio = 0;
+      }
       // Get the point Y and X of fresnel in positive and negative
 
       let fresnelPositiveXPoint;
@@ -486,7 +497,7 @@ export class Tab2Page {
           && !Number.isNaN(radio)) {
   
         fresnelPositiveXPoint = this.getXTranferredPoint(P1x, radio, angleCounterClkSenseTransferred);
-        fresnelNegativeXPoint = this.getXTranferredPoint(P1y, radio, angleClkSenseTransferred);
+        fresnelNegativeXPoint = this.getXTranferredPoint(P1x, radio, angleClkSenseTransferred);
         
         fresnelPositiveYPoint = this.getYTranferredPoint(P1y, radio, angleCounterClkSenseTransferred);
         fresnelNegativeYPoint = this.getYTranferredPoint(P1y, radio, angleClkSenseTransferred);
@@ -513,16 +524,16 @@ export class Tab2Page {
       }
 
       console.log("fresnelNegativeXPoint ", fresnelNegativeXPoint)
-      console.log("fresnelPositiveXPoint ", fresnelPositiveXPoint)
+      // console.log("fresnelPositiveXPoint ", fresnelPositiveXPoint)
       console.log("fresnelNegativeYPoint ", fresnelNegativeYPoint)
-      console.log("fresnelPositiveYPoint ", fresnelPositiveYPoint)
+      // console.log("fresnelPositiveYPoint ", fresnelPositiveYPoint)
       console.log("radio ", radio)
 
-      fresnelDataX.push(fresnelNegativeXPoint);
-      fresnelInvertedDataX.push(fresnelPositiveXPoint);
+      fresnelDataX.push(fresnelPositiveXPoint);
+      fresnelInvertedDataX.push(fresnelNegativeXPoint);
 
-      fresnelDataY.push(fresnelNegativeYPoint);
-      fresnelInvertedDataY.push(fresnelPositiveYPoint);
+      fresnelDataY.push(fresnelPositiveYPoint);
+      fresnelInvertedDataY.push(fresnelNegativeYPoint);
 
       P1y = this.getFinalPointY(mRect, (P1x + xFractioned), P1x, P1y);
       P1x += xFractioned;
@@ -535,7 +546,7 @@ export class Tab2Page {
       // // Update the distance 1 and distance 2 to next loop
   
       distance1 += distanceFraction;
-      distance2 -= distanceFraction;
+      distance2 = Math.abs(distance2 - distanceFraction);
 
     }
 
@@ -546,8 +557,20 @@ export class Tab2Page {
     // fresnelInvertedDataY.push(rectDataY[rectDataY.length - 1]);
 
 
-    console.log("Fresnel data x ", fresnelDataX)
-    console.log("Fresnel data y ", fresnelDataY)
+    // console.log("Fresnel data x ", fresnelDataX)
+    // console.log("Fresnel data y ", fresnelDataY)
+
+    console.log("Fresnel data x inverted ", fresnelInvertedDataX)
+    console.log("Fresnel data y inverted ", fresnelInvertedDataY)
+
+    this.elevationData.data.push({
+      x: fresnelDataX,
+      y: fresnelDataY,
+      type: 'scatter',
+      line: {
+        color: '#17BECF'
+      }
+    })
 
     this.elevationData.data.push({
       x: fresnelInvertedDataX,
@@ -558,14 +581,6 @@ export class Tab2Page {
       }
     })
 
-    this.elevationData.data.push({
-      x: fresnelDataX,
-      y: fresnelDataY,
-      type: 'scatter',
-      line: {
-        color: '#17BECF'
-      }
-    })
 
     this.elevationData.data.push({
       x: rectDataX,

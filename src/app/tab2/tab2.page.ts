@@ -359,9 +359,9 @@ export class Tab2Page {
 
     this.createElipseCurve(this.elevationTotalDataX[99], 
                            1000, 
-                           this.elevationTotalDataX[this.elevationData.data[0].x.length - 101] - this.elevationTotalDataX[99], 
-                           1500,
-                           10);
+                           this.elevationTotalDataX[this.elevationData.data[0].x.length - 101], 
+                           1000,
+                           1000);
 
     this.elevationGraph = true;
     this.alertController.dismiss();
@@ -523,11 +523,11 @@ export class Tab2Page {
         }
       }
 
-      console.log("fresnelNegativeXPoint ", fresnelNegativeXPoint)
-      // console.log("fresnelPositiveXPoint ", fresnelPositiveXPoint)
-      console.log("fresnelNegativeYPoint ", fresnelNegativeYPoint)
-      // console.log("fresnelPositiveYPoint ", fresnelPositiveYPoint)
-      console.log("radio ", radio)
+      // console.log("fresnelNegativeXPoint ", fresnelNegativeXPoint)
+      // // console.log("fresnelPositiveXPoint ", fresnelPositiveXPoint)
+      // console.log("fresnelNegativeYPoint ", fresnelNegativeYPoint)
+      // // console.log("fresnelPositiveYPoint ", fresnelPositiveYPoint)
+      // console.log("radio ", radio)
 
       fresnelDataX.push(fresnelPositiveXPoint);
       fresnelInvertedDataX.push(fresnelNegativeXPoint);
@@ -550,6 +550,55 @@ export class Tab2Page {
 
     }
 
+    // console.log("Obstruction points array x ", this.obstructionPointsX)
+    // console.log("Obstruction points array y ", this.obstructionPointsY)
+
+    fresnelDataY.forEach((y, index) => {
+
+      if (index === 171) {
+        console.log("Posicion x elevacion ", this.elevationTotalDataX[270])
+        console.log("Posicion x fresnel ", fresnelDataX[index])
+      }
+
+      if (y <= this.elevationTotalDataY[index]) {
+
+        console.log("Index ", index)
+
+        this.obstructionPointsInvertedX.push(fresnelDataX[index]);
+        this.obstructionPointsInvertedY.push(y);
+
+      }
+
+    })
+
+    // Check if there are obstruction points
+
+    // if (fresnelPositiveYPoint <= this.elevationTotalDataY[index + 99]) {
+
+      // console.log("Indice en obstruction positiva ", index)
+      // console.log("Indice en obstruction positiva + 100 ", index + 100)
+      // console.log("Elevation data mayor a data de fresnel ", this.elevationTotalDataY[index])
+
+      // this.obstructionPointsX.push(fresnelPositiveXPoint);
+      // this.obstructionPointsY.push(fresnelPositiveYPoint);
+
+    // }
+
+    // if (fresnelNegativeYPoint <= this.elevationTotalDataY[index + 99]) {
+
+      // console.log("Indice en obstruction negativa ", index)
+      // console.log("Indice en obstruction negativa + 100 ", index + 100)
+      // console.log("Elevation data mayor a data de fresnel ", this.elevationTotalDataY[index])
+
+      // this.obstructionPointsInvertedX.push(fresnelNegativeXPoint);
+      // this.obstructionPointsInvertedY.push(fresnelNegativeYPoint);
+
+    // }
+
+    // this.obstructionPointsInvertedX.push(fresnelDataX[171]);
+    // this.obstructionPointsInvertedY.push(fresnelDataY[171]);
+
+
     // fresnelDataX.push(rectDataX[rectDataX.length - 1]);
     // fresnelInvertedDataX.push(rectDataX[rectDataX.length - 1]);
 
@@ -557,8 +606,8 @@ export class Tab2Page {
     // fresnelInvertedDataY.push(rectDataY[rectDataY.length - 1]);
 
 
-    // console.log("Fresnel data x ", fresnelDataX)
-    // console.log("Fresnel data y ", fresnelDataY)
+    console.log("Fresnel data x ", fresnelDataX)
+    console.log("Fresnel data y ", fresnelDataY)
 
     console.log("Fresnel data x inverted ", fresnelInvertedDataX)
     console.log("Fresnel data y inverted ", fresnelInvertedDataY)
@@ -587,6 +636,27 @@ export class Tab2Page {
       y: rectDataY,
       type: 'scatter'
     })
+
+    // this.elevationData.data.push({
+    //   x: this.obstructionPointsX,
+    //   y: this.obstructionPointsY,
+    //   mode: 'markers',
+    //   type: 'scatter',
+    //   line: {
+    //     color: '#d91313'
+    //   }
+    // })
+
+    this.elevationData.data.push({
+      x: this.obstructionPointsInvertedX,
+      y: this.obstructionPointsInvertedY,
+      mode: 'markers',
+      type: 'scatter',
+      line: {
+        color: '#d91313'
+      }
+    })
+
 
     // this.elevationData = {
     //   data: [
@@ -684,12 +754,10 @@ export class Tab2Page {
       // Check if there are obstruction points
 
       if (this.dataFresnely[index] <= this.elevationTotalDataY[index]) {
-        console.log("Data fresnel en index ", index)
-        console.log("Altura fresnel en index ", this.dataFresnely[index])
-        console.log("Altura de elevacion en index ", this.elevationTotalDataY[index])
-        console.log("distance 1 ", this.distance1)
+
         this.obstructionPointsX.push(this.elevationTotalDataX[index]);
         this.obstructionPointsY.push(radio + 1000);
+        
       }
 
       if (this.dataFresnelyInverted[index] <= this.elevationTotalDataY[index]) {

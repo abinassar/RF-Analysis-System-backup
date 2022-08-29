@@ -307,18 +307,18 @@ export class Tab2Page {
     let initialPoint = 0;
     let finalPoint = this.elevationDataX[this.elevationDataX.length - 1];
 
-    for (let index = 0; index < 100; index++) {
+    // for (let index = 0; index < 100; index++) {
 
-      floorDataXInitial.push(initialPoint);
-      floorDataYInitial.push(this.elevationDataY[0]);
+    //   floorDataXInitial.push(initialPoint);
+    //   floorDataYInitial.push(this.elevationDataY[0]);
 
-      floorDataXFinal.push(finalPoint);
-      floorDataYFinal.push(this.elevationDataY[this.elevationDataY.length - 1]);
+    //   floorDataXFinal.push(finalPoint);
+    //   floorDataYFinal.push(this.elevationDataY[this.elevationDataY.length - 1]);
 
-      initialPoint += fractionIn200XInitial;
-      finalPoint += fractionIn200XInitial;
+    //   initialPoint += fractionIn200XInitial;
+    //   finalPoint += fractionIn200XInitial;
       
-    }
+    // }
 
     this.elevationTotalDataX = [];
     this.elevationTotalDataY = [];
@@ -347,22 +347,18 @@ export class Tab2Page {
       layout: { title: 'Elevation graph' }
     };
 
+    // this.createElipseCurve(this.elevationTotalDataX[99], 
+    //                        1000, 
+    //                        this.elevationTotalDataX[this.elevationData.data[0].x.length - 101], 
+    //                        1000,
+    //                        1000);
 
-    // console.log('final point ', this.elevationDataX[this.elevationData.data[0].x.length - 1])
-
-    // this.createElipseData(0,this.elevationDataX[this.elevationData.data[0].x.length - 50]);
-    
-    // console.log('final point ', this.elevationTotalDataX[this.elevationData.data[0].x.length - 1])
-
-    // this.createElipseData(this.elevationTotalDataX[99],
-    //                       this.elevationTotalDataX[this.elevationData.data[0].x.length - 101] - this.elevationTotalDataX[99]);
-
-    this.createElipseCurve(this.elevationTotalDataX[99], 
+    this.createElipseCurve(this.elevationTotalDataX[0], 
                            1000, 
-                           this.elevationTotalDataX[this.elevationData.data[0].x.length - 101], 
+                           this.elevationTotalDataX[this.elevationData.data[0].x.length - 1], 
                            1000,
                            1000);
-
+                           
     this.elevationGraph = true;
     this.alertController.dismiss();
   }
@@ -555,14 +551,18 @@ export class Tab2Page {
 
     fresnelDataY.forEach((y, index) => {
 
-      if (index === 171) {
-        console.log("Posicion x elevacion ", this.elevationTotalDataX[270])
-        console.log("Posicion x fresnel ", fresnelDataX[index])
-      }
-
       if (y <= this.elevationTotalDataY[index]) {
 
-        console.log("Index ", index)
+        this.obstructionPointsX.push(fresnelDataX[index]);
+        this.obstructionPointsY.push(y);
+
+      }
+
+    })
+
+    fresnelInvertedDataY.forEach((y, index) => {
+
+      if (y <= this.elevationTotalDataY[index]) {
 
         this.obstructionPointsInvertedX.push(fresnelDataX[index]);
         this.obstructionPointsInvertedY.push(y);
@@ -637,15 +637,15 @@ export class Tab2Page {
       type: 'scatter'
     })
 
-    // this.elevationData.data.push({
-    //   x: this.obstructionPointsX,
-    //   y: this.obstructionPointsY,
-    //   mode: 'markers',
-    //   type: 'scatter',
-    //   line: {
-    //     color: '#d91313'
-    //   }
-    // })
+    this.elevationData.data.push({
+      x: this.obstructionPointsX,
+      y: this.obstructionPointsY,
+      mode: 'markers',
+      type: 'scatter',
+      line: {
+        color: '#d91313'
+      }
+    })
 
     this.elevationData.data.push({
       x: this.obstructionPointsInvertedX,

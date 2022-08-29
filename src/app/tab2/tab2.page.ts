@@ -212,7 +212,7 @@ export class Tab2Page {
 
     // Generate 10 pack of 100 requests
 
-    for (let index = 0; index < 10; index++) {
+    for (let index = 0; index < 20; index++) {
 
       if (index !== 0) {
         latlonArray = [];
@@ -354,10 +354,10 @@ export class Tab2Page {
     //                        1000);
 
     this.createElipseCurve(this.elevationTotalDataX[0], 
-                           1000, 
+                           1432, 
                            this.elevationTotalDataX[this.elevationData.data[0].x.length - 1], 
-                           1000,
-                           1000);
+                           827,
+                           2000);
                            
     this.elevationGraph = true;
     this.alertController.dismiss();
@@ -432,9 +432,6 @@ export class Tab2Page {
 
     // Push the initial point of rect
 
-    // rectDataX.push(P1x);
-    // rectDataY.push(P1y);
-
     let distance1 = 0;
     let distance2 = rectDistance - distance1;
 
@@ -442,27 +439,9 @@ export class Tab2Page {
     // Para cada ciclo
     
     let distanceFraction = rectDistance/fraction;
-    console.log("distanceFraction ", distanceFraction)
-
-    // Set initial point in fresnel elipse
-
-    // fresnelDataX.push(Xinitial);
-    // fresnelInvertedDataX.push(Xinitial);
-
-    // fresnelDataY.push(Yinitial);
-    // fresnelInvertedDataY.push(Yinitial);
-    // console.log("PDiferenceFractionX ", PDiferenceFractionX)
-
 
     for (let index = 0; index <= fraction; index++) {
       
-      // let P2y = this.getFinalPointY(mRect, PDiferenceFractionX, P1x, P1y);
-
-      // rectDataX.push(PDiferenceFractionX);
-      // rectDataY.push(P2y);
-
-      // if (index > 0) {
-
       // Add point to rect data
 
       console.log("P1x ", P1x)
@@ -519,12 +498,6 @@ export class Tab2Page {
         }
       }
 
-      // console.log("fresnelNegativeXPoint ", fresnelNegativeXPoint)
-      // // console.log("fresnelPositiveXPoint ", fresnelPositiveXPoint)
-      // console.log("fresnelNegativeYPoint ", fresnelNegativeYPoint)
-      // // console.log("fresnelPositiveYPoint ", fresnelPositiveYPoint)
-      // console.log("radio ", radio)
-
       fresnelDataX.push(fresnelPositiveXPoint);
       fresnelInvertedDataX.push(fresnelNegativeXPoint);
 
@@ -533,11 +506,6 @@ export class Tab2Page {
 
       P1y = this.getFinalPointY(mRect, (P1x + xFractioned), P1x, P1y);
       P1x += xFractioned;
-      // }
-
-      // P1x = PDiferenceFractionX;
-      // PDiferenceFractionX += distanceFractioned;
-      // P1y = P2y;
 
       // // Update the distance 1 and distance 2 to next loop
   
@@ -546,30 +514,57 @@ export class Tab2Page {
 
     }
 
-    // console.log("Obstruction points array x ", this.obstructionPointsX)
-    // console.log("Obstruction points array y ", this.obstructionPointsY)
+    this.elevationTotalDataY.forEach((y, index) => {
 
-    fresnelDataY.forEach((y, index) => {
+      // Busco un punto que este mas o menos en el valor de x de la zona de fresnel
+      
+      let indexOfPositionX = fresnelDataX.findIndex((fresnelPointX) => {
+        return (fresnelPointX > this.elevationTotalDataX[index] - distanceFraction 
+               && fresnelPointX < this.elevationTotalDataX[index] + distanceFraction);
+      });
 
-      if (y <= this.elevationTotalDataY[index]) {
+      if (y >= fresnelDataY[indexOfPositionX]) {
 
-        this.obstructionPointsX.push(fresnelDataX[index]);
-        this.obstructionPointsY.push(y);
+        this.obstructionPointsX.push(fresnelDataX[indexOfPositionX]);
+        this.obstructionPointsY.push(fresnelDataY[indexOfPositionX]);
+
+      }
+
+      let indexOfPositionInvertedX = fresnelInvertedDataX.findIndex((fresnelPointX) => {
+        return (fresnelPointX > this.elevationTotalDataX[index] - distanceFraction 
+               && fresnelPointX < this.elevationTotalDataX[index] + distanceFraction);
+      });
+
+      if (y >= fresnelInvertedDataY[indexOfPositionInvertedX]) {
+        
+        this.obstructionPointsInvertedX.push(fresnelInvertedDataX[indexOfPositionInvertedX]);
+        this.obstructionPointsInvertedY.push(fresnelInvertedDataY[indexOfPositionInvertedX]);
 
       }
 
     })
 
-    fresnelInvertedDataY.forEach((y, index) => {
+    // fresnelDataY.forEach((y, index) => {
 
-      if (y <= this.elevationTotalDataY[index]) {
+    //   if (y <= this.elevationTotalDataY[index]) {
 
-        this.obstructionPointsInvertedX.push(fresnelDataX[index]);
-        this.obstructionPointsInvertedY.push(y);
+    //     this.obstructionPointsX.push(fresnelDataX[index]);
+    //     this.obstructionPointsY.push(y);
 
-      }
+    //   }
 
-    })
+    // })
+
+    // fresnelInvertedDataY.forEach((y, index) => {
+
+    //   if (y <= this.elevationTotalDataY[index]) {
+
+    //     this.obstructionPointsInvertedX.push(fresnelDataX[index]);
+    //     this.obstructionPointsInvertedY.push(y);
+
+    //   }
+
+    // })
 
     // Check if there are obstruction points
 

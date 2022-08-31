@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { ActionSheetController, AlertController, LoadingController, MenuController } from '@ionic/angular';
 import { DataService } from '../services/data.service';
+import { SettingsService } from '../services/settings.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-tab2',
@@ -38,16 +40,54 @@ export class Tab2Page {
   obstructionPointsY: number[] = [];
   obstructionPointsInvertedY: number[] = [];
 
+  anthenaOneHeight: number = 1000;
+  anthenaTwoHeight: number = 1000;
+
   constructor( private dataService: DataService,
-               private alertController: AlertController ) {}
+               private loadingCtrl: LoadingController,
+               private actionSheetController: ActionSheetController,
+               private menu: MenuController,
+               private settingsService: SettingsService ) {}
 
   ngOnInit(): void {
+
+    this.settingsService.linkSettings$.subscribe((settings) => {
+
+      this.anthenaOneHeight = settings.anthenaOneHigh;
+      this.anthenaTwoHeight = settings.anthenaTwoHigh;
+
+      this.presentLoading();
+
+      setTimeout(() => {
+        
+        // Clean the before fresnel zone
+  
+        this.elevationData.data.pop();
+        this.elevationData.data.pop();
+        this.elevationData.data.pop();
+        this.elevationData.data.pop();
+        this.elevationData.data.pop();
+  
+  
+        // Refresh data in graph
+  
+        this.createElipseCurve(this.elevationTotalDataX[0], 
+                              this.anthenaOneHeight, 
+                              this.elevationTotalDataX[this.elevationData.data[0].x.length - 1], 
+                              this.anthenaTwoHeight,
+                              2000);
+                             
+        this.loadingCtrl.dismiss();
+        
+      }, 2000);
+
+    })
 
     // this.createElipseCurve(0, 0, 4, 4);
 
     // console.log("Actan ", Math.atan(1))
 
-    this.presentAlert();
+    this.presentLoading();
 
     this.getFresnelZoneData(40.851445, -3.360259, 40.852399, -3.364143);
     
@@ -56,13 +96,12 @@ export class Tab2Page {
   ngAfterViewInit() {
   }
 
-  async presentAlert() {
-    const alert = await this.alertController.create({
-      header: 'Espera',
-      subHeader: 'Cargando la data de elevacio.'
+  async presentLoading() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Cargando data de elevación...'
     });
 
-    await alert.present();
+    loading.present();
   }
 
   getLatLonInAnyDistance(lat1: number, 
@@ -274,10 +313,6 @@ export class Tab2Page {
       totalResponsesData = [...totalResponsesData , ...response.results];
     });
 
-    // console.log('distance fractioned ', this.distanceFractioned)
-    // console.log('distance fraction ', this.distanceFraction)
-    // console.log('Tottal responses data ', totalResponsesData)
-
     // Set offset to initial point
 
     let distanceFinal = this.distanceFractioned;
@@ -292,9 +327,6 @@ export class Tab2Page {
       distanceFinal += this.distanceFractioned;
     }
 
-    // console.log('elevation data X ', this.elevationDataX);
-    // console.log('elevation data Y ', this.elevationDataY);
-
     // Set floor in data
 
     let floorDataXInitial: number[] = [];
@@ -307,44 +339,30 @@ export class Tab2Page {
     let initialPoint = 0;
     let finalPoint = this.elevationDataX[this.elevationDataX.length - 1];
 
-    // for (let index = 0; index < 100; index++) {
-
-    //   floorDataXInitial.push(initialPoint);
-    //   floorDataYInitial.push(this.elevationDataY[0]);
-
-    //   floorDataXFinal.push(finalPoint);
-    //   floorDataYFinal.push(this.elevationDataY[this.elevationDataY.length - 1]);
-
-    //   initialPoint += fractionIn200XInitial;
-    //   finalPoint += fractionIn200XInitial;
-      
-    // }
-
     this.elevationTotalDataX = [];
     this.elevationTotalDataY = [];
-
-    // console.log("initial x data ", floorDataXInitial);
 
     this.elevationTotalDataX = floorDataXInitial.concat(this.elevationDataX, floorDataXFinal);
     this.elevationTotalDataY = floorDataYInitial.concat(this.elevationDataY, floorDataYFinal);
 
-    console.log("elevation x ", this.elevationTotalDataX)
-    console.log("elevation y ", this.elevationTotalDataY)
-
     this.elevationData = {
-      // data: [
-      //   { x: this.elevationDataX,
-      //     y: this.elevationDataY,
-      //     type: 'scatter'
-      //   },
-      // ],
       data: [
         { x: this.elevationTotalDataX,
           y: this.elevationTotalDataY,
           type: 'scatter'
         },
       ],
-      layout: { title: 'Elevation graph' }
+      layout: { 
+        title: 'Gráfico de elevación',
+        yaxis: {
+          showline: false,
+          showgrid: false
+        },
+        xaxis: {
+          showline: false,
+          showgrid: false
+        }
+      }
     };
 
     // this.createElipseCurve(this.elevationTotalDataX[99], 
@@ -354,13 +372,13 @@ export class Tab2Page {
     //                        1000);
 
     this.createElipseCurve(this.elevationTotalDataX[0], 
-                           1432, 
+                           this.anthenaOneHeight, 
                            this.elevationTotalDataX[this.elevationData.data[0].x.length - 1], 
-                           827,
+                           this.anthenaTwoHeight,
                            2000);
                            
     this.elevationGraph = true;
-    this.alertController.dismiss();
+    this.loadingCtrl.dismiss();
   }
 
   createElipseCurve(Xinitial: number, 
@@ -369,27 +387,27 @@ export class Tab2Page {
                     Yfinal: number,
                     fraction: number = 1000) {
 
-    console.log("Xinitial ", Xinitial)
-    console.log("Xfinal ", Xfinal)
-    console.log("Yinitial ", Yinitial)
-    console.log("Yfinal ", Yfinal)
+    // console.log("Xinitial ", Xinitial)
+    // console.log("Xfinal ", Xfinal)
+    // console.log("Yinitial ", Yinitial)
+    // console.log("Yfinal ", Yfinal)
 
     let diferenceX = Math.abs(Xfinal - Xinitial);
     let diferenceY = Math.abs(Yfinal - Yinitial);
 
-    console.log("Diferencia puntos x ", diferenceX);
-    console.log("Diferencia puntos y ", diferenceY);
+    // console.log("Diferencia puntos x ", diferenceX);
+    // console.log("Diferencia puntos y ", diferenceY);
 
     let rectDistance = Math.sqrt(Math.pow(diferenceX, 2) + Math.pow(diferenceY, 2));
 
-    console.log('distancia de la recta ', rectDistance);
+    // console.log('distancia de la recta ', rectDistance);
 
     let xFractioned = Math.abs(Xfinal - Xinitial)/fraction;
 
     let mRect = (Yfinal - Yinitial)/(Xfinal - Xinitial);
     let angleRectDegree;
 
-    console.log("pendiente de la recta ", mRect)
+    // console.log("pendiente de la recta ", mRect)
 
     if (mRect === 0) {
       angleRectDegree = 0;
@@ -397,7 +415,7 @@ export class Tab2Page {
       angleRectDegree = Math.atan(mRect);
     }
 
-    console.log("angulo de la recta en grados", angleRectDegree)
+    // console.log("angulo de la recta en grados", angleRectDegree)
 
     let angleRectRadian = (angleRectDegree*Math.PI)/180;
 
@@ -430,6 +448,12 @@ export class Tab2Page {
     let fresnelInvertedDataX: number[] = [];
     let fresnelInvertedDataY: number[] = [];
 
+    this.obstructionPointsX = [];
+    this.obstructionPointsY = [];
+
+    this.obstructionPointsInvertedX = [];
+    this.obstructionPointsInvertedY = [];
+
     // Push the initial point of rect
 
     let distance1 = 0;
@@ -443,15 +467,9 @@ export class Tab2Page {
     for (let index = 0; index <= fraction; index++) {
       
       // Add point to rect data
-
-      console.log("P1x ", P1x)
-      console.log("P1y ", P1y)
         
       rectDataX.push(P1x);
       rectDataY.push(P1y);
-
-      console.log("distance1 ", distance1)
-      console.log("distance2 ", distance2)
 
       // Create the fresnel zone points
 
@@ -544,69 +562,6 @@ export class Tab2Page {
 
     })
 
-    // fresnelDataY.forEach((y, index) => {
-
-    //   if (y <= this.elevationTotalDataY[index]) {
-
-    //     this.obstructionPointsX.push(fresnelDataX[index]);
-    //     this.obstructionPointsY.push(y);
-
-    //   }
-
-    // })
-
-    // fresnelInvertedDataY.forEach((y, index) => {
-
-    //   if (y <= this.elevationTotalDataY[index]) {
-
-    //     this.obstructionPointsInvertedX.push(fresnelDataX[index]);
-    //     this.obstructionPointsInvertedY.push(y);
-
-    //   }
-
-    // })
-
-    // Check if there are obstruction points
-
-    // if (fresnelPositiveYPoint <= this.elevationTotalDataY[index + 99]) {
-
-      // console.log("Indice en obstruction positiva ", index)
-      // console.log("Indice en obstruction positiva + 100 ", index + 100)
-      // console.log("Elevation data mayor a data de fresnel ", this.elevationTotalDataY[index])
-
-      // this.obstructionPointsX.push(fresnelPositiveXPoint);
-      // this.obstructionPointsY.push(fresnelPositiveYPoint);
-
-    // }
-
-    // if (fresnelNegativeYPoint <= this.elevationTotalDataY[index + 99]) {
-
-      // console.log("Indice en obstruction negativa ", index)
-      // console.log("Indice en obstruction negativa + 100 ", index + 100)
-      // console.log("Elevation data mayor a data de fresnel ", this.elevationTotalDataY[index])
-
-      // this.obstructionPointsInvertedX.push(fresnelNegativeXPoint);
-      // this.obstructionPointsInvertedY.push(fresnelNegativeYPoint);
-
-    // }
-
-    // this.obstructionPointsInvertedX.push(fresnelDataX[171]);
-    // this.obstructionPointsInvertedY.push(fresnelDataY[171]);
-
-
-    // fresnelDataX.push(rectDataX[rectDataX.length - 1]);
-    // fresnelInvertedDataX.push(rectDataX[rectDataX.length - 1]);
-
-    // fresnelDataY.push(rectDataY[rectDataY.length - 1]);
-    // fresnelInvertedDataY.push(rectDataY[rectDataY.length - 1]);
-
-
-    console.log("Fresnel data x ", fresnelDataX)
-    console.log("Fresnel data y ", fresnelDataY)
-
-    console.log("Fresnel data x inverted ", fresnelInvertedDataX)
-    console.log("Fresnel data y inverted ", fresnelInvertedDataY)
-
     this.elevationData.data.push({
       x: fresnelDataX,
       y: fresnelDataY,
@@ -624,7 +579,6 @@ export class Tab2Page {
         color: '#17BECF'
       }
     })
-
 
     this.elevationData.data.push({
       x: rectDataX,
@@ -651,29 +605,6 @@ export class Tab2Page {
         color: '#d91313'
       }
     })
-
-
-    // this.elevationData = {
-    //   data: [
-    //     { x: rectDataX,
-    //       y: rectDataY,
-    //       type: 'scatter'
-    //     },
-    //     { x: fresnelDataX,
-    //       y: fresnelDataY,
-    //       type: 'scatter'
-    //     },
-    //     { x: fresnelInvertedDataX,
-    //       y: fresnelInvertedDataY,
-    //       type: 'scatter'
-    //     },
-    //   ],
-    //   layout: { title: 'Test elipse graph' },
-    //   type: 'scatter',
-    //   line: {
-    //     color: '#d91313'
-    //   }
-    // };
 
     this.elevationGraph = true;
 
@@ -826,8 +757,30 @@ export class Tab2Page {
     // valor x elevacion en 383 = 131.5481834148379
 
 
-    this.alertController.dismiss();
+    this.loadingCtrl.dismiss();
 
+  }
+
+  async presentActionSheet(lat: number, long: number, e) {
+
+    const actionSheet = await this.actionSheetController.create({
+      header: 'ACCIONES',
+      buttons: [
+        { 
+          text: 'Colocar marcador en: ' + lat + ", " + long,
+          icon: 'location-outline',
+          handler: () => {
+            // this.setMarker(e);
+          }
+        },
+      ],
+    });
+
+    await actionSheet.present();
+  }
+
+  openConfiguration() {
+    this.menu.open('first');
   }
 
 }

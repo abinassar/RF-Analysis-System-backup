@@ -1,20 +1,52 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
 
-  <ion-menu side="end" type="push" menuId="first" contentId="main">
-  <ion-header>
-    <ion-toolbar color="primary">
-      <ion-title>Menu</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content>
-    <ion-list>
-      <ion-item>Punteros</ion-item>
-      <ion-item>Informacion de antenas</ion-item>
-      <ion-item>Informacion de potencia</ion-item>
-    </ion-list>
-  </ion-content>
-</ion-menu>
+  <ion-menu side="end" 
+            type="push" 
+            menuId="first" 
+            contentId="main"
+            [formGroup]="settingsForm">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+
+      <ion-item>
+        <strong>
+          Altura de las antenas (metros)
+        </strong>
+      </ion-item>
+
+      <ion-item>
+
+        <ion-label>
+          Antena 1:
+        </ion-label>
+        <ion-input type="number" 
+                   formControlName="anthenaOneHigh"></ion-input>
+
+      </ion-item>
+      <ion-item>
+
+        <ion-label>
+          Antena 2:
+        </ion-label>
+        <ion-input type="number" 
+                   formControlName="anthenaTwoHigh"></ion-input>
+
+      </ion-item>
+
+      <ion-list>
+        <ion-item>Punteros</ion-item>
+        <ion-item>Informacion de potencia</ion-item>
+      </ion-list>
+
+      <ion-button color="success"
+                  (click)="saveSettings()">Save</ion-button>
+    </ion-content>
+  </ion-menu>
 
 <ion-router-outlet id="main"></ion-router-outlet>
 

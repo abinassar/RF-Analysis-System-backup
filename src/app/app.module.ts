@@ -8,6 +8,8 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,7 +23,10 @@ import { AppComponent } from './app.component';
   providers: [{ 
     provide: RouteReuseStrategy, 
     useClass: IonicRouteStrategy 
-  }],
+    },
+    DeviceOrientation,
+    Geolocation
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

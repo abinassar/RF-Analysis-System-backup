@@ -13,40 +13,11 @@
     </ion-toolbar>
   </ion-header>
 
-  <div class="compass">
-    <div class="compass-main">
-      <!-- {/*  Rótulos | Labels */} -->
-      <span class="north-label">N</span>
-      <span class="east-label">E</span>
-      <span class="west-label">W</span>
-      <span class="south-label">S</span>
-      <!-- {/* Rosa dos Ventos | Compass Rose */} -->
-      <div class="compass-rose">
-        <!-- {/* Pontos Cardiais | Cardial Points */} -->
-        <div class="cardial-points">
-          <div class="north-pointer pointer"></div>
-          <div class="east-pointer pointer"></div>
-          <div class="west-pointer pointer"></div>
-          <div class="south-pointer pointer"></div>
-        </div>
-        <!-- {/* Pontos Ordinais | Ordinal Points */} -->
-        <div class="ordinal-points">
-          <div class="northeast-pointer"></div>
-          <div class="northwest-pointer"></div>
-          <div class="southeast-pointer"></div>
-          <div class="south-west-pointer"></div>
-        </div>
-      </div>
-      <!-- {/* Bt Center */} -->
-      <div class="bt-center"></div>
-      <!-- {/* Agulha Magnética | Dip Needle */} -->
-      <!-- <div class="dip-needle" style={styles.rotation}></div> -->
-    </div>
-    <!-- <div style={styles.valuesVisbility} class="author"> -->
-      <!-- {this.bearing}° / {this.heading}° -->
-    <!-- </div> -->
+  <div id="container">
+    <!-- <strong>DeviceOrientationCompassHeading</strong> -->
+    <img src="assets/compass.png" width="200em" [ngStyle]="{'transform': 'rotate('+(qiblaLocation*-1)+'deg)'}">
+    <p>Current Location<br>{{!!currentLocation ? "["+currentLocation.coords.latitude+","+currentLocation.coords.longitude+"]" : 'Not Allowed'}}</p>
   </div>
-
 
   <!-- <app-explore-container name="Tab 3 page"></app-explore-container> -->
 </ion-content>

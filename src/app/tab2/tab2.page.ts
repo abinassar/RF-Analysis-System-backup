@@ -89,7 +89,7 @@ export class Tab2Page {
 
     this.presentLoading();
 
-    this.getFresnelZoneData(40.851445, -3.360259, 40.852399, -3.364143);
+    this.getFresnelZoneData(10.469305, -68.020143, 10.46825, -68.016109);
     
   }
 
@@ -257,7 +257,7 @@ export class Tab2Page {
         latlonArray = [];
       }
       
-      for (let index = 0; index < 100; index++) {
+      for (let index = 0; index < 50; index++) {
 
         if (index === 0 && this.firstIteration) {
           this.firstIteration = false;
@@ -280,15 +280,18 @@ export class Tab2Page {
         
       }
   
-      let uriBase = 'https://api.open-elevation.com/api/v1/lookup?locations=';
+      // let uriBase = 'https://api.open-elevation.com/api/v1/lookup?locations=';
+      let uriBase = 'https://api.gpxz.io/v1/elevation/points';
       let uriLocations = latlonArray.join('|');
   
       // console.log('lat lon array data ', latlonArray);
       // console.log('API uri ', latlonArray.join('|'));
 
-      this.requestArray.push(this.dataService
-                       .get(uriBase + uriLocations));
-  
+      // this.requestArray.push(this.dataService
+      //   .get(uriBase + uriLocations));
+        this.requestArray.push(this.dataService
+                                   .post(uriBase, uriLocations));
+
     }
 
     // Made the 10 reqeust and set the lat lon data

@@ -15,7 +15,7 @@ export class DataService {
 
     // Http service
 
-    get(uri: string,
+  get(uri: string,
       params?: HttpParams,
       headers: HttpHeaders = new HttpHeaders({
                                                 Accept: 'application/json'
@@ -26,4 +26,19 @@ export class DataService {
                                       params
                                     });
   }
+
+  post(uri: string,
+    positions,
+        params?: HttpParams,
+        headers: HttpHeaders = new HttpHeaders({
+                                                'Content-Type': 'application/x-www-form-urlencoded'
+                                              })): Observable<any> {
+
+    return this.http.post<any>(uri, 
+                                positions,
+                                    {
+                                      headers, 
+                                      params
+                                    });
+  }  
 }

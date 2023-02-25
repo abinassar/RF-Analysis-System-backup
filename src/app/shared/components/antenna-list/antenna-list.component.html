@@ -1,0 +1,11 @@
+<ion-list>
+  <ion-item detail *ngFor="let antenna of antennaList"> <!--detailattributegivethearrowtoitem-->
+    <ion-avatar slot="start"> <!--slot="start"attributepositionstheavatartostart-->
+      <img src="{{antenna.imgPath}}">
+    </ion-avatar>
+    <ion-label>
+      <h2>{{antenna.name}}</h2>
+      <p>{{antenna.frecuency}} Ghz, Gain: {{antenna.gain}}</p>
+    </ion-label>
+  </ion-item>
+</ion-list>

@@ -1,7 +1,8 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { ActionSheetController, MenuController } from '@ionic/angular';
+import { ActionSheetController, MenuController, ModalController } from '@ionic/angular';
 import * as Leaflet from "leaflet";
 import { antPath } from 'leaflet-ant-path';
+import { LinkConfigurationComponent } from '../shared/components/link-configuration/link-configuration.component';
 
 @Component({
   selector: 'app-tab1',
@@ -31,7 +32,8 @@ export class Tab1Page {
   createMaker: boolean = false;
 
   constructor(private actionSheetController: ActionSheetController,
-              private menu: MenuController) {}
+              private menu: MenuController,
+              private linkModalCtrl: ModalController) {}
 
   ngOnInit() {
 
@@ -102,6 +104,19 @@ export class Tab1Page {
     });
 
     await actionSheet.present();
+  }
+
+  async linkConfiguration() {
+    const modal = await this.linkModalCtrl.create({
+      component: LinkConfigurationComponent,
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    // if (role === 'confirm') {
+    //   this.message = `Hello, ${data}!`;
+    // }
   }
 
   openConfiguration() {

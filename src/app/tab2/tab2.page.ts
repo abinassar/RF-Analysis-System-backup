@@ -51,45 +51,44 @@ export class Tab2Page {
 
   ngOnInit(): void {
 
-    this.settingsService.linkSettings$.subscribe((settings) => {
+    // TODO: Descomentar esto luego de que se coloque
+    // la configuracion de las antenas
 
-      this.anthenaOneHeight = settings.anthenaOneHigh;
-      this.anthenaTwoHeight = settings.anthenaTwoHigh;
+    // this.settingsService.linkSettings$.subscribe((settings) => {
 
-      this.presentLoading();
+    //   this.anthenaOneHeight = settings.anthenaOneHigh;
+    //   this.anthenaTwoHeight = settings.anthenaTwoHigh;
 
-      setTimeout(() => {
+    //   this.presentLoading();
+
+    //   setTimeout(() => {
         
-        // Clean the before fresnel zone
+    //     // Clean the before fresnel zone
   
-        this.elevationData.data.pop();
-        this.elevationData.data.pop();
-        this.elevationData.data.pop();
-        this.elevationData.data.pop();
-        this.elevationData.data.pop();
+    //     this.elevationData.data.pop();
+    //     this.elevationData.data.pop();
+    //     this.elevationData.data.pop();
+    //     this.elevationData.data.pop();
+    //     this.elevationData.data.pop();
   
   
-        // Refresh data in graph
+    //     // Refresh data in graph
   
-        this.createElipseCurve(this.elevationTotalDataX[0], 
-                              this.anthenaOneHeight, 
-                              this.elevationTotalDataX[this.elevationData.data[0].x.length - 1], 
-                              this.anthenaTwoHeight,
-                              2000);
+    //     this.createElipseCurve(this.elevationTotalDataX[0], 
+    //                           this.anthenaOneHeight, 
+    //                           this.elevationTotalDataX[this.elevationData.data[0].x.length - 1], 
+    //                           this.anthenaTwoHeight,
+    //                           2000);
                              
-        this.loadingCtrl.dismiss();
+    //     this.loadingCtrl.dismiss();
         
-      }, 2000);
+    //   }, 2000);
 
-    })
+    // })
 
-    // this.createElipseCurve(0, 0, 4, 4);
+    // this.presentLoading();
 
-    // console.log("Actan ", Math.atan(1))
-
-    this.presentLoading();
-
-    this.getFresnelZoneData(10.469305, -68.020143, 10.46825, -68.016109);
+    // this.getFresnelZoneData(10.469305, -68.020143, 10.46825, -68.016109);
     
   }
 

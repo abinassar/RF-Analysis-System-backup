@@ -1,0 +1,108 @@
+<!-- <ion-modal #modal trigger="open-modal">
+  <ng-template>
+    <ion-content>
+      <ion-toolbar>
+        <ion-title>Modal</ion-title>
+        <ion-buttons slot="end">
+          <ion-button color="light" (click)="modal.dismiss()">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      <ion-list>
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-img src="https://i.pravatar.cc/300?u=b"></ion-img>
+          </ion-avatar>
+          <ion-label>
+            <h2>Connor Smith</h2>
+            <p>Sales Rep</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-img src="https://i.pravatar.cc/300?u=a"></ion-img>
+          </ion-avatar>
+          <ion-label>
+            <h2>Daniel Smith</h2>
+            <p>Product Designer</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-img src="https://i.pravatar.cc/300?u=d"></ion-img>
+          </ion-avatar>
+          <ion-label>
+            <h2>Greg Smith</h2>
+            <p>Director of Operations</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-img src="https://i.pravatar.cc/300?u=e"></ion-img>
+          </ion-avatar>
+          <ion-label>
+            <h2>Zoey Smith</h2>
+            <p>CEO</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal> -->
+
+
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Configuración del enlace</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()">Confirm</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+
+  <ion-accordion-group>
+    <ion-accordion value="first">
+      <ion-item slot="header" color="light">
+        <ion-label>Punto 1: AIRMAX U-OMT-DISH-5</ion-label>
+      </ion-item>
+
+      <div class="ion-padding" 
+           slot="content">
+        
+        <ion-item>
+          <ion-label position="stacked">Nombre</ion-label>
+          <ion-input>Estación 1</ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Locación</ion-label>
+          <ion-input>Estación 1</ion-input>
+        </ion-item>
+
+        <ion-item detail
+                  (click)="openAntennasConfig()">
+          <ion-label>
+            <h2>Antena</h2>
+            <p>AIRMAX U-OMT-DISH-5</p>
+          </ion-label>
+        </ion-item>
+
+           
+      </div>
+    </ion-accordion>
+    <ion-accordion value="second">
+      <ion-item slot="header" color="light">
+        <ion-label>Punto 2: AIRMAX U-OMT-DISH-5</ion-label>
+      </ion-item>
+
+      <div class="ion-padding" slot="content">
+        Second Content
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+
+
+</ion-content>

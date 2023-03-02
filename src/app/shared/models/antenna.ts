@@ -5,4 +5,5 @@ export interface Antenna {
     frecuency: number;
     wavelength: number;
     imgPath: string;
+    checked: boolean;
 }

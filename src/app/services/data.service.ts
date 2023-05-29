@@ -28,14 +28,14 @@ export class DataService {
   }
 
   post(uri: string,
-    positions,
-        params?: HttpParams,
-        headers: HttpHeaders = new HttpHeaders({
-                                                'Content-Type': 'application/x-www-form-urlencoded'
+       body,
+       params?: HttpParams,
+       headers: HttpHeaders = new HttpHeaders({
+                                                'Content-Type': 'application/json'
                                               })): Observable<any> {
 
     return this.http.post<any>(uri, 
-                                positions,
+                                body,
                                     {
                                       headers, 
                                       params

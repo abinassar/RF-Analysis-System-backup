@@ -3,6 +3,8 @@ import { ActionSheetController, AlertController, LoadingController, MenuControll
 import { DataService } from '../services/data.service';
 import { SettingsService } from '../services/settings.service';
 import { Observable } from 'rxjs';
+import { LocationService } from '../services/location.service';
+import { geoPoint } from '../shared/models/geographic';
 
 @Component({
   selector: 'app-tab2',
@@ -43,13 +45,33 @@ export class Tab2Page {
   anthenaOneHeight: number = 1000;
   anthenaTwoHeight: number = 1000;
 
+  initialPoint: geoPoint;
+  endPoint: geoPoint;
+
   constructor( private dataService: DataService,
                private loadingCtrl: LoadingController,
                private actionSheetController: ActionSheetController,
                private menu: MenuController,
-               private settingsService: SettingsService ) {}
+               private settingsService: SettingsService,
+               private locationService: LocationService ) {}
 
   ngOnInit(): void {
+
+    this.initialPoint = {
+      lat: 10.471813,
+      lng: -68.047204
+    }
+
+    this.endPoint = {
+      lat: 6.3318,
+      lng: -62.4338
+    }
+
+    this.locationService
+        .getElevationProfile(this.initialPoint, this.endPoint)
+        .subscribe((response) => {
+      console.log("data: ", response)
+    })
 
     // TODO: Descomentar esto luego de que se coloque
     // la configuracion de las antenas

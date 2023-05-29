@@ -58,8 +58,8 @@ export class Tab2Page {
   ngOnInit(): void {
 
     this.initialPoint = {
-      lat: 10.471813,
-      lng: -68.047204
+      lat: 6.3332,
+      lng: -62.6685
     }
 
     this.endPoint = {
@@ -67,11 +67,11 @@ export class Tab2Page {
       lng: -62.4338
     }
 
-    this.locationService
-        .getElevationProfile(this.initialPoint, this.endPoint)
-        .subscribe((response) => {
-      console.log("data: ", response)
-    })
+    // this.locationService
+    //     .getElevationProfile(this.initialPoint, this.endPoint)
+    //     .subscribe((response) => {
+    //   console.log("data: ", response)
+    // })
 
     // TODO: Descomentar esto luego de que se coloque
     // la configuracion de las antenas
@@ -112,6 +112,65 @@ export class Tab2Page {
 
     // this.getFresnelZoneData(10.469305, -68.020143, 10.46825, -68.016109);
     
+    this.getElevationProfile();
+
+  }
+
+  getElevationProfile() {
+
+    this.locationService
+        .getElevationProfile(this.initialPoint, this.endPoint)
+        .subscribe((response) => {
+
+      console.log("data: ", response)
+
+      let distanceFraction = response.distances/1000;
+      let positionX = 0;
+
+      console.log("distanceFraction: ", distanceFraction)
+
+      let elevationProfileData = response.elevations;
+  
+      // Get point x and y for each position in map
+  
+      for (let index = 0; index < elevationProfileData.length; index++) {
+        
+        this.elevationDataX.push(positionX);
+        this.elevationDataY.push(elevationProfileData[index]);
+  
+        positionX += distanceFraction;
+      }
+
+      this.elevationData = {
+        data: [
+          { x: this.elevationDataX,
+            y: this.elevationDataY,
+            type: 'scatter'
+          },
+        ],
+        layout: { 
+          title: 'Gráfico de elevación',
+          yaxis: {
+            showline: false,
+            showgrid: false
+          },
+          xaxis: {
+            showline: false,
+            showgrid: false
+          }
+        }
+      };
+
+      this.createElipseCurve(this.elevationDataX[0], 
+        150, 
+        this.elevationDataX[this.elevationDataX.length - 1], 
+        180,
+        2000);
+
+      this.elevationGraph = true;
+
+    })
+
   }
 
   ngAfterViewInit() {
@@ -556,13 +615,13 @@ export class Tab2Page {
 
     }
 
-    this.elevationTotalDataY.forEach((y, index) => {
+    this.elevationDataY.forEach((y, index) => {
 
       // Busco un punto que este mas o menos en el valor de x de la zona de fresnel
       
       let indexOfPositionX = fresnelDataX.findIndex((fresnelPointX) => {
-        return (fresnelPointX > this.elevationTotalDataX[index] - distanceFraction 
-               && fresnelPointX < this.elevationTotalDataX[index] + distanceFraction);
+        return (fresnelPointX > this.elevationDataX[index] - distanceFraction 
+               && fresnelPointX < this.elevationDataX[index] + distanceFraction);
       });
 
       if (y >= fresnelDataY[indexOfPositionX]) {
@@ -573,8 +632,8 @@ export class Tab2Page {
       }
 
       let indexOfPositionInvertedX = fresnelInvertedDataX.findIndex((fresnelPointX) => {
-        return (fresnelPointX > this.elevationTotalDataX[index] - distanceFraction 
-               && fresnelPointX < this.elevationTotalDataX[index] + distanceFraction);
+        return (fresnelPointX > this.elevationDataX[index] - distanceFraction 
+               && fresnelPointX < this.elevationDataX[index] + distanceFraction);
       });
 
       if (y >= fresnelInvertedDataY[indexOfPositionInvertedX]) {

@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
 import { LocationService } from '../services/location.service';
 import { geoPoint } from '../shared/models/geographic';
 
+const SPEED_OF_LIGHT: number = 299792458;
+
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
@@ -13,7 +15,9 @@ import { geoPoint } from '../shared/models/geographic';
 })
 export class Tab2Page {
 
-  lambda: number = 200;
+  // Lambda referente a una freceucnia de 20 Ghz  
+
+  lambda: number = SPEED_OF_LIGHT/(20 * 1e9);
   distance1!: number;
   distance2!: number;
   dataFresnelx: number[] = [];
@@ -162,9 +166,9 @@ export class Tab2Page {
       };
 
       this.createElipseCurve(this.elevationDataX[0], 
-        150, 
+        125, 
         this.elevationDataX[this.elevationDataX.length - 1], 
-        180,
+        130,
         2000);
 
       this.elevationGraph = true;
@@ -469,6 +473,8 @@ export class Tab2Page {
                     Xfinal: number, 
                     Yfinal: number,
                     fraction: number = 1000) {
+
+    console.log("lambda ", this.lambda)
 
     // console.log("Xinitial ", Xinitial)
     // console.log("Xfinal ", Xfinal)

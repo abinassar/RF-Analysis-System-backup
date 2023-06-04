@@ -46,11 +46,13 @@ export class Tab2Page {
   obstructionPointsY: number[] = [];
   obstructionPointsInvertedY: number[] = [];
 
-  anthenaOneHeight: number = 15;
-  anthenaTwoHeight: number = 30;
+  anthenaOneHeight: number = 5;
+  anthenaTwoHeight: number = 3;
 
   initialPoint: GeoPoint;
   finalPoint: GeoPoint;
+
+  pointsFraction: number = 1000;
 
   initialPointObservale = this.settingsService
                               .initialPoint$
@@ -83,24 +85,23 @@ export class Tab2Page {
 
   ionViewDidEnter() {
 
-    const data = [156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156];
+//     const data = [156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156];
 
-const interpolatedData = this.interpolateArrayParabolic(data);
-console.log(interpolatedData);
+// const interpolatedData = this.interpolateArrayParabolic(data);
+// console.log(interpolatedData);
 
-    // if (this.initialPoint
-    //     && this.finalPoint) {
+    if (this.initialPoint
+        && this.finalPoint) {
 
-    //   this.presentLoading();
-    //   this.getElevationProfile();
+      this.getElevationProfile();
 
-    // } else {
+    } else {
 
-    //   this.alertService
-    //       .presentAlert("Puntos geográficos", 
-    //                     "Por favor selecciona dos puntos geograficos para mostrar la gráfica");
+      this.alertService
+          .presentAlert("Puntos geográficos", 
+                        "Por favor selecciona dos puntos geograficos para mostrar la gráfica");
 
-    // }
+    }
   }
 
   interpolateArrayParabolic(arr) {
@@ -162,7 +163,13 @@ console.log(interpolatedData);
     return result;
   }
 
-  getElevationProfile() {
+  async getElevationProfile() {
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Cargando perfil de elevación...'
+    });
+
+    await loading.present();
 
     this.locationService
         .getElevationProfile(this.initialPoint, this.finalPoint)
@@ -170,7 +177,7 @@ console.log(interpolatedData);
 
       console.log("data: ", JSON.stringify(response.elevations))
 
-      let distanceFraction = response.distances/1000;
+      let distanceFraction = response.distances*1000/this.pointsFraction;
       let positionX = 0;
 
       console.log("distanceFraction: ", distanceFraction)
@@ -192,13 +199,16 @@ console.log(interpolatedData);
       // Ademas, uso la funcion de interpolacion para que los puntos que hay
       // repetidos se cambien y asi generar una grafica continua y no cuadrada
 
-      console.log("this.interpolateArrayParabolic(this.elevationDataY) ", this.interpolateArrayParabolic(this.elevationDataY))
+      console.log("this.elevationDataX ", this.elevationDataX)
+      console.log("this.elevationDataY ", this.elevationDataY)
+
+      this.elevationDataY = this.interpolateArray(this.elevationDataY);
 
       this.elevationData = {
         data: [
           { x: this.elevationDataX,
-            y: this.interpolateArrayParabolic(this.elevationDataY),
-            mode: 'lines', // El modo de la serie de datos es "lines" y "markers"
+            y: this.elevationDataY,
+            mode: 'lines+markers', // El modo de la serie de datos es "lines" y "markers"
             line: {              // Establecemos la configuracion de la linea
               shape: 'spline', // Configuramos la forma como "spline"
               color: '#7f7f7f', // Establecemos el color de la linea
@@ -233,21 +243,13 @@ console.log(interpolatedData);
                             this.anthenaOneHeight, 
                             this.elevationDataX[this.elevationData.data[0].x.length - 1], 
                             this.anthenaTwoHeight,
-                            2000);
+                            this.pointsFraction);
                                 
       this.elevationGraph = true;
       this.loadingCtrl.dismiss();
 
     })
 
-  }
-
-  async presentLoading() {
-    const loading = await this.loadingCtrl.create({
-      message: 'Cargando perfil de elevación...'
-    });
-
-    loading.present();
   }
 
   getLatLonInAnyDistance(lat1: number, 
@@ -267,7 +269,7 @@ console.log(interpolatedData);
 
     // angular distance ( distance should be in km )
 
-    let distanceInKM = distance/1000;
+    let distanceInKM = distance/this.pointsFraction;
 
     const δ = distanceInKM/R;
 
@@ -352,177 +354,14 @@ console.log(interpolatedData);
     return d;
   }
 
-  getFresnelZoneData (lat1: number,
-                      lon1: number,
-                      lat2: number,
-                      lon2: number) {
-                        
-    let bearing = this.getBearing(lat1, lon1, lat2, lon2);
-
-    let totalDistanceKM = this.getDistanceBetweenPoints(lat1, lon1, lat2, lon2)/1000;
-    let totalDistanceMeters = this.getDistanceBetweenPoints(lat1, lon1, lat2, lon2);
-
-    this.createLatLonData(lat1, lon1, lat2, totalDistanceMeters, bearing);
-  }
-
-  createLatLonData(lat1: number, 
-                   lon1: number, 
-                   lat2: number,
-                   totalDistance: number, 
-                   bearing:number,
-                   distanceFraction: number = 1000) {
-
-    console.log('distancia total ', totalDistance)
-
-    // Divide the data in fraction of 1000 parts
-
-    this.distanceFraction = distanceFraction;
-                    
-    //TODO Review this distance unity
-    let distanceFractioned = totalDistance/distanceFraction;
-    this.distanceFractioned = distanceFractioned;
-
-    let finalPointDistance = distanceFractioned;
-
-    this.elevationDataX = [];
-    this.elevationDataY = [];
-
-    let latlonArray = [];
-    this.requestArray = [];
-    let latPoint = lat1;
-    let lonPoint = lon1;
-    let latlonInitial = lat1 + ',' + lon1;
-
-    latlonArray.push(latlonInitial);
-
-    // Generate 10 pack of 100 requests
-
-    for (let index = 0; index < 20; index++) {
-
-      if (index !== 0) {
-        latlonArray = [];
-      }
-      
-      for (let index = 0; index < 50; index++) {
-
-        if (index === 0 && this.firstIteration) {
-          this.firstIteration = false;
-          continue;
-        }
-       
-        let latlonFinal = this.getLatLonInAnyDistance(latPoint,
-                                                      lonPoint,
-                                                      lat2,
-                                                      finalPointDistance,
-                                                      bearing);
-  
-        // Increase final point 
-        finalPointDistance += distanceFractioned;
-  
-        latlonArray.push(latlonFinal.join(','));
-  
-        latPoint = latlonFinal[0]; // Final lat point
-        lonPoint = latlonFinal[1]; // Final lon point
-        
-      }
-  
-      // let uriBase = 'https://api.open-elevation.com/api/v1/lookup?locations=';
-      let uriBase = 'https://api.gpxz.io/v1/elevation/points';
-      let uriLocations = latlonArray.join('|');
-  
-      // console.log('lat lon array data ', latlonArray);
-      // console.log('API uri ', latlonArray.join('|'));
-
-      // this.requestArray.push(this.dataService
-      //   .get(uriBase + uriLocations));
-        this.requestArray.push(this.dataService
-                                   .post(uriBase, uriLocations));
-
-    }
-
-    // Made the 10 reqeust and set the lat lon data
-
-    let requestIndex = 0;
-
-    this.requestArray[requestIndex].subscribe((response: any) => {
-      
-      this.responsesData.push(response);
-      requestIndex += 1;
-
-      this.requestRecursive(requestIndex);
-    })
-
-  }
-
-  setElevationData(responsesData: any) {
-
-    let totalResponsesData: any = [];
-
-    responsesData.forEach((response: any) => {
-      totalResponsesData = [...totalResponsesData , ...response.results];
-    });
-
-    // Set offset to initial point
-
-    let distanceFinal = this.distanceFractioned;
-
-    // Get point x and y for each position in map
-
-    for (let index = 0; index < this.distanceFraction; index++) {
-      
-      this.elevationDataX.push(distanceFinal);
-      this.elevationDataY.push(totalResponsesData[index].elevation);
-
-      distanceFinal += this.distanceFractioned;
-    }
-
-    // Set floor in data
-
-    let floorDataXInitial: number[] = [];
-    let floorDataXFinal: number[] = [];
-    let floorDataYInitial: number[] = [];
-    let floorDataYFinal: number[] = [];
-
-    let fractionIn200XInitial = this.elevationDataX[0];
-    
-    let initialPoint = 0;
-    let finalPoint = this.elevationDataX[this.elevationDataX.length - 1];
-
-    this.elevationTotalDataX = [];
-    this.elevationTotalDataY = [];
-
-    this.elevationTotalDataX = floorDataXInitial.concat(this.elevationDataX, floorDataXFinal);
-    this.elevationTotalDataY = floorDataYInitial.concat(this.elevationDataY, floorDataYFinal);
-
-    this.elevationData = {
-      data: [
-        { x: this.elevationTotalDataX,
-          y: this.elevationTotalDataY,
-          type: 'scatter'
-        },
-      ],
-      layout: { 
-        title: 'Gráfico de elevación',
-        yaxis: {
-          showline: false,
-          showgrid: false
-        },
-        xaxis: {
-          showline: false,
-          showgrid: false
-        }
-      }
-    };
-
-  }
-
   createElipseCurve(Xinitial: number, 
                     Yinitial: number, 
                     Xfinal: number, 
                     Yfinal: number,
-                    fraction: number = 1000) {
+                    fraction: number = this.pointsFraction) {
 
-    console.log("lambda ", this.lambda)
+                      console.log("lambda ", this.lambda)
+                      console.log("fraction ", fraction)
 
     // console.log("Xinitial ", Xinitial)
     // console.log("Xfinal ", Xfinal)
@@ -535,16 +374,22 @@ console.log(interpolatedData);
     // console.log("Diferencia puntos x ", diferenceX);
     // console.log("Diferencia puntos y ", diferenceY);
 
+    // Calculo el largo de la recta del elipse
+
     let rectDistance = Math.sqrt(Math.pow(diferenceX, 2) + Math.pow(diferenceY, 2));
 
     // console.log('distancia de la recta ', rectDistance);
 
     let xFractioned = Math.abs(Xfinal - Xinitial)/fraction;
 
+    // Calculo la pendiente de la recta
+
     let mRect = (Yfinal - Yinitial)/(Xfinal - Xinitial);
     let angleRectDegree;
 
-    // console.log("pendiente de la recta ", mRect)
+    console.log("pendiente de la recta ", mRect)
+
+    // Calculo el angulo de la recta
 
     if (mRect === 0) {
       angleRectDegree = 0;
@@ -554,10 +399,18 @@ console.log(interpolatedData);
 
     // console.log("angulo de la recta en grados", angleRectDegree)
 
+    // Transformo el angulo de la recta en radianes
+
     let angleRectRadian = (angleRectDegree*Math.PI)/180;
 
     let angleClkSenseTransferred = angleRectRadian + Math.PI/2;
     let angleCounterClkSenseTransferred = angleRectRadian - Math.PI/2;
+
+    // Traslado el angulo de la recta tanto en sentido horario
+    // Como contrario al sentido horario para tener las rectas
+    // Perpendiculares "imaginarias" que me daran cada uno de los
+    // Puntos de la curva de la elipse de fresnel con la variacion del radio
+    // a lo largo de la recta
 
     if (angleClkSenseTransferred < 0) {
       angleClkSenseTransferred += 2*Math.PI;
@@ -567,7 +420,7 @@ console.log(interpolatedData);
       angleCounterClkSenseTransferred += 2*Math.PI;
     }
 
-    console.log("Angulo de la recta ", angleRectRadian)
+    console.log("Angulo de la recta en radianes", angleRectRadian)
 
     console.log("Angulo transladado ens entido de agujas del reloj ", angleClkSenseTransferred)
     console.log("Angulo transladado ens entido contrario de agujas del reloj ", angleCounterClkSenseTransferred)
@@ -634,6 +487,8 @@ console.log(interpolatedData);
         
       } else {
 
+        // Evaluo si estoy parado en el punto inicial o final
+
         if (index === fraction) {
 
           fresnelPositiveXPoint = Xfinal; 
@@ -669,7 +524,12 @@ console.log(interpolatedData);
 
     }
 
-    this.elevationDataY.forEach((y, index) => {
+    console.log("this.elevationDataY ", this.elevationDataY)
+    console.log("this.elevationDataX ", this.elevationDataX)
+    console.log("this.fresnelDataY ", fresnelDataY)
+    console.log("this.fresnelDataX ", fresnelDataX)
+
+    this.elevationDataY.forEach((elevationProfilePointY, index) => {
 
       // Busco un punto que este mas o menos en el valor de x de la zona de fresnel
       
@@ -678,7 +538,9 @@ console.log(interpolatedData);
                && fresnelPointX < this.elevationDataX[index] + distanceFraction);
       });
 
-      if (y >= fresnelDataY[indexOfPositionX]) {
+      if (elevationProfilePointY >= fresnelDataY[indexOfPositionX]) {
+
+        console.log("indexOfPositionX ", indexOfPositionX)
 
         this.obstructionPointsX.push(fresnelDataX[indexOfPositionX]);
         this.obstructionPointsY.push(fresnelDataY[indexOfPositionX]);
@@ -690,7 +552,9 @@ console.log(interpolatedData);
                && fresnelPointX < this.elevationDataX[index] + distanceFraction);
       });
 
-      if (y >= fresnelInvertedDataY[indexOfPositionInvertedX]) {
+      if (elevationProfilePointY >= fresnelInvertedDataY[indexOfPositionInvertedX]) {
+
+        console.log("indexOfPositionInvertedX ", indexOfPositionInvertedX)
         
         this.obstructionPointsInvertedX.push(fresnelInvertedDataX[indexOfPositionInvertedX]);
         this.obstructionPointsInvertedY.push(fresnelInvertedDataY[indexOfPositionInvertedX]);
@@ -754,26 +618,6 @@ console.log(interpolatedData);
     return (mRect * (Xfinal - Xinitial)) + Yinitial;
   }
 
-  requestRecursive(requestIndex: number) {
-
-    if (requestIndex < this.requestArray.length) {
-
-      this.requestArray[requestIndex].subscribe((response: any) => {
-
-        requestIndex += 1;
-        this.responsesData.push(response);
-
-        if (this.responsesData.length === 10) {
-          this.setElevationData(this.responsesData);
-        }
-  
-        this.requestRecursive(requestIndex);
-
-      })
-    }
-
-  }
-
   fresnelRadio(lambda: number, d1: number, d2: number): number {
     return Math.sqrt((lambda*d1*d2)/(d1 + d2));
   }
@@ -795,12 +639,12 @@ console.log(interpolatedData);
     this.distance1 = distance1;
     this.distance2 = distance2;
 
-    let distanceFraction = (distance2 - distance1) / 1000;
+    let distanceFraction = (distance2 - distance1) / this.pointsFraction;
     let distanceInitial = 0;
 
     console.log('DISTANCIA fraccionada ', distanceFraction)
 
-    for (let index = 0; index < 1000; index++) {
+    for (let index = 0; index < this.pointsFraction; index++) {
       
       // this.distance1 = index;
       this.distance2 = distance2 - this.distance1;
@@ -810,22 +654,24 @@ console.log(interpolatedData);
       // console.log("Radio de frresnel ", radio)
 
       this.dataFresnelx.push(this.distance1);
-      this.dataFresnely.push(radio + 1000);
+      this.dataFresnely.push(radio + this.distanceFraction);
+      // this.dataFresnely.push(radio + 1000);
       // this.dataFresnely.push(-radio);
-      this.dataFresnelyInverted.push(-radio + 1000);
+      this.dataFresnelyInverted.push(-radio + this.distanceFraction);
+      // this.dataFresnelyInverted.push(-radio + 1000);
 
       // Check if there are obstruction points
 
       if (this.dataFresnely[index] <= this.elevationTotalDataY[index]) {
 
         this.obstructionPointsX.push(this.elevationTotalDataX[index]);
-        this.obstructionPointsY.push(radio + 1000);
+        this.obstructionPointsY.push(radio + this.distanceFraction);
         
       }
 
       if (this.dataFresnelyInverted[index] <= this.elevationTotalDataY[index]) {
         this.obstructionPointsInvertedX.push(this.elevationTotalDataX[index]);
-        this.obstructionPointsInvertedY.push(-radio + 1000);
+        this.obstructionPointsInvertedY.push(-radio + this.distanceFraction);
       }
       
       this.distance1 += distanceFraction;

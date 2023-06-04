@@ -17,10 +17,12 @@ export class AppComponent implements OnInit {
                private menu: MenuController ) {}
 
   ngOnInit(): void {
+
+    // TODO: Implement save data base data of anthenas
    
     this.settingsForm = this.formBuilder.group({
-      anthenaOneHigh: this.formBuilder.control(1000),
-      anthenaTwoHigh: this.formBuilder.control(1000)
+      anthenaOneHigh: this.formBuilder.control(15),
+      anthenaTwoHigh: this.formBuilder.control(30)
     })
     
   }

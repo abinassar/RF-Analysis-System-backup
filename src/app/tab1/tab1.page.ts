@@ -3,6 +3,8 @@ import { ActionSheetController, MenuController, ModalController } from '@ionic/a
 import * as Leaflet from "leaflet";
 import { antPath } from 'leaflet-ant-path';
 import { LinkConfigurationComponent } from '../shared/components/link-configuration/link-configuration.component';
+import { SettingsService } from '../services/settings.service';
+import { GeoPoint } from '../shared/models/geographic';
 
 @Component({
   selector: 'app-tab1',
@@ -33,7 +35,8 @@ export class Tab1Page {
 
   constructor(private actionSheetController: ActionSheetController,
               private menu: MenuController,
-              private linkModalCtrl: ModalController) {}
+              private linkModalCtrl: ModalController,
+              private settingsService: SettingsService) {}
 
   ngOnInit() {
 
@@ -111,12 +114,6 @@ export class Tab1Page {
       component: LinkConfigurationComponent,
     });
     modal.present();
-
-    const { data, role } = await modal.onWillDismiss();
-
-    // if (role === 'confirm') {
-    //   this.message = `Hello, ${data}!`;
-    // }
   }
 
   openConfiguration() {
@@ -154,10 +151,27 @@ export class Tab1Page {
 
       this.antPathArray.push(antPathVar);
     }
+
+    this.updateGeoPoints(this.markersArray);
+
   }
 
-  helloWorld() {
-    console.log("Heloieieieiei")
+  updateGeoPoints(markers: any[]) {
+
+    markers.forEach((marker, index) => {
+
+      let point: GeoPoint = {
+        lat: marker.getLatLng().lat,
+        lng: marker.getLatLng().lng
+      }
+
+      if (index === 0) {
+        this.settingsService.initialPoint.next(point);
+      } else {
+        this.settingsService.finalPoint.next(point);
+      }
+    })
+
   }
     
   ngAfterViewInit(): void {

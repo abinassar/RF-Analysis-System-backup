@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { ActionSheetController, AlertController, LoadingController, MenuController } from '@ionic/angular';
 import { DataService } from '../services/data.service';
 import { SettingsService } from '../services/settings.service';
-import { Observable } from 'rxjs';
 import { LocationService } from '../services/location.service';
-import { geoPoint } from '../shared/models/geographic';
+import { GeoPoint } from '../shared/models/geographic';
+import { AlertService } from '../services/alert.service';
 
 const SPEED_OF_LIGHT: number = 299792458;
 
@@ -46,84 +46,62 @@ export class Tab2Page {
   obstructionPointsY: number[] = [];
   obstructionPointsInvertedY: number[] = [];
 
-  anthenaOneHeight: number = 1000;
-  anthenaTwoHeight: number = 1000;
+  anthenaOneHeight: number = 15;
+  anthenaTwoHeight: number = 30;
 
-  initialPoint: geoPoint;
-  endPoint: geoPoint;
+  initialPoint: GeoPoint;
+  finalPoint: GeoPoint;
+
+  initialPointObservale = this.settingsService
+                              .initialPoint$
+                              .subscribe((point: GeoPoint) => {
+    this.initialPoint = point;
+  });
+
+  finalPointObservale = this.settingsService
+                              .finalPoint$
+                              .subscribe((point: GeoPoint) => {
+    this.finalPoint = point;
+  });
+
+  antennaSettingsObservable = this.settingsService
+                                  .linkSettings$
+                                  .subscribe((settings) => {
+
+      this.anthenaOneHeight = settings.anthenaOneHigh;
+      this.anthenaTwoHeight = settings.anthenaTwoHigh;
+
+  });
 
   constructor( private dataService: DataService,
                private loadingCtrl: LoadingController,
                private actionSheetController: ActionSheetController,
                private menu: MenuController,
                private settingsService: SettingsService,
-               private locationService: LocationService ) {}
+               private locationService: LocationService,
+               private alertService: AlertService ) {}
 
-  ngOnInit(): void {
+  ionViewDidEnter() {
 
-    this.initialPoint = {
-      lat: 6.3332,
-      lng: -62.6685
+    if (this.initialPoint
+        && this.finalPoint) {
+
+      this.presentLoading();
+      this.getElevationProfile();
+
+    } else {
+
+      this.alertService
+          .presentAlert("Puntos geográficos", 
+                        "Por favor selecciona dos puntos geograficos para mostrar la gráfica");
+
     }
-
-    this.endPoint = {
-      lat: 6.3318,
-      lng: -62.4338
-    }
-
-    // this.locationService
-    //     .getElevationProfile(this.initialPoint, this.endPoint)
-    //     .subscribe((response) => {
-    //   console.log("data: ", response)
-    // })
-
-    // TODO: Descomentar esto luego de que se coloque
-    // la configuracion de las antenas
-
-    // this.settingsService.linkSettings$.subscribe((settings) => {
-
-    //   this.anthenaOneHeight = settings.anthenaOneHigh;
-    //   this.anthenaTwoHeight = settings.anthenaTwoHigh;
-
-    //   this.presentLoading();
-
-    //   setTimeout(() => {
-        
-    //     // Clean the before fresnel zone
-  
-    //     this.elevationData.data.pop();
-    //     this.elevationData.data.pop();
-    //     this.elevationData.data.pop();
-    //     this.elevationData.data.pop();
-    //     this.elevationData.data.pop();
-  
-  
-    //     // Refresh data in graph
-  
-    //     this.createElipseCurve(this.elevationTotalDataX[0], 
-    //                           this.anthenaOneHeight, 
-    //                           this.elevationTotalDataX[this.elevationData.data[0].x.length - 1], 
-    //                           this.anthenaTwoHeight,
-    //                           2000);
-                             
-    //     this.loadingCtrl.dismiss();
-        
-    //   }, 2000);
-
-    // })
-
-    // this.presentLoading();
-
-    // this.getFresnelZoneData(10.469305, -68.020143, 10.46825, -68.016109);
-    
-    this.getElevationProfile();
-
   }
 
   getElevationProfile() {
 
     this.locationService
-        .getElevationProfile(this.initialPoint, this.endPoint)
+        .getElevationProfile(this.initialPoint, this.finalPoint)
         .subscribe((response) => {
 
       console.log("data: ", response)
@@ -165,24 +143,31 @@ export class Tab2Page {
         }
       };
 
-      this.createElipseCurve(this.elevationDataX[0], 
-        125, 
-        this.elevationDataX[this.elevationDataX.length - 1], 
-        130,
-        2000);
+      // Agregar la altura por defecto de la elevacion de la tierra
+      // A la altura de la antena
 
+      this.anthenaOneHeight += this.elevationDataY[0];
+      this.anthenaTwoHeight += this.elevationDataY[this.elevationDataY.length - 1];
+
+      console.log("this.anthenaOneHeight ", this.anthenaOneHeight)
+      console.log("this.anthenaTwoHeight ", this.anthenaTwoHeight)
+
+      this.createElipseCurve(this.elevationDataX[0], 
+                            this.anthenaOneHeight, 
+                            this.elevationDataX[this.elevationData.data[0].x.length - 1], 
+                            this.anthenaTwoHeight,
+                            2000);
+                                
       this.elevationGraph = true;
+      this.loadingCtrl.dismiss();
 
     })
 
   }
 
-  ngAfterViewInit() {
-  }
-
   async presentLoading() {
     const loading = await this.loadingCtrl.create({
-      message: 'Cargando data de elevación...'
+      message: 'Cargando perfil de elevación...'
     });
 
     loading.present();
@@ -452,20 +437,6 @@ export class Tab2Page {
       }
     };
 
-    // this.createElipseCurve(this.elevationTotalDataX[99], 
-    //                        1000, 
-    //                        this.elevationTotalDataX[this.elevationData.data[0].x.length - 101], 
-    //                        1000,
-    //                        1000);
-
-    this.createElipseCurve(this.elevationTotalDataX[0], 
-                           this.anthenaOneHeight, 
-                           this.elevationTotalDataX[this.elevationData.data[0].x.length - 1], 
-                           this.anthenaTwoHeight,
-                           2000);
-                           
-    this.elevationGraph = true;
-    this.loadingCtrl.dismiss();
   }
 
   createElipseCurve(Xinitial: number, 

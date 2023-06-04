@@ -83,19 +83,83 @@ export class Tab2Page {
 
   ionViewDidEnter() {
 
-    if (this.initialPoint
-        && this.finalPoint) {
+    const data = [156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156];
 
-      this.presentLoading();
-      this.getElevationProfile();
+const interpolatedData = this.interpolateArrayParabolic(data);
+console.log(interpolatedData);
 
-    } else {
+    // if (this.initialPoint
+    //     && this.finalPoint) {
 
-      this.alertService
-          .presentAlert("Puntos geográficos", 
-                        "Por favor selecciona dos puntos geograficos para mostrar la gráfica");
+    //   this.presentLoading();
+    //   this.getElevationProfile();
 
+    // } else {
+
+    //   this.alertService
+    //       .presentAlert("Puntos geográficos", 
+    //                     "Por favor selecciona dos puntos geograficos para mostrar la gráfica");
+
+    // }
+  }
+
+  interpolateArrayParabolic(arr) {
+    const result = [];
+    let prev = arr[0];
+    let count = 0;
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i] === prev) {
+        count++;
+      } else {
+        if (count === 1) {
+          result.push(prev);
+        } else if (count === 2) {
+          result.push(prev);
+          result.push((prev + arr[i]) / 2);
+        } else {
+          const p0 = Math.max(i - count - 1, 0);
+          const p1 = i - count - 1;
+          const p2 = i - 1;
+          const x0 = p0 + 1;
+          const x1 = p1 + 1;
+          const x2 = p2 + 1;
+          const y0 = arr[p0];
+          const y1 = arr[p1];
+          const y2 = arr[p2];
+          const a = ((y0 - y1) * (x1 - x2) - (y1 - y2) * (x0 - x1)) / ((x1 * x1 - x2 * x2) * (x1 - x0) - (x0 * x0 - x1 * x1) * (x2 - x1));
+          const b = ((y0 - y1) - a * (x0 * x0 - x1 * x1)) / (x0 - x1);
+          const c = y0 - a * x0 * x0 - b * x0;
+          for (let j = 1; j <= count + 1; j++) {
+            const x = i - count - 1 + j;
+            result.push(a * x * x + b * x + c);
+          }
+        }
+        prev = arr[i];
+        count = 0;
+      }
     }
+    result.push(prev);
+    return result;
+  }
+
+  interpolateArray(arr) {
+    const result = [];
+    let prev = arr[0];
+    let count = 0;
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i] === prev) {
+        count++;
+      } else {
+        const diff = (arr[i] - prev) / (count + 1);
+        for (let j = 1; j <= count + 1; j++) {
+          result.push(prev + j * diff);
+        }
+        prev = arr[i];
+        count = 0;
+      }
+    }
+    result.push(prev);
+    return result;
   }
 
   getElevationProfile() {
@@ -104,7 +168,7 @@ export class Tab2Page {
         .getElevationProfile(this.initialPoint, this.finalPoint)
         .subscribe((response) => {
 
-      console.log("data: ", response)
+      console.log("data: ", JSON.stringify(response.elevations))
 
       let distanceFraction = response.distances/1000;
       let positionX = 0;
@@ -123,11 +187,24 @@ export class Tab2Page {
         positionX += distanceFraction;
       }
 
+      // Declaro la configuraion de la grafica para que sea 
+      // Una gracias de lineas suaves
+      // Ademas, uso la funcion de interpolacion para que los puntos que hay
+      // repetidos se cambien y asi generar una grafica continua y no cuadrada
+
+      console.log("this.interpolateArrayParabolic(this.elevationDataY) ", this.interpolateArrayParabolic(this.elevationDataY))
+
       this.elevationData = {
         data: [
           { x: this.elevationDataX,
-            y: this.elevationDataY,
-            type: 'scatter'
+            y: this.interpolateArrayParabolic(this.elevationDataY),
+            mode: 'lines', // El modo de la serie de datos es "lines" y "markers"
+            line: {              // Establecemos la configuracion de la linea
+              shape: 'spline', // Configuramos la forma como "spline"
+              color: '#7f7f7f', // Establecemos el color de la linea
+              width: 1,
+              opacity: 0.5
+            }
           },
         ],
         layout: { 

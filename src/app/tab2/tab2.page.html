@@ -22,6 +22,14 @@
       </plotly-plot>
   </div>
 
+  <div *ngIf="atenuationGraph">
+
+      <plotly-plot [data]="elevationData.data"
+                   [layout]="elevationData.layout"
+                   [useResizeHandler]="true"
+                   [style]="{position: 'relative', width: '100%', height: '100%'}">
+      </plotly-plot>
+  </div>
   <ion-fab vertical="bottom" 
            horizontal="end" 
            slot="fixed">

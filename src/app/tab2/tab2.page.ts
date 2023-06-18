@@ -30,6 +30,11 @@ export class Tab2Page {
   elevationDataY: number[] = [];
   elevationGraph: boolean = false;
 
+  atenuationData: any;
+  atenuationDataX: number[] = [];
+  atenuationDataY: number[] = [];
+  atenuationGraph: boolean = false;
+
   distanceFractioned!: number;
   distanceFraction!: number;
 
@@ -85,23 +90,73 @@ export class Tab2Page {
 
   ionViewDidEnter() {
 
-//     const data = [156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156,156];
+    this.locationService
+        .getLocationData('10.482149', '-68.056942')
+        .subscribe((response) => {
+          console.log("REsponse ", JSON.stringify(response))
+        })
 
-// const interpolatedData = this.interpolateArrayParabolic(data);
-// console.log(interpolatedData);
+    // this.locationService
+    //     .getAtenuation(1013, 15)
+    //     .subscribe((response) => {
 
-    if (this.initialPoint
-        && this.finalPoint) {
+    //       let atenuationPoints = response.atenuationsPoints;
 
-      this.getElevationProfile();
+    //       for (let index = 0; index < atenuationPoints.length; index++) {
+    //         this.atenuationDataY.push(atenuationPoints[index].atenuation);
+    //         this.atenuationDataX.push(atenuationPoints[index].frecuency)
+    //       }
 
-    } else {
+    //       console.log("atenuationDataX ", this.atenuationDataX)
+    //       console.log("atenuationDataY ", this.atenuationDataY)
+    //       console.log("this.atenuationDataY ", this.atenuationDataY.length)
 
-      this.alertService
-          .presentAlert("Puntos geográficos", 
-                        "Por favor selecciona dos puntos geograficos para mostrar la gráfica");
+    //       this.elevationData = {
+    //         data: [
+    //           { x: this.atenuationDataX,
+    //             y: this.atenuationDataY,
+    //             mode: 'lines+markers', // El modo de la serie de datos es "lines" y "markers"
+    //             line: {              // Establecemos la configuracion de la linea
+    //               shape: 'spline', // Configuramos la forma como "spline"
+    //               color: '#7f7f7f', // Establecemos el color de la linea
+    //               width: 1,
+    //               opacity: 0.5
+    //             }
+    //           },
+    //         ],
+    //         layout: { 
+    //           title: 'Gráfico de Atenuacion en Aire Seco',
+    //           yaxis: {
+    //             // showline: false,
+    //             // showgrid: false,
+    //             type: 'log'
+    //           },
+    //           xaxis: {
+    //             // showline: false,
+    //             // showgrid: false,
+    //             type: 'log'
+    //           }
+    //         }
+    //       };
 
-    }
+    //       this.atenuationGraph = true;
+
+
+    //     })
+
+
+    // if (this.initialPoint
+    //     && this.finalPoint) {
+
+    //   this.getElevationProfile();
+
+    // } else {
+
+    //   this.alertService
+    //       .presentAlert("Puntos geográficos", 
+    //                     "Por favor selecciona dos puntos geograficos para mostrar la gráfica");
+
+    // }
   }
 
   interpolateArrayParabolic(arr) {

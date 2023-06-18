@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
+import { environment } from 'src/environments/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,5 +15,16 @@ export class LocationService {
       "start_point": startPoint,
       "end_point": endPoint
     })
+  }
+
+  getAtenuation(pressure: number, temperature: number) {
+    return this.dataService.post("http://127.0.0.1:5000/get_atmospheric_atenuation", {
+      pressure,
+      temperature
+    })
+  }
+
+  getLocationData(lat: string, lng: string): Observable<LocationWeather> {
+    return this.dataService.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${environment.weatherAPIKey}`);
   }
 }

@@ -5,6 +5,12 @@ import { antPath } from 'leaflet-ant-path';
 import { LinkConfigurationComponent } from '../shared/components/link-configuration/link-configuration.component';
 import { SettingsService } from '../services/settings.service';
 import { GeoPoint } from '../shared/models/geographic';
+// import "leaflet-control-geocoder/dist/Control.Geocoder.scss";
+import "leaflet-control-geocoder/dist/Control.Geocoder.js";
+
+const iconRetinaUrl = 'assets/marker-icon-2x.png';
+const iconUrl = 'assets/marker-icon.png';
+const shadowUrl = 'assets/marker-shadow.png';
 
 @Component({
   selector: 'app-tab1',
@@ -21,9 +27,9 @@ export class Tab1Page {
   antPathArray: any[] = [];
 
   greenIcon = Leaflet.icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-
+    iconUrl,
+    shadowUrl,
+    iconRetinaUrl,
     iconSize:     [20, 30], // size of the icon
     shadowSize:   [20, 40], // size of the shadow
     iconAnchor:   [9, 29], // point of the icon which will correspond to marker's location
@@ -55,6 +61,14 @@ export class Tab1Page {
     setTimeout(() => {
       this.map.invalidateSize();
     }, 0);
+
+    // Adding geocoder
+
+    (Leaflet.Control as any).geocoder({
+      placeholder: "Buscar...",
+      errorMessage: "No encontrado",
+      iconLabel: "Iniciar busqueda"
+    }).addTo(this.map);
 
   // Leaflet.marker([10.468190075498294, -68.01362568059086], {icon: this.greenIcon}).addTo(this.map).bindPopup('Hi').openPopup();
   // Leaflet.marker([10.467063961652615, -68.00759845883557],  {icon: this.greenIcon}).addTo(this.map).bindPopup('Hello').openPopup();

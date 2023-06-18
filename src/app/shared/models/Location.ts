@@ -1,4 +1,4 @@
-interface LocationWeather {
+export interface LocationWeather {
   coord: Coord;
   weather: Weather[];
   base: string;

@@ -9,7 +9,10 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
+
+//IMPORT THE PLUGINS
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -25,7 +28,8 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
     useClass: IonicRouteStrategy 
     },
     DeviceOrientation,
-    Geolocation
+    Geolocation,
+    NativeGeocoder
   ],
   bootstrap: [AppComponent],
 })

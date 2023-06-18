@@ -26,3 +26,12 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 @import "~leaflet/dist/leaflet.css";
+
+@font-face {
+    font-family: 'arsenal';
+    src: url('./assets/fonts/Arsenal-Regular.ttf') format('truetype');
+}
+
+body {
+    font-family: 'arsenal', sans-serif;
+}

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
+import { LocationWeather } from '../shared/models/Location';
 
 @Injectable({
   providedIn: 'root'

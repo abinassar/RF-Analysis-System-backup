@@ -1,20 +1,20 @@
 import { Component } from '@angular/core';
 import { ActionSheetController, AlertController, LoadingController, MenuController } from '@ionic/angular';
-import { DataService } from '../services/data.service';
-import { SettingsService } from '../services/settings.service';
-import { LocationService } from '../services/location.service';
-import { GeoPoint } from '../shared/models/geographic';
-import { AlertService } from '../services/alert.service';
+import { DataService } from '../../../../services/data.service';
+import { SettingsService } from '../../../../services/settings.service';
+import { LocationService } from '../../../../services/location.service';
+import { GeoPoint } from '../../../../shared/models/geographic';
+import { AlertService } from '../../../../services/alert.service';
 import { Router } from '@angular/router';
 
 const SPEED_OF_LIGHT: number = 299792458;
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss']
+  selector: 'app-graphics',
+  templateUrl: './graphics.page.html',
+  styleUrls: ['./graphics.page.scss'],
 })
-export class Tab2Page {
+export class GraphicsPage {
 
   // Lambda referente a una freceucnia de 20 Ghz  
 
@@ -839,3 +839,4 @@ export class Tab2Page {
   }
 
 }
+

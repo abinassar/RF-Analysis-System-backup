@@ -7,6 +7,21 @@
 <ion-content [fullscreen]="true">
 
   <div id="map"></div>
+
+  <!-- Floating compass -->
+
+  <ion-fab vertical="bottom" 
+           horizontal="start" 
+           slot="fixed">
+    <!-- <img src="../assets/compass.png" width="60"> -->
+
+    <div id="container">
+      <img src="assets/compass.png" width="60" [ngStyle]="{'transform': 'rotate('+(qiblaLocation*-1)+'deg)'}">
+    </div>
+
+  </ion-fab>
+
+  <!-- Settings button -->
   <ion-fab vertical="bottom" 
            horizontal="end" 
            slot="fixed">

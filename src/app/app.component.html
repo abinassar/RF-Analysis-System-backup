@@ -1,10 +1,9 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
 
   <ion-menu side="end" 
             type="push" 
             menuId="first" 
-            contentId="main"
+            contentId="main" 
             [formGroup]="settingsForm">
     <ion-header>
       <ion-toolbar color="primary">
@@ -24,8 +23,7 @@
         <ion-label>
           Antena 1:
         </ion-label>
-        <ion-input type="number" 
-                   formControlName="anthenaOneHigh"></ion-input>
+        <ion-input type="number" formControlName="anthenaOneHigh"></ion-input>
 
       </ion-item>
       <ion-item>
@@ -33,8 +31,7 @@
         <ion-label>
           Antena 2:
         </ion-label>
-        <ion-input type="number" 
-                   formControlName="anthenaTwoHigh"></ion-input>
+        <ion-input type="number" formControlName="anthenaTwoHigh"></ion-input>
 
       </ion-item>
 
@@ -43,11 +40,10 @@
         <ion-item>Informacion de potencia</ion-item>
       </ion-list>
 
-      <ion-button color="success"
-                  (click)="saveSettings()">Save</ion-button>
+      <ion-button color="success" (click)="saveSettings()">Save</ion-button>
     </ion-content>
   </ion-menu>
 
-<ion-router-outlet id="main"></ion-router-outlet>
+  <ion-router-outlet id="main"></ion-router-outlet>
 
 </ion-app>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MenuController } from '@ionic/angular';
-import { SettingsService } from './services/settings.service';
+import { SettingsService } from './shared/services/settings.service';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +28,7 @@ export class AppComponent implements OnInit {
   }
 
   saveSettings() {
+    
     let settings = {
       anthenaOneHigh: this.settingsForm.get("anthenaOneHigh").value,
       anthenaTwoHigh: this.settingsForm.get("anthenaTwoHigh").value      

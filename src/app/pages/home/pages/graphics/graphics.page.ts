@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { ActionSheetController, AlertController, LoadingController, MenuController } from '@ionic/angular';
-import { DataService } from '../../../../services/data.service';
-import { SettingsService } from '../../../../services/settings.service';
-import { LocationService } from '../../../../services/location.service';
+import { DataService } from '../../../../shared/services/data.service';
+import { SettingsService } from '../../../../shared/services/settings.service';
+import { LocationService } from '../../../../shared/services/location.service';
 import { GeoPoint } from '../../../../shared/models/geographic';
-import { AlertService } from '../../../../services/alert.service';
+import { AlertService } from '../../../../shared/services/alert.service';
 import { Router } from '@angular/router';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 const SPEED_OF_LIGHT: number = 299792458;
 
@@ -60,18 +61,6 @@ export class GraphicsPage {
 
   pointsFraction: number = 1000;
 
-  initialPointObservale = this.settingsService
-                              .initialPoint$
-                              .subscribe((point: GeoPoint) => {
-    this.initialPoint = point;
-  });
-
-  finalPointObservale = this.settingsService
-                              .finalPoint$
-                              .subscribe((point: GeoPoint) => {
-    this.finalPoint = point;
-  });
-
   antennaSettingsObservable = this.settingsService
                                   .linkSettings$
                                   .subscribe((settings) => {
@@ -81,6 +70,9 @@ export class GraphicsPage {
 
   });
 
+  settingsForm: FormGroup;
+  showForm: boolean = false;
+
   constructor( private dataService: DataService,
                private loadingCtrl: LoadingController,
                private actionSheetController: ActionSheetController,
@@ -88,15 +80,22 @@ export class GraphicsPage {
                private settingsService: SettingsService,
                private locationService: LocationService,
                private alertService: AlertService,
-               private router: Router ) {}
+               private router: Router,
+               private formBuilder: FormBuilder ) {}
 
   ionViewDidEnter() {
+
+    this.initialPoint = this.settingsService.initialPoint;
+    this.finalPoint = this.settingsService.finalPoint;
+
+    this.setSettingsForm();
+    this.showForm = true;
 
     this.locationService
         .getLocationData('10.482149', '-68.056942')
         .subscribe((response) => {
           console.log("REsponse ", JSON.stringify(response))
-        })
+        });
 
     // this.locationService
     //     .getAtenuation(1013, 15)
@@ -159,6 +158,18 @@ export class GraphicsPage {
     //                     "Por favor selecciona dos puntos geograficos para mostrar la gráfica");
 
     // }
+  }
+
+  setSettingsForm() {
+
+    this.settingsForm = this.formBuilder.group({
+      initialLat: this.formBuilder.control(this.initialPoint.lat === 0 ? null : this.initialPoint.lat),
+      initialLng: this.formBuilder.control(this.initialPoint.lng === 0 ? null : this.initialPoint.lng),
+      finalLat: this.formBuilder.control(this.finalPoint.lat === 0 ? null : this.finalPoint.lat),
+      finalLng: this.formBuilder.control(this.finalPoint.lng === 0 ? null : this.finalPoint.lng),
+    });
+
+    console.log("this.settingsForm ", this.settingsForm)
   }
 
   navToProfileGraph() {

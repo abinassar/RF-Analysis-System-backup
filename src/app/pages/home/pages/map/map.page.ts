@@ -3,7 +3,7 @@ import { ActionSheetController, MenuController, ModalController } from '@ionic/a
 import * as Leaflet from "leaflet";
 import { antPath } from 'leaflet-ant-path';
 import { LinkConfigurationComponent } from '../../../../shared/components/link-configuration/link-configuration.component';
-import { SettingsService } from '../../../../services/settings.service';
+import { SettingsService } from '../../../../shared/services/settings.service';
 import { GeoPoint } from '../../../../shared/models/geographic';
 // import "leaflet-control-geocoder/dist/Control.Geocoder.scss";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
@@ -137,13 +137,20 @@ export class MapPage {
   setMarker(event) {
 
     if (this.markersArray.length === 2) {
+
+      // Remove first point marked 
+      // In path
+
       this.map.removeLayer(this.markersArray[0]);
       this.markersArray.shift();
+
     }
 
     if (this.antPathArray.length === 1) {
+
       this.map.removeLayer(this.antPathArray[0]);
       this.antPathArray.shift();
+      
     }
 
     let marker = Leaflet.marker([event.latlng.lat, event.latlng.lng], {icon: this.greenIcon}).addTo(this.map);
@@ -179,10 +186,17 @@ export class MapPage {
         lng: marker.getLatLng().lng
       }
 
+      // Update point in the properties
+      // Shared with another components
+
       if (index === 0) {
-        this.settingsService.initialPoint.next(point);
+
+        this.settingsService.initialPoint = point;
+
       } else {
-        this.settingsService.finalPoint.next(point);
+
+        this.settingsService.finalPoint = point;
+
       }
     })
 

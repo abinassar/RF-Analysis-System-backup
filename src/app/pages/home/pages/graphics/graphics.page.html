@@ -13,6 +13,66 @@
   </ion-header>
 
   <h2>
+    Estadisticas del enlace:
+  </h2>
+
+  <ion-grid [formGroup]="settingsForm"
+            *ngIf="showForm">
+    <ion-row>
+      <h3>
+        Punto inicial
+      </h3>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-item>
+          <ion-input label="Latitud" 
+                     labelPlacement="floating" 
+                     placeholder="Ingresa latitud" 
+                     type="number"
+                     formControlName="initialLat"></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col>
+        <ion-item>
+          <ion-input label="Longitud"
+                     labelPlacement="floating" 
+                     placeholder="Ingresa longitud" 
+                     type="number"
+                     formControlName="initialLng"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <h3>
+        Punto final
+      </h3>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-item>
+          <ion-input label="Latitud" 
+                     labelPlacement="floating" 
+                     placeholder="Ingresa latitud" 
+                     type="number"
+                     formControlName="finalLat"></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col>
+        <ion-item>
+          <ion-input label="Longitud"
+                     labelPlacement="floating" 
+                     placeholder="Ingresa longitud" 
+                     type="number"
+                     formControlName="finalLng"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+  <h2>
     Selecciona una gráfica:
   </h2>
 

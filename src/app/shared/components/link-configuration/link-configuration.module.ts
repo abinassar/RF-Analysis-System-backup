@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AntennaListComponent } from '../antenna-list/antenna-list.component';
 import { AntennaListModule } from '../antenna-list/antenna-list.module';
 import { LinkConfigurationComponent } from './link-configuration.component';
+import { IonicModule } from '@ionic/angular';
 
 
 
@@ -12,7 +13,8 @@ import { LinkConfigurationComponent } from './link-configuration.component';
   ],
   imports: [
     CommonModule,
-    AntennaListModule
+    AntennaListModule,
+    IonicModule
   ],
   exports: [
     LinkConfigurationComponent

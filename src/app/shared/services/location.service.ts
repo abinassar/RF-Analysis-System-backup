@@ -12,9 +12,21 @@ export class LocationService {
   constructor(private dataService: DataService) { }
 
   getElevationProfile(startPoint, endPoint) {
+    console.log("startPoint ", startPoint)
+    console.log("endPoint ", endPoint)
     return this.dataService.post("http://127.0.0.1:5000/elevation_profile", {
       "start_point": startPoint,
       "end_point": endPoint
+    })
+  }
+
+  getWaterVaporAtenuation(pressure: number, 
+                          temperature: number,
+                          waterDensity: number) {
+    return this.dataService.post("http://127.0.0.1:5000/get_atmospheric_atenuation_water_vapor", {
+      pressure,
+      temperature,
+      waterDensity
     })
   }
 

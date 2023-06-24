@@ -76,21 +76,30 @@
     Selecciona una gráfica:
   </h2>
 
-  <ion-item (click)="navToProfileGraph()">
+  <ion-item detail 
+            (click)="navToProfileGraph()">
     <ion-avatar slot="start">
       <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
     </ion-avatar>
-    <ion-label> Perfil de Elevacion </ion-label>
+    <ion-label> 
+      Perfil de Elevacion 
+
+      <p>
+
+      </p>
+    </ion-label>
   </ion-item>
 
-  <ion-item>
+  <ion-item detail
+            (click)="navToAtenuationGraph()">
     <ion-avatar slot="start">
       <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
     </ion-avatar>
     <ion-label> Atenuacion debido a Gases Atmosfericos </ion-label>
   </ion-item>
 
-  <ion-item>
+  <ion-item detail
+            (click)="navToAtenuationVaporGraph()">
     <ion-avatar slot="start">
       <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
     </ion-avatar>
@@ -122,5 +131,7 @@
                 (click)="openConfiguration()"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
+  <ion-router-outlet></ion-router-outlet>
 
 </ion-content>

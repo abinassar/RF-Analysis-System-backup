@@ -1,0 +1,23 @@
+
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home/graphics"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Atenuación en Aire Seco</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true"
+             class="ion-padding">
+
+  <div *ngIf="atenuationGraph">
+
+      <plotly-plot [data]="elevationData.data"
+                   [layout]="elevationData.layout"
+                   [useResizeHandler]="true"
+                   [style]="{position: 'relative', width: '100%', height: '100%'}">
+      </plotly-plot>
+  </div>
+
+</ion-content>

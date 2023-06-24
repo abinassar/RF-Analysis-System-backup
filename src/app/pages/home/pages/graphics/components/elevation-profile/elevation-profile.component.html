@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home/graphics"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Perfil de Elevación</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div *ngIf="elevationGraph">
+
+    <plotly-plot [data]="elevationData.data"
+                 [layout]="elevationData.layout"
+                 [useResizeHandler]="true"
+                 [style]="{position: 'relative', width: '100%', height: '100%'}">
+    </plotly-plot>
+  </div>
+
+</ion-content>

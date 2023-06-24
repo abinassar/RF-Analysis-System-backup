@@ -7,6 +7,9 @@ import { GraphicsPage } from './graphics.page';
 import { PlotlyModule } from 'angular-plotly.js';
 import * as PlotlyJS from 'plotly.js-dist-min';
 import { GraphicsPageRoutingModule } from './graphics-routing.module';
+import { ElevationProfileComponent,
+         AtenuationWaterVaporGraphComponent,
+         AtenuationGraphComponent } from './components';
 PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
@@ -18,6 +21,11 @@ PlotlyModule.plotlyjs = PlotlyJS;
     GraphicsPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [GraphicsPage]
+  declarations: [
+    GraphicsPage,
+    ElevationProfileComponent,
+    AtenuationGraphComponent,
+    AtenuationWaterVaporGraphComponent
+  ]
 })
 export class GraphicsPageModule {}

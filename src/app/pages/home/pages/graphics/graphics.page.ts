@@ -91,11 +91,11 @@ export class GraphicsPage {
     this.setSettingsForm();
     this.showForm = true;
 
-    this.locationService
-        .getLocationData('10.482149', '-68.056942')
-        .subscribe((response) => {
-          console.log("REsponse ", JSON.stringify(response))
-        });
+    // this.locationService
+    //     .getLocationData('10.482149', '-68.056942')
+    //     .subscribe((response) => {
+          
+    //     });
 
     // this.locationService
     //     .getAtenuation(1013, 15)
@@ -173,18 +173,15 @@ export class GraphicsPage {
   }
 
   navToProfileGraph() {
-    this.router.navigate(['/tabs/tab2/profile-elevation', { lat: '10.482149', 
-                                                  lng: '-68.056942' }]);
+    this.router.navigate([`/home/graphics/elevation-profile`]);
   }
 
   navToAtenuationGraph() {
-    this.router.navigate(['/tabs/tab2/atenuation-graph', { lat: '10.482149', 
-                                                  lng: '-68.056942' }]);
+    this.router.navigate(['/home/graphics/atenuation-graph']);
   }
 
   navToAtenuationVaporGraph() {
-    this.router.navigate(['/tabs/tab2/atenuation-water-vapor-graph', { lat: '10.482149', 
-                                                                       lng: '-68.056942' }]);
+    this.router.navigate(['/home/graphics/atenuation-water-vapor-graph']);
   }
 
   interpolateArrayParabolic(arr) {

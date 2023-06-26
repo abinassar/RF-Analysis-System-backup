@@ -3,6 +3,7 @@ import { SettingsService } from '@shared/services/settings.service';
 import { GeoPoint } from '@shared/models/geographic';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { frecuencyUnit } from '@shared/models/frecuency';
 
 @Component({
   selector: 'app-graphics',
@@ -28,6 +29,15 @@ export class GraphicsPage {
 
   settingsForm: FormGroup;
   showForm: boolean = false;
+  frecuency: number = 40;
+  frecuencyUnit: frecuencyUnit = frecuencyUnit.GHZ;
+  frecuencies: frecuencyUnit[] = [
+    frecuencyUnit.HZ,
+    frecuencyUnit.MHZ,
+    frecuencyUnit.GHZ
+  ];
+  antennaInitialHeight: number = 0;
+  antennaFinalHeight: number = 0;
 
   constructor( private settingsService: SettingsService,
                private router: Router,
@@ -37,6 +47,8 @@ export class GraphicsPage {
 
     this.initialPoint = this.settingsService.initialPoint;
     this.finalPoint = this.settingsService.finalPoint;
+    this.antennaInitialHeight = this.settingsService.antennaInitialHeight;
+    this.antennaFinalHeight = this.settingsService.antennaFinalHeight;
 
     this.setSettingsForm();
     this.showForm = true;
@@ -50,6 +62,10 @@ export class GraphicsPage {
       initialLng: this.formBuilder.control(this.initialPoint.lng === 0 ? null : this.initialPoint.lng),
       finalLat: this.formBuilder.control(this.finalPoint.lat === 0 ? null : this.finalPoint.lat),
       finalLng: this.formBuilder.control(this.finalPoint.lng === 0 ? null : this.finalPoint.lng),
+      frecuency: this.formBuilder.control(this.frecuency === 0 ? null : this.frecuency),
+      frecuencyUnit: this.formBuilder.control(this.frecuencyUnit === frecuencyUnit.HZ ? null : this.frecuencyUnit),
+      antennaInitialHeight: this.formBuilder.control(this.antennaInitialHeight === 0 ? null : this.antennaInitialHeight),
+      antennaFinalHeight: this.formBuilder.control(this.antennaFinalHeight === 0 ? null : this.antennaFinalHeight)
     });
 
     console.log("this.settingsForm ", this.settingsForm)

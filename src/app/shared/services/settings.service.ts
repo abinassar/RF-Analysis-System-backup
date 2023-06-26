@@ -13,6 +13,8 @@ export class SettingsService {
   frecuency: number;
   initialPoint: GeoPoint = defaultPoints;
   finalPoint: GeoPoint = defaultPoints;
+  antennaInitialHeight: number = 10;
+  antennaFinalHeight: number = 15;
 
   constructor() { }
 }

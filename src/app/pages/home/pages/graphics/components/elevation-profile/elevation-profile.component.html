@@ -9,6 +9,10 @@
 
 <ion-content class="ion-padding">
 
+  <button (click)="showObstructions()">
+    showObstructions()
+  </button>
+
   <div *ngIf="elevationGraph">
 
     <plotly-plot [data]="elevationData.data"
@@ -17,5 +21,20 @@
                  [style]="{position: 'relative', width: '100%', height: '100%'}">
     </plotly-plot>
   </div>
+
+  <ion-grid>
+
+    <ion-row>
+      <h2>
+        Puntos de obstrucción:
+      </h2>
+    </ion-row>
+
+    <ion-row *ngFor="let point of obstructionSelectedPoints; let i=index">
+
+      {{point.x}} Km
+      
+    </ion-row>
+  </ion-grid>
 
 </ion-content>

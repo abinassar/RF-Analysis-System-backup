@@ -69,7 +69,8 @@ export class ElevationProfileComponent implements OnInit {
 
   settingsForm: FormGroup;
   showForm: boolean = false;
-  
+  obstructionSelectedPoints: any[] = [];
+  startObstruction: boolean = false;
 
   constructor(private settingsService: SettingsService,
               private locationService: LocationService,
@@ -94,6 +95,10 @@ export class ElevationProfileComponent implements OnInit {
 
     }
 
+  }
+
+  showObstructions() {
+    console.log("this.obstructionSelectedPoints ", this.obstructionSelectedPoints)
   }
 
   async getElevationProfile() {
@@ -285,6 +290,139 @@ export class ElevationProfileComponent implements OnInit {
     
     let distanceFraction = rectDistance/fraction;
 
+    let fresnelPoints = this.createFresnelPoints(1,
+                                                fraction, 
+                                                rectDataX, 
+                                                rectDataY, 
+                                                P1x, 
+                                                P1y, 
+                                                distance1, 
+                                                distance2, 
+                                                angleCounterClkSenseTransferred, 
+                                                angleClkSenseTransferred,
+                                                Xfinal,
+                                                Yfinal,
+                                                Xinitial,
+                                                Yinitial,
+                                                fresnelDataX,
+                                                fresnelDataY,
+                                                fresnelInvertedDataX,
+                                                fresnelInvertedDataY,
+                                                mRect,
+                                                xFractioned,
+                                                distanceFraction);
+
+    let fresnel70PercentPoints = this.createFresnelPoints(0.7,
+                                                fraction, 
+                                                rectDataX, 
+                                                rectDataY, 
+                                                P1x, 
+                                                P1y, 
+                                                distance1, 
+                                                distance2, 
+                                                angleCounterClkSenseTransferred, 
+                                                angleClkSenseTransferred,
+                                                Xfinal,
+                                                Yfinal,
+                                                Xinitial,
+                                                Yinitial,
+                                                fresnelDataX,
+                                                fresnelDataY,
+                                                fresnelInvertedDataX,
+                                                fresnelInvertedDataY,
+                                                mRect,
+                                                xFractioned,
+                                                distanceFraction);
+    // TODO: Put fresnel points function
+
+    this.elevationData.data.push({
+      x: fresnel70PercentPoints.fresnelDataX,
+      y: fresnel70PercentPoints.fresnelDataY,
+      type: 'scatter',
+      line: {
+        color: '#9a37c4'
+      }
+    })
+
+    this.elevationData.data.push({
+      x: fresnel70PercentPoints.fresnelInvertedDataX,
+      y: fresnel70PercentPoints.fresnelInvertedDataY,
+      type: 'scatter',
+      line: {
+        color: '#9a37c4'
+      }
+    })
+
+    // this.elevationData.data.push({
+    //   x: fresnelPoints.fresnelDataX,
+    //   y: fresnelPoints.fresnelDataY,
+    //   type: 'scatter',
+    //   line: {
+    //     color: '#17BECF'
+    //   }
+    // })
+
+    // this.elevationData.data.push({
+    //   x: fresnelPoints.fresnelInvertedDataX,
+    //   y: fresnelPoints.fresnelInvertedDataY,
+    //   type: 'scatter',
+    //   line: {
+    //     color: '#17BECF'
+    //   }
+    // })
+
+    this.elevationData.data.push({
+      x: fresnelPoints.rectDataX,
+      y: fresnelPoints.rectDataY,
+      type: 'scatter'
+    })
+
+    this.elevationData.data.push({
+      x: this.obstructionPointsX,
+      y: this.obstructionPointsY,
+      mode: 'markers',
+      type: 'scatter',
+      line: {
+        color: '#d91313'
+      }
+    })
+
+    this.elevationData.data.push({
+      x: this.obstructionPointsInvertedX,
+      y: this.obstructionPointsInvertedY,
+      mode: 'markers',
+      type: 'scatter',
+      line: {
+        color: '#d91313'
+      }
+    })
+
+    this.elevationGraph = true;
+
+  }
+
+  createFresnelPoints(radioPercent = 1,
+                      fraction, 
+                      rectDataX, 
+                      rectDataY, 
+                      P1x, 
+                      P1y, 
+                      distance1, 
+                      distance2, 
+                      angleCounterClkSenseTransferred, 
+                      angleClkSenseTransferred,
+                      Xfinal,
+                      Yfinal,
+                      Xinitial,
+                      Yinitial,
+                      fresnelDataX,
+                      fresnelDataY,
+                      fresnelInvertedDataX,
+                      fresnelInvertedDataY,
+                      mRect,
+                      xFractioned,
+                      distanceFraction) {
+
     for (let index = 0; index <= fraction; index++) {
       
       // Add point to rect data
@@ -294,7 +432,7 @@ export class ElevationProfileComponent implements OnInit {
 
       // Create the fresnel zone points
 
-      let radio = this.fresnelRadio(this.lambda, distance1, distance2);
+      let radio = radioPercent * this.fresnelRadio(this.lambda, distance1, distance2);
 
       if (radio < 0.00001) {
         radio = 0;
@@ -355,11 +493,6 @@ export class ElevationProfileComponent implements OnInit {
 
     }
 
-    console.log("this.elevationDataY ", this.elevationDataY)
-    console.log("this.elevationDataX ", this.elevationDataX)
-    console.log("this.fresnelDataY ", fresnelDataY)
-    console.log("this.fresnelDataX ", fresnelDataX)
-
     this.elevationDataY.forEach((elevationProfilePointY, index) => {
 
       // Busco un punto que este mas o menos en el valor de x de la zona de fresnel
@@ -371,10 +504,20 @@ export class ElevationProfileComponent implements OnInit {
 
       if (elevationProfilePointY >= fresnelDataY[indexOfPositionX]) {
 
-        console.log("indexOfPositionX ", indexOfPositionX)
+        if (!this.startObstruction) {
+          this.startObstruction = true;
+           this.obstructionSelectedPoints.push({
+            x: fresnelDataX[indexOfPositionX],
+            y: fresnelDataX[indexOfPositionX]
+           });
+        }
 
         this.obstructionPointsX.push(fresnelDataX[indexOfPositionX]);
         this.obstructionPointsY.push(fresnelDataY[indexOfPositionX]);
+
+      } else {
+
+        this.startObstruction = false;
 
       }
 
@@ -392,53 +535,18 @@ export class ElevationProfileComponent implements OnInit {
 
       }
 
-    })
+    });
 
-    this.elevationData.data.push({
-      x: fresnelDataX,
-      y: fresnelDataY,
-      type: 'scatter',
-      line: {
-        color: '#17BECF'
-      }
-    })
+    let fresnelPoints = {
+      fresnelDataX,
+      fresnelDataY,
+      fresnelInvertedDataX,
+      fresnelInvertedDataY,
+      rectDataX,
+      rectDataY
+    }
 
-    this.elevationData.data.push({
-      x: fresnelInvertedDataX,
-      y: fresnelInvertedDataY,
-      type: 'scatter',
-      line: {
-        color: '#17BECF'
-      }
-    })
-
-    this.elevationData.data.push({
-      x: rectDataX,
-      y: rectDataY,
-      type: 'scatter'
-    })
-
-    this.elevationData.data.push({
-      x: this.obstructionPointsX,
-      y: this.obstructionPointsY,
-      mode: 'markers',
-      type: 'scatter',
-      line: {
-        color: '#d91313'
-      }
-    })
-
-    this.elevationData.data.push({
-      x: this.obstructionPointsInvertedX,
-      y: this.obstructionPointsInvertedY,
-      mode: 'markers',
-      type: 'scatter',
-      line: {
-        color: '#d91313'
-      }
-    })
-
-    this.elevationGraph = true;
+    return fresnelPoints;
 
   }
 

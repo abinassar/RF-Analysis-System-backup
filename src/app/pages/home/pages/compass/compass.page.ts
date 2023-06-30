@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
 import { DeviceOrientation, DeviceOrientationCompassHeading } from '@ionic-native/device-orientation/ngx';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
@@ -20,17 +21,21 @@ export class CompassPage {
   // Initial Qibla Location
   public qiblaLocation = 0;
 
+  antennaForm: FormGroup;
+  showForm: boolean = false;
+
   constructor(private deviceOrientation: DeviceOrientation,
-              private geolocation: Geolocation) {
+              private geolocation: Geolocation,
+              private formBuilder: FormBuilder) {
 
     // Watch the device compass heading change
     this.deviceOrientation.watchHeading().subscribe((res: DeviceOrientationCompassHeading) => {
-      this.data = res;
-      // Change qiblaLocation when currentLocation is not empty 
-      if (!!this.currentLocation) {
-        const currentQibla = res.magneticHeading - this.getQiblaPosition();
-        this.qiblaLocation = currentQibla > 360 ? currentQibla%360 : currentQibla;
-      }
+        this.data = res;
+        // Change qiblaLocation when currentLocation is not empty 
+        if (!!this.currentLocation) {
+          const currentQibla = res.magneticHeading - this.getQiblaPosition();
+          this.qiblaLocation = currentQibla > 360 ? currentQibla%360 : currentQibla;
+        }
       }
     );
 
@@ -43,6 +48,26 @@ export class CompassPage {
     this.geolocation.watchPosition().subscribe((res) => {
         this.currentLocation = res;
     });
+  }
+
+  ionViewDidEnter() {
+    this.setAntennaForm();
+  }
+
+  setAntennaForm() {
+
+    this.antennaForm = this.formBuilder.group({
+      txPower: this.formBuilder.control(0),
+      txAntennaGain: this.formBuilder.control(0),
+      txLoss: this.formBuilder.control(0),
+      freeSpaceLoss: this.formBuilder.control(0),
+      miscLoss: this.formBuilder.control(0),
+      rxAntennaGain: this.formBuilder.control(0),
+      rxLoss: this.formBuilder.control(0)
+    });
+
+    this.showForm = true;
+
   }
 
   getQiblaPosition() {

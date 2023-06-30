@@ -1,23 +1,181 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>compass</ion-title>
+    <ion-title>Data</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <!-- <app-antenna-list></app-antenna-list> -->
+<ion-content [fullscreen]="true"
+             class="ion-padding">
 
   <div id="container">
-    <!-- <strong>DeviceOrientationCompassHeading</strong> -->
-    <img src="assets/compass.png" width="200em" [ngStyle]="{'transform': 'rotate('+(qiblaLocation*-1)+'deg)'}">
-    <p>Current Location<br>{{!!currentLocation ? "["+currentLocation.coords.latitude+","+currentLocation.coords.longitude+"]" : 'Not Allowed'}}</p>
+    <p>Ubicación actual:
+        <br>
+      {{!!currentLocation ? "["+currentLocation.coords.latitude+","+currentLocation.coords.longitude+"]" : 'No permitida'}}
+    </p>
   </div>
 
-  <!-- <app-explore-container name="Tab 3 page"></app-explore-container> -->
+  <ion-card class="ion-padding">
+    <ion-card-header>
+      <ion-card-title>Presupuesto de potencia:</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-grid [formGroup]="antennaForm"
+                *ngIf="showForm">
+        <ion-row class="ion-padding">
+          <ion-col>
+            <h2>
+              Potencia de Transmisión - (dBm)
+            </h2>
+            <ion-item class="ion-padding">
+              <ion-input fill="outline"
+                         label="Latitud" 
+                         labelPlacement="floating" 
+                         placeholder="Ingresa valor" 
+                         type="number"
+                         formControlName="txPower"></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <h2>
+              Ganancia de la antena TX - (dBi)
+            </h2>
+            <ion-item class="ion-padding">
+              <ion-input fill="outline"
+                         label="Longitud"
+                         labelPlacement="floating"
+                         placeholder="Ingresa valor" 
+                         type="number"
+                         formControlName="txAntennaGain"></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="ion-padding">
+          <ion-col>
+            <h2>
+              Pérdidas de Transmisión (cables, conectores, etc) - (dB)
+            </h2>
+            <ion-item class="ion-padding">
+              <ion-input fill="outline"
+                         label="Latitud" 
+                         labelPlacement="floating" 
+                         placeholder="Ingresa valor" 
+                         type="number"
+                         formControlName="txLoss"></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <h2>
+              Pérdidas de espacio libre - (dBm)
+            </h2>
+            <ion-item class="ion-padding">
+              <ion-input fill="outline"
+                         label="Latitud" 
+                         labelPlacement="floating" 
+                         placeholder="Ingresa valor" 
+                         type="number"
+                         formControlName="freeSpaceLoss"></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="ion-padding">
+          <ion-col>
+            <h2>
+              Ganancia antena receptora - (dBi)
+            </h2>
+            <ion-item class="ion-padding">
+              <ion-input fill="outline"
+                         label="Longitud"
+                         labelPlacement="floating" 
+                         placeholder="Ingresa valor" 
+                         type="number"
+                         formControlName="rxAntennaGain"></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <h2>
+              Perdidas de recepcion (cable, conectores, etc) - (dB)
+            </h2>
+            <ion-item class="ion-padding">
+              <ion-input fill="outline"
+                         label="Latitud" 
+                         labelPlacement="floating" 
+                         placeholder="Ingresa valor" 
+                         type="number"
+                         formControlName="rxLoss"></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="ion-padding">
+          <ion-col>
+            <h2>
+              Otras perdidas (Margen de desvanecimiento, desajuste de polarización, etc) - (dB)
+            </h2>
+            <ion-item class="ion-padding">
+              <ion-input fill="outline"
+                         label="Latitud" 
+                         labelPlacement="floating" 
+                         placeholder="Ingresa valor" 
+                         type="number"
+                         formControlName="miscLoss"></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        
+        <ion-row class="ion-justify-content-center ion-align-self-center">
+          <ion-col class="power-budget-result">
+
+            <h1 class="text-center">
+              Presupuesto de potencia:
+            </h1>
+
+            <h2 class="text-center mt-10px">
+
+              Prx = {{antennaForm.get('txPower').value}} (Ptx) + 
+                    {{antennaForm.get('txAntennaGain').value}} (Gtx) -
+                    {{antennaForm.get('txLoss').value}} (Ltx) -
+                    {{antennaForm.get('freeSpaceLoss').value}} (Lfs) -
+                    {{antennaForm.get('miscLoss').value}} (Lm) +
+                    {{antennaForm.get('rxAntennaGain').value}} (Grx) -
+                    {{antennaForm.get('rxLoss').value}} (Lrx)
+
+            </h2>
+
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="ion-justify-content-center ion-align-self-center">
+          <ion-col class="power-budget-result">
+
+            <h2>
+              Sumario:
+            </h2>
+
+            <ul class="mt-10px">
+
+              <li>Prx: Potencia del receptor</li>
+              <li>Ptx: Potencia del transmisor</li>
+              <li>Gtx: Ganancia de la antena transmisora</li>
+              <li>Ltx: Pérdidas de transmisión (Cable, conectores, etc)</li>
+              <li>Lfs: Pérdidas de espacio libre</li>
+              <li>Lm: Otras pérdidas (Margen de desvanecimiento, desajuste de polarización, etc)</li>
+              <li>Lrx: Pérdidas en el receptor (Cable, conectores, etc)</li>
+
+            </ul>
+
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+        </ion-row>
+
+
+      </ion-grid>
+    </ion-card-content>
+
+  </ion-card>
+
 </ion-content>

@@ -92,7 +92,7 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
 
       this.alertService
           .presentAlert("Puntos geográficos", 
-                        "Por favor selecciona dos puntos geograficos para mostrar la gráfica");
+                        "Por favor selecciona dos puntos en el mapa para mostrar la gráfica");
 
     }
 
@@ -179,7 +179,7 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
     const loading = await this.loadingCtrl.create({
       message: 'Cargando perfil de elevación...'
     });
-    
+
     await loading.present();
 
     this.locationService
@@ -194,13 +194,15 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
       this.obstructionSelectedPoints = [];
 
       console.log("data: ", JSON.stringify(response.elevations))
+      console.log("distance: ", response.linkDistance)
 
-      let distanceFraction = response.distances*1000/this.pointsFraction;
+      let distanceFraction = response.linkDistance*1000/this.pointsFraction;
       let positionX = 0;
 
       console.log("distanceFraction: ", distanceFraction)
 
       let elevationProfileData = response.elevations;
+      this.settingsService.linkDistance = response.linkDistance;
   
       // Get point x and y for each position in map
   

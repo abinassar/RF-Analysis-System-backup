@@ -4,22 +4,113 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home/graphics"></ion-back-button>
     </ion-buttons>
-    <ion-title>Atenuación en Aire Seco</ion-title>
+    <ion-title>Atenuación en aire seco</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true"
-             class="ion-padding">
+<ion-content class="ion-padding">
 
-  <div *ngIf="atenuationGraph">
+  <!-- <ion-button (click)="showMapp()">
+    showMap()
+  </ion-button> -->
 
+  <ion-card>
+    <img src="../../../../../../../assets/images/desert.png" />
+    <ion-card-header>
+      <ion-card-subtitle>Atenuación debido a aire seco</ion-card-subtitle>
+      <ion-card-title>Enlaces de microondas</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      La atenuación debido a aire seco es un fenómeno que ocurre en la 
+      propagación de ondas electromagnéticas, 
+      como las ondas de radio y las señales de televisión, a medida que se propagan a través del aire.
+    </ion-card-content>
+  </ion-card>
+
+  <ion-row class="cellphone-width justify-content-center align-items-center">
+    <ion-col>
+      <app-global-map class="map-container" 
+                      *ngIf="homeService.showMap"></app-global-map>
+    </ion-col>
+  </ion-row>
+
+  <ion-button (click)="getLocationData()">
+    Obtener datos atmosféricos
+  </ion-button>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Información atmosférica:</ion-card-title>
+    </ion-card-header>
+    <ion-grid>
+
+      <ion-row class="ion-padding pt-0px">
+        <ion-col>
+          <h3>
+            <ion-badge slot="start">Locación:</ion-badge>
+            <span>
+              {{settingsService.locationName}}
+            </span>
+          </h3>
+        </ion-col>
+      </ion-row>
+  
+      <ion-row class="ion-padding pt-0px">
+        <ion-col>
+          <h3>
+            <ion-badge slot="start">Presión atmosférica:</ion-badge>
+            
+            <span>
+              {{settingsService.atmosphericPressure}} (hPa)
+            </span>
+          </h3>
+        </ion-col>
+        <ion-col>
+          <h3>
+            <ion-badge slot="start">Temperatura:</ion-badge>
+            <span>
+              {{settingsService.temperature}} (C°)
+            </span>
+          </h3>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+
+    <ng-container *ngIf="atenuationGraph; else noAtenuationGraphic"
+                  class="graph-container">
+      
       <plotly-plot [data]="elevationData.data"
                    [layout]="elevationData.layout"
                    [useResizeHandler]="true"
                    [style]="{position: 'relative', width: '100%', height: '100%'}">
       </plotly-plot>
-  </div>
 
-  <app-global-map *ngIf="showMap"></app-global-map>
+    </ng-container>
+
+    <ng-template #noAtenuationGraphic>
+
+      <ion-card class="ion-padding">
+        <ion-card-subtitle>Generar gráfica</ion-card-subtitle>
+        <ion-card-title>Procedimiento:</ion-card-title>
+  
+        <ion-card-content>
+          <ul>
+            <li>
+              <p class="fs-20">
+                1.- Selecciona los dos puntos en el mapa donde quieres graficar el
+                perfil de elevación.
+              </p>
+            </li>
+            <li>
+              <p class="fs-20">
+                2.- Seleccionados los puntos, presiona el botón "Generar gráfica"
+                para obtener mostrar el gráfico.
+              </p>
+            </li>
+          </ul>
+        </ion-card-content>      
+      </ion-card>
+
+    </ng-template>
 
 </ion-content>

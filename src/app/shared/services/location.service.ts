@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
-import { LocationWeather } from '../models';
+import { ElevationData, LocationWeather } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class LocationService {
 
   constructor(private dataService: DataService) { }
 
-  getElevationProfile(startPoint, endPoint) {
+  getElevationProfile(startPoint, endPoint): Observable<ElevationData> {
     console.log("startPoint ", startPoint)
     console.log("endPoint ", endPoint)
     return this.dataService.post("http://127.0.0.1:5000/elevation_profile", {
@@ -38,6 +38,6 @@ export class LocationService {
   }
 
   getLocationData(lat: string, lng: string): Observable<LocationWeather> {
-    return this.dataService.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${environment.weatherAPIKey}`);
+    return this.dataService.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&lang=es&appid=${environment.weatherAPIKey}`);
   }
 }

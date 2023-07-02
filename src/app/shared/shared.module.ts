@@ -6,11 +6,13 @@ import { LinkConfigurationModule } from './components/link-configuration/link-co
 import { AntennaListModule } from './components/antenna-list/antenna-list.module';
 import { GlobalMapComponent } from './components/global-map/global-map.component';
 import { TruncatePipe } from './pipes';
+import { OptionsModalComponent } from './components/options-modal/options-modal.component';
 
 @NgModule({
   declarations: [
     GlobalMapComponent,
-    TruncatePipe
+    TruncatePipe,
+    OptionsModalComponent
   ],
   imports: [
     CommonModule,
@@ -20,7 +22,8 @@ import { TruncatePipe } from './pipes';
   ],
   exports: [
     GlobalMapComponent,
-    TruncatePipe
+    TruncatePipe,
+    OptionsModalComponent
   ]
 })
 export class SharedModule { }

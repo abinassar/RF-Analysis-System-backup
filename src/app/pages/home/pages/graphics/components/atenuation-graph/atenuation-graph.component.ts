@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController } from '@ionic/angular';
-import { LocationService } from '@shared/services';
+import { LoadingController, ModalController } from '@ionic/angular';
+import { OptionsModalComponent } from '@shared/components/options-modal/options-modal.component';
+import { defaultPoints } from '@shared/models';
+import { AlertService, LocationService, SettingsService } from '@shared/services';
 import { HomeService } from 'src/app/pages/home/home.service';
 
 @Component({
@@ -19,20 +21,82 @@ export class AtenuationGraphComponent implements OnInit {
 
   constructor(private locationService: LocationService,
               private loadingCtrl: LoadingController,
-              private homeService: HomeService) { }
+              public homeService: HomeService,
+              private settingsSetting: SettingsService,
+              private alertService: AlertService,
+              public settingsService: SettingsService) { }
 
   ngOnInit() {
-    this.generateAtenuationGraph();
 
-    
-    this.showMap = this.homeService.showMap;
-    this.showMap = true;
     this.homeService.showMap = true;
+
+    this.getLocationData();
+
+    // this.generateAtenuationGraph();
+
+    // this.showMap = this.homeService.showMap;
+    // this.showMap = true;
+    // this.homeService.showMap = true;
+
+  }
+
+  async getLocationData() {
+
+    if (this.settingsService.initialPoint !== defaultPoints) {
+
+      this.generateAtenuationGraph();
+
+    } else {
+
+      this.atenuationGraph = false;
+
+      this.alertService
+          .presentAlert("Gráfica de atenuación", 
+                        "Por favor selecciona al menos un punto en el mapa para mostrar la gráfica");
+
+    }
 
   }
 
   async generateAtenuationGraph() {
 
+    if (this.settingsSetting.initialPoint.lat === 0
+        && this.settingsSetting.finalPoint.lat === 0) {
+      
+    } else {
+
+      const loadingAtmosData = await this.loadingCtrl.create({
+        message: 'Obteniendo datos atmosféricos...'
+      });
+
+      await loadingAtmosData.present();
+
+      this.locationService
+          .getLocationData(this.settingsService.initialPoint.lat.toString(),
+                            this.settingsService.initialPoint.lng.toString())
+          .subscribe((response) => {
+            console.log("weather response ", JSON.stringify(response))
+
+            // Convert temperature from kelvin unity to centigrade unity
+
+            this.settingsService.locationName = response.name;
+            this.settingsService.temperature = response.main.temp - 273.15;
+            this.settingsService.atmosphericPressure = response.main.pressure;
+
+            loadingAtmosData.dismiss();
+            
+            setTimeout(() => {
+              
+              this.createAtenuationGraph();
+
+            }, 300);
+
+          })
+    }
+  }
+
+  async createAtenuationGraph() {
+    
     const loading = await this.loadingCtrl.create({
       message: 'Cargando gráfico...'
     });
@@ -40,7 +104,8 @@ export class AtenuationGraphComponent implements OnInit {
     await loading.present();
 
     this.locationService
-        .getAtenuation(1013, 15)
+        .getAtenuation(this.settingsService.atmosphericPressure, 
+                       this.settingsService.temperature)
         .subscribe((response) => {
 
           let atenuationPoints = response.atenuationsPoints;
@@ -85,7 +150,7 @@ export class AtenuationGraphComponent implements OnInit {
           this.atenuationGraph = true;
           this.loadingCtrl.dismiss();
 
-        })
+        });
 
   }
 

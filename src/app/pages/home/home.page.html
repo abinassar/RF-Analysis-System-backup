@@ -1,4 +1,5 @@
-<ion-tabs>
+
+<ion-tabs (ionTabsWillChange)="onTabWillChange($event)">
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="map">
       <ion-icon name="navigate-outline"></ion-icon>
@@ -16,3 +17,25 @@
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>
+
+<!-- <ion-content>
+
+  <ion-router-outlet></ion-router-outlet>
+
+  <ion-footer>
+    <ion-buttons>
+      <ion-button (click)="navMap()">
+        Mapa
+      </ion-button>
+    
+      <ion-button (click)="navGraphics()">
+        Gráficos
+      </ion-button>
+    
+      <ion-button (click)="navPower()">
+        Potencia
+      </ion-button>
+    </ion-buttons>
+  </ion-footer>
+  
+</ion-content> -->

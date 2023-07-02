@@ -4,6 +4,7 @@ import { GeoPoint } from '@shared/models/geographic';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { frecuencyUnit } from '@shared/models/frecuency';
+import { HomeService } from '../../home.service';
 
 @Component({
   selector: 'app-graphics',
@@ -41,7 +42,12 @@ export class GraphicsPage {
 
   constructor( private settingsService: SettingsService,
                private router: Router,
-               private formBuilder: FormBuilder ) {}
+               private formBuilder: FormBuilder,
+               private homeService: HomeService ) {}
+
+               showMap() {
+                console.log("home service show map ", this.homeService.showMap)
+               }
 
   ionViewDidEnter() {
 
@@ -55,6 +61,55 @@ export class GraphicsPage {
 
   }
 
+  getDestinationLatLong(lat1: number, lon1: number, bearing: number, distance: number): [number, number] {
+    const R = 6371; // radio de la Tierra en km
+    const d = distance / 1000; // distancia en km
+    const lat1Rad = lat1 * Math.PI / 180; // latitud en radianes
+    const lon1Rad = lon1 * Math.PI / 180; // longitud en radianes
+    const bearingRad = bearing * Math.PI / 180; // dirección en radianes
+  
+    const lat2Rad = Math.asin(Math.sin(lat1Rad) * Math.cos(d/R) + Math.cos(lat1Rad) * Math.sin(d/R) * Math.cos(bearingRad));
+    const lon2Rad = lon1Rad + Math.atan2(Math.sin(bearingRad) * Math.sin(d/R) * Math.cos(lat1Rad), Math.cos(d/R) - Math.sin(lat1Rad) * Math.sin(lat2Rad));
+  
+    const lat2 = lat2Rad * 180 / Math.PI; // latitud en grados
+    const lon2 = lon2Rad * 180 / Math.PI; // longitud en grados
+  
+    return [lat2, lon2];
+  }
+
+  getBearingOriginal(lat1: number, 
+              lon1: number, 
+              lat2: number, 
+              lon2: number): number {
+
+    let lat1Radian = lat1 * (Math.PI)/180;
+    let lat2Radian = lat2 * (Math.PI)/180;
+    let lon1Radian = lon1 * (Math.PI)/180;
+    let lon2Radian = lon2 * (Math.PI)/180;
+
+    const y = Math.sin(lon2Radian-lon1Radian) * Math.cos(lat2Radian);
+    const x = Math.cos(lat1Radian)*Math.sin(lat2Radian) -
+              Math.sin(lat1Radian)*Math.cos(lat2Radian)*Math.cos(lon2Radian-lon1Radian);
+    const θ = Math.atan2(y, x);
+    const bearing = (θ*180/Math.PI + 360) % 360; // in degrees
+
+    return bearing
+
+  }
+
+  getBearingRobot(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const lat1Rad = lat1 * Math.PI / 180; // latitud del punto A en radianes
+    const lat2Rad = lat2 * Math.PI / 180; // latitud del punto B en radianes
+    const dLon = (lon2 - lon1) * Math.PI / 180; // diferencia de longitud en radianes
+  
+    const y = Math.sin(dLon) * Math.cos(lat2Rad);
+    const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+  
+    const bearingRad = Math.atan2(y, x); // bearing en radianes
+    const bearingDeg = bearingRad * 180 / Math.PI; // bearing en grados
+  
+    return (bearingDeg + 360) % 360; // ajuste de la dirección a un rango de 0 a 360 grados
+  }
   setSettingsForm() {
 
     this.settingsForm = this.formBuilder.group({

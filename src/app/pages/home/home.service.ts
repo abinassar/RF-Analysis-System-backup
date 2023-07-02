@@ -5,5 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class HomeService {
 
+  showMap: boolean = false;
+
   constructor() { }
 }

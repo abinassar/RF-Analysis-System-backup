@@ -7,14 +7,19 @@ import { IonicModule } from '@ionic/angular';
 import { MapPageRoutingModule } from './map-routing.module';
 
 import { MapPage } from './map.page';
+import { SharedModule } from '@shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    MapPageRoutingModule
+    MapPageRoutingModule,
+    SharedModule
   ],
-  declarations: [MapPage]
+  declarations: [MapPage],
+  exports: [
+    MapPage
+  ]
 })
 export class MapPageModule {}

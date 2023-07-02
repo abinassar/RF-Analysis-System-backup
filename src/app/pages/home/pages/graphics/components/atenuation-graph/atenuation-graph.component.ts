@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 import { LocationService } from '@shared/services';
+import { HomeService } from 'src/app/pages/home/home.service';
 
 @Component({
   selector: 'app-atenuation-graph',
@@ -14,12 +15,20 @@ export class AtenuationGraphComponent implements OnInit {
   atenuationDataY: number[] = [];
   atenuationGraph: boolean = false;
   elevationData: any;
+  showMap: boolean = false;
 
   constructor(private locationService: LocationService,
-              private loadingCtrl: LoadingController) { }
+              private loadingCtrl: LoadingController,
+              private homeService: HomeService) { }
 
   ngOnInit() {
     this.generateAtenuationGraph();
+
+    
+    this.showMap = this.homeService.showMap;
+    this.showMap = true;
+    this.homeService.showMap = true;
+
   }
 
   async generateAtenuationGraph() {

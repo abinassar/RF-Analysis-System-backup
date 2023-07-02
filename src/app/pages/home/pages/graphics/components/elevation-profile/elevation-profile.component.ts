@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { GeoPoint, defaultPoints } from '@shared/models';
 import { AlertService, LocationService, SettingsService } from '@shared/services';
+import { HomeService } from 'src/app/pages/home/home.service';
 
 const SPEED_OF_LIGHT: number = 299792458;
 
@@ -12,7 +13,7 @@ const SPEED_OF_LIGHT: number = 299792458;
   templateUrl: './elevation-profile.component.html',
   styleUrls: ['./elevation-profile.component.scss'],
 })
-export class ElevationProfileComponent implements OnInit {
+export class ElevationProfileComponent implements OnInit, OnDestroy {
 
   initialPoint: GeoPoint;
   finalPoint: GeoPoint;
@@ -58,36 +59,36 @@ export class ElevationProfileComponent implements OnInit {
 
   pointsFraction: number = 1000;
 
-  antennaSettingsObservable = this.settingsService
-                                  .linkSettings$
-                                  .subscribe((settings) => {
-
-      this.anthenaOneHeight = settings.anthenaOneHigh;
-      this.anthenaTwoHeight = settings.anthenaTwoHigh;
-
-  });
-
   settingsForm: FormGroup;
   showForm: boolean = false;
   obstructionSelectedPoints: any[] = [];
-  startObstruction: boolean = false;
+  startUpperObstruction: boolean = false;
+  startLowerObstruction: boolean = false;
+  clearMap: boolean = false;
+  showMap: boolean = false;
+  obstructionFieldPoints: any[] = [];
 
-  constructor(private settingsService: SettingsService,
+  constructor(public settingsService: SettingsService,
               private locationService: LocationService,
               private alertService: AlertService,
-              private loadingCtrl: LoadingController) { }
+              private loadingCtrl: LoadingController,
+              public homeService: HomeService) { }
 
   ngOnInit() {
+    // this.generateElevationGraph();
+    this.homeService.showMap = true;
+  }
+  
+  generateElevationGraph() {
 
-    this.initialPoint = this.settingsService.initialPoint;
-    this.finalPoint = this.settingsService.finalPoint;
-
-    if (this.initialPoint !== defaultPoints
-        && this.finalPoint) {
+    if (this.settingsService.initialPoint !== defaultPoints
+        && this.settingsService.finalPoint) {
 
       this.getElevationProfile();
 
     } else {
+
+      this.elevationGraph = false;
 
       this.alertService
           .presentAlert("Puntos geográficos", 
@@ -95,6 +96,72 @@ export class ElevationProfileComponent implements OnInit {
 
     }
 
+  }
+
+  getBearingRobot(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const lat1Rad = lat1 * Math.PI / 180; // latitud del punto A en radianes
+    const lat2Rad = lat2 * Math.PI / 180; // latitud del punto B en radianes
+    const dLon = (lon2 - lon1) * Math.PI / 180; // diferencia de longitud en radianes
+  
+    const y = Math.sin(dLon) * Math.cos(lat2Rad);
+    const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+  
+    const bearingRad = Math.atan2(y, x); // bearing en radianes
+    const bearingDeg = bearingRad * 180 / Math.PI; // bearing en grados
+  
+    return (bearingDeg + 360) % 360; // ajuste de la dirección a un rango de 0 a 360 grados
+  }
+
+  getDestinationLatLong(lat1: number, lon1: number, bearing: number, distance: number): [number, number] {
+    const R = 6371; // radio de la Tierra en km
+    const d = distance / 1000; // distancia en km
+    const lat1Rad = lat1 * Math.PI / 180; // latitud en radianes
+    const lon1Rad = lon1 * Math.PI / 180; // longitud en radianes
+    const bearingRad = bearing * Math.PI / 180; // dirección en radianes
+  
+    const lat2Rad = Math.asin(Math.sin(lat1Rad) * Math.cos(d/R) + Math.cos(lat1Rad) * Math.sin(d/R) * Math.cos(bearingRad));
+    const lon2Rad = lon1Rad + Math.atan2(Math.sin(bearingRad) * Math.sin(d/R) * Math.cos(lat1Rad), Math.cos(d/R) - Math.sin(lat1Rad) * Math.sin(lat2Rad));
+  
+    const lat2 = lat2Rad * 180 / Math.PI; // latitud en grados
+    const lon2 = lon2Rad * 180 / Math.PI; // longitud en grados
+  
+    return [lat2, lon2];
+  }
+
+  setObstructionPoints() {
+    this.obstructionFieldPoints = [];
+    let bearing = this.getBearingRobot(this.settingsService.initialPoint.lat,
+                                       this.settingsService.initialPoint.lng,
+                                       this.settingsService.finalPoint.lat,
+                                       this.settingsService.finalPoint.lng);
+
+    this.obstructionSelectedPoints.forEach((point) => {
+
+      let finalPointCoordinates = this.getDestinationLatLong(this.settingsService.initialPoint.lat,
+                                                             this.settingsService.initialPoint.lng,
+                                                             bearing,
+                                                             point.distance);
+
+      let obstructionPointCoord = {
+        distance: point.distance,
+        elevation: point.elevation,
+        lat: finalPointCoordinates[0],
+        lng: finalPointCoordinates[1]
+      };
+
+      this.obstructionFieldPoints.push(obstructionPointCoord);
+
+    });
+    
+  }
+  
+  showMapp() {
+    console.log("home service show map ", this.homeService.showMap)
+    console.log("this.obstructionSelectedPoints ", this.obstructionSelectedPoints)
+  }
+
+  deleteMap() {
+    this.clearMap = true;
   }
 
   showObstructions() {
@@ -110,7 +177,7 @@ export class ElevationProfileComponent implements OnInit {
     await loading.present();
 
     this.locationService
-        .getElevationProfile(this.initialPoint, this.finalPoint)
+        .getElevationProfile(this.settingsService.initialPoint, this.settingsService.finalPoint)
         .subscribe((response) => {
 
       console.log("data: ", JSON.stringify(response.elevations))
@@ -171,20 +238,29 @@ export class ElevationProfileComponent implements OnInit {
       // Agregar la altura por defecto de la elevacion de la tierra
       // A la altura de la antena
 
-      this.anthenaOneHeight += this.elevationDataY[0];
-      this.anthenaTwoHeight += this.elevationDataY[this.elevationDataY.length - 1];
+      let antenaOneHeight = this.anthenaOneHeight;
+      let antenaTwoHeight = this.anthenaTwoHeight;
 
-      console.log("this.anthenaOneHeight ", this.anthenaOneHeight)
-      console.log("this.anthenaTwoHeight ", this.anthenaTwoHeight)
+      antenaOneHeight += this.elevationDataY[0];
+      antenaTwoHeight += this.elevationDataY[this.elevationDataY.length - 1];
 
       this.createElipseCurve(this.elevationDataX[0], 
-                            this.anthenaOneHeight, 
+                            antenaOneHeight, 
                             this.elevationDataX[this.elevationData.data[0].x.length - 1], 
-                            this.anthenaTwoHeight,
+                            antenaTwoHeight,
                             this.pointsFraction);
+
+      this.setObstructionPoints();
                                 
       this.elevationGraph = true;
       this.loadingCtrl.dismiss();
+
+    }, (error) => {
+      
+      this.loadingCtrl.dismiss();
+      this.alertService
+          .presentAlert("Error", 
+                        "Ha ocurrido un error obteniendo la informacion, más tarde");
 
     })
 
@@ -504,12 +580,22 @@ export class ElevationProfileComponent implements OnInit {
 
       if (elevationProfilePointY >= fresnelDataY[indexOfPositionX]) {
 
-        if (!this.startObstruction) {
-          this.startObstruction = true;
-           this.obstructionSelectedPoints.push({
-            x: fresnelDataX[indexOfPositionX],
-            y: fresnelDataX[indexOfPositionX]
-           });
+        if (!this.startUpperObstruction) {
+
+          this.startUpperObstruction = true;
+
+          // I check that the point does not exist so as not to add again
+
+          let pointExist = this.obstructionSelectedPoints.findIndex((point) => {
+            return point.distance === fresnelDataX[indexOfPositionX]
+          });
+
+          if (pointExist === -1) {
+            this.obstructionSelectedPoints.push({
+              distance: fresnelDataX[indexOfPositionX],
+              elevation: fresnelDataY[indexOfPositionX]
+            });
+          }
         }
 
         this.obstructionPointsX.push(fresnelDataX[indexOfPositionX]);
@@ -517,7 +603,7 @@ export class ElevationProfileComponent implements OnInit {
 
       } else {
 
-        this.startObstruction = false;
+        this.startUpperObstruction = false;
 
       }
 
@@ -528,11 +614,32 @@ export class ElevationProfileComponent implements OnInit {
 
       if (elevationProfilePointY >= fresnelInvertedDataY[indexOfPositionInvertedX]) {
 
+        if (!this.startLowerObstruction) {
+
+          this.startLowerObstruction = true;
+
+          // I check that the point does not exist so as not to add again
+
+          let pointExist = this.obstructionSelectedPoints.findIndex((point) => {
+            return point.distance === fresnelInvertedDataX[indexOfPositionX]
+          });
+
+          if (pointExist === -1) {
+            this.obstructionSelectedPoints.push({
+              distance: fresnelInvertedDataX[indexOfPositionX],
+              elevation: fresnelInvertedDataY[indexOfPositionX]
+            });
+          }
+
+        }
+
         console.log("indexOfPositionInvertedX ", indexOfPositionInvertedX)
         
         this.obstructionPointsInvertedX.push(fresnelInvertedDataX[indexOfPositionInvertedX]);
         this.obstructionPointsInvertedY.push(fresnelInvertedDataY[indexOfPositionInvertedX]);
 
+      } else {
+        this.startLowerObstruction = true;
       }
 
     });
@@ -587,6 +694,11 @@ export class ElevationProfileComponent implements OnInit {
 
   fresnelRadio(lambda: number, d1: number, d2: number): number {
     return Math.sqrt((lambda*d1*d2)/(d1 + d2));
+  }
+
+  ngOnDestroy(): void {
+    // console.log("deleting map")
+      // this.deleteMap();
   }
 
 }

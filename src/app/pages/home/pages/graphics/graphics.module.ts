@@ -10,6 +10,8 @@ import { GraphicsPageRoutingModule } from './graphics-routing.module';
 import { ElevationProfileComponent,
          AtenuationWaterVaporGraphComponent,
          AtenuationGraphComponent } from './components';
+import { MapPageModule } from '../map/map.module';
+import { SharedModule } from '@shared/shared.module';
 PlotlyModule.plotlyjs = PlotlyJS;
 
 @NgModule({
@@ -19,13 +21,15 @@ PlotlyModule.plotlyjs = PlotlyJS;
     FormsModule,
     PlotlyModule,
     GraphicsPageRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MapPageModule,
+    SharedModule
   ],
   declarations: [
     GraphicsPage,
     ElevationProfileComponent,
     AtenuationGraphComponent,
-    AtenuationWaterVaporGraphComponent
+    AtenuationWaterVaporGraphComponent,
   ]
 })
 export class GraphicsPageModule {}

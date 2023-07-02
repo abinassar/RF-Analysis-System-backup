@@ -168,17 +168,30 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
     console.log("this.obstructionSelectedPoints ", this.obstructionSelectedPoints)
   }
 
+  resetElevationData() {
+    this.elevationDataX = [];
+    this.elevationDataY = [];
+    this.elevationData.data = [];
+  }
+
   async getElevationProfile() {
 
     const loading = await this.loadingCtrl.create({
       message: 'Cargando perfil de elevación...'
     });
-
+    
     await loading.present();
 
     this.locationService
         .getElevationProfile(this.settingsService.initialPoint, this.settingsService.finalPoint)
         .subscribe((response) => {
+
+      // Reset the elevation points
+      // data arrays
+
+      this.elevationDataX = [];
+      this.elevationDataY = [];
+      this.obstructionSelectedPoints = [];
 
       console.log("data: ", JSON.stringify(response.elevations))
 

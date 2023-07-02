@@ -68,24 +68,42 @@
     Generar Gráfica
   </ion-button>
 
-  <ion-button (click)="showMapp()">
-    show points
-  </ion-button>
-
   <ion-card class="ion-padding">
 
-    <ng-container *ngIf="elevationGraph"
+    <ng-container *ngIf="elevationGraph; else noElevationGraphic"
                   class="graph-container">
-  
+      
       <plotly-plot [data]="elevationData.data" [layout]="elevationData.layout" [useResizeHandler]="true"
         [style]="{position: 'relative', width: '100%', height: '100%'}">
       </plotly-plot>
-      
+
     </ng-container>
+    <ng-template #noElevationGraphic>
+
+      <ion-card-subtitle>Generar gráfica</ion-card-subtitle>
+      <ion-card-title>Procedimiento:</ion-card-title>
+
+      <ion-card-content>
+        <ul>
+          <li>
+            <p class="fs-20">
+              1.- Selecciona los dos puntos en el mapa donde quieres graficar el
+              perfil de elevación.
+            </p>
+          </li>
+          <li>
+            <p class="fs-20">
+              2.- Seleccionados los puntos, presiona el botón "Generar gráfica"
+              para obtener mostrar el gráfico.
+            </p>
+          </li>
+        </ul>
+      </ion-card-content>      
+    </ng-template>
 
   </ion-card>
 
-  <ion-card>
+  <ion-card *ngIf="elevationGraph">
     <ion-card-header>
       <ion-card-title>Puntos de obstrucción:</ion-card-title>
     </ion-card-header>
@@ -97,27 +115,12 @@
           <h3>
             <ion-badge slot="start">N°{{i + 1}}:</ion-badge>
             <span>
-              Distancia: {{obstructionPoint.distance}} - Lat: {{obstructionPoint.lat}} - Lng: {{obstructionPoint.lng}}
+              Distancia: {{obstructionPoint.distance}} Km (aprox.) ; Lat: {{obstructionPoint.lat}} - Lng: {{obstructionPoint.lng}}
             </span>
           </h3>
         </ion-col>
       </ion-row>
     </ion-grid>
   </ion-card>
-
-  <!-- <ion-grid class="ion-padding">
-
-    <ion-row>
-      <h2>
-        Puntos de obstrucción:
-      </h2>
-    </ion-row>
-
-    <ion-row *ngFor="let point of obstructionSelectedPoints; let i=index">
-
-      {{point.x}} Km
-
-    </ion-row>
-  </ion-grid> -->
 
 </ion-content>

@@ -161,6 +161,17 @@ export class GlobalMapComponent implements OnDestroy {
   ngOnInit() {
 
     this.initMap();
+
+    // Check if there points of connection
+
+    if (this.settingsService.initialPoint.lat !== 0) {
+      this.addMarker(this.settingsService.initialPoint);
+    }
+
+    if (this.settingsService.finalPoint.lat !== 0) {
+      this.addMarker(this.settingsService.finalPoint);
+    }
+
   }
 
   async presentActionSheet(lat: number, long: number, e) {
@@ -172,7 +183,13 @@ export class GlobalMapComponent implements OnDestroy {
           text: 'Colocar marcador en: ' + lat + ", " + long,
           icon: 'location-outline',
           handler: () => {
-            this.addMarker(e);
+
+            let point: GeoPoint = {
+              lat: e.latlng.lat,
+              lng: e.latlng.lng
+            }
+
+            this.addMarker(point);
           }
         },
       ],
@@ -192,7 +209,7 @@ export class GlobalMapComponent implements OnDestroy {
     this.menu.open('first');
   }
 
-  addMarker(event) {
+  addMarker(point: GeoPoint) {
 
     if (this.markersArray.length === 2) {
 
@@ -211,7 +228,7 @@ export class GlobalMapComponent implements OnDestroy {
       
     }
 
-    let marker = Leaflet.marker([event.latlng.lat, event.latlng.lng], {icon: this.greenIcon}).addTo(this.map);
+    let marker = Leaflet.marker([point.lat, point.lng], {icon: this.greenIcon}).addTo(this.map);
     this.markersArray.push(marker);
 
     // Leaflet.marker([event.latlng.lat, event.latlng.lng],  {icon: this.greenIcon}).addTo(this.map).bindPopup('Hello').openPopup();
@@ -240,8 +257,8 @@ export class GlobalMapComponent implements OnDestroy {
     markers.forEach((marker, index) => {
 
       let point: GeoPoint = {
-        lat: marker.getLatLng().lat,
-        lng: marker.getLatLng().lng
+        lat: Number(marker.getLatLng().lat.toString().substring(0, 10)),
+        lng: Number(marker.getLatLng().lng.toString().substring(0, 11))
       }
 
       // Update point in the properties

@@ -9,12 +9,15 @@ import { ElevationData, LocationWeather } from '../models';
 })
 export class LocationService {
 
+  // uri: string = 'http://127.0.0.1:5000';
+  uri: string = 'http://abinassar.pythonanywhere.com';
+
   constructor(private dataService: DataService) { }
 
   getElevationProfile(startPoint, endPoint): Observable<ElevationData> {
     console.log("startPoint ", startPoint)
     console.log("endPoint ", endPoint)
-    return this.dataService.post("http://127.0.0.1:5000/elevation_profile", {
+    return this.dataService.post(this.uri + "/elevation_profile", {
       "start_point": startPoint,
       "end_point": endPoint
     })
@@ -23,7 +26,7 @@ export class LocationService {
   getWaterVaporAtenuation(pressure: number, 
                           temperature: number,
                           waterDensity: number) {
-    return this.dataService.post("http://127.0.0.1:5000/get_atmospheric_atenuation_water_vapor", {
+    return this.dataService.post(this.uri + "/get_atmospheric_atenuation_water_vapor", {
       pressure,
       temperature,
       waterDensity
@@ -31,7 +34,7 @@ export class LocationService {
   }
 
   getAtenuation(pressure: number, temperature: number) {
-    return this.dataService.post("http://127.0.0.1:5000/get_atmospheric_atenuation", {
+    return this.dataService.post(this.uri + "/get_atmospheric_atenuation", {
       pressure,
       temperature
     })

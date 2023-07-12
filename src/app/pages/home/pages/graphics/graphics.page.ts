@@ -32,7 +32,7 @@ export class GraphicsPage {
   showForm: boolean = false;
   frecuency: number = 40;
   frecuencyUnit: frecuencyUnit = frecuencyUnit.GHZ;
-  frecuencies: frecuencyUnit[] = [
+  frecuenciesUnits: frecuencyUnit[] = [
     frecuencyUnit.HZ,
     frecuencyUnit.MHZ,
     frecuencyUnit.GHZ

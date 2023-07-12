@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
-import { LocationService } from '@shared/services';
+import { frecuencyUnit } from '@shared/models';
+import { LocationService, SettingsService } from '@shared/services';
 
 @Component({
   selector: 'app-atenuation-water-vapor-graph',
@@ -14,9 +16,19 @@ export class AtenuationWaterVaporGraphComponent implements OnInit {
   atenuationDataY: number[] = [];
   atenuationGraph: boolean = false;
   elevationData: any;
+  frecuenciesUnits: frecuencyUnit[] = [
+    frecuencyUnit.HZ,
+    frecuencyUnit.MHZ,
+    frecuencyUnit.GHZ
+  ];
+  atenuationForm: FormGroup;
+  showForm: boolean = false;
+  atenuationByFrecuency: number = 0;
 
   constructor(private locationService: LocationService,
-              private loadingCtrl: LoadingController) { }
+              private loadingCtrl: LoadingController,
+              private formBuilder: FormBuilder,
+              public settingsService: SettingsService) { }
 
   ngOnInit() {
     this.generateAtenuationGraph();
@@ -78,6 +90,56 @@ export class AtenuationWaterVaporGraphComponent implements OnInit {
 
         })
 
+  }
+
+  ionViewDidEnter() {
+
+    this.setAtenuationForm();
+
+  }
+
+  setAtenuationForm() {
+    this.atenuationForm = this.formBuilder.group({
+      frecuency: this.formBuilder.control(null, Validators.required),
+      frecuencyUnit: this.formBuilder.control(frecuencyUnit.HZ, Validators.required),
+    });
+    this.showForm = true;
+  }
+
+  // Convert the frecuency selected to GHZ unity
+
+  calcFrecuency(frecuency: number, unit: frecuencyUnit): number {
+
+    let frecuencyResult = frecuency;
+
+    if (unit === frecuencyUnit.MHZ) {
+      frecuencyResult = frecuencyResult / 1000;
+    } else if (unit === frecuencyUnit.HZ) {
+      frecuencyResult = frecuencyResult / 1000000000;
+    }
+
+    return frecuencyResult;
+
+  }
+
+  getAtenuation() {
+
+    if (this.atenuationForm.valid) {
+
+      let frecuency = this.calcFrecuency(this.atenuationForm.get("frecuency").value, 
+                                         this.atenuationForm.get("frecuencyUnit").value);
+      
+      this.locationService
+          .getSpecificAtenuation(this.settingsService.atmosphericPressure, 
+                                 this.settingsService.temperature,
+                                 frecuency)
+          .subscribe((response) => {
+            this.atenuationByFrecuency = response.atenuationValue;
+          })
+
+    } else {
+      console.log("No valido")
+    }
   }
 
 }

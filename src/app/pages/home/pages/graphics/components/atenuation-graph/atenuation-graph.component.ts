@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController, ModalController } from '@ionic/angular';
-import { OptionsModalComponent } from '@shared/components/options-modal/options-modal.component';
-import { defaultPoints } from '@shared/models';
+import { defaultPoints, frecuencyUnit } from '@shared/models';
 import { AlertService, LocationService, SettingsService } from '@shared/services';
 import { HomeService } from 'src/app/pages/home/home.service';
 
@@ -18,13 +18,22 @@ export class AtenuationGraphComponent implements OnInit {
   atenuationGraph: boolean = false;
   elevationData: any;
   showMap: boolean = false;
+  frecuenciesUnits: frecuencyUnit[] = [
+    frecuencyUnit.HZ,
+    frecuencyUnit.MHZ,
+    frecuencyUnit.GHZ
+  ];
+  atenuationForm: FormGroup;
+  showForm: boolean = false;
+  atenuationByFrecuency: number = 0;
 
   constructor(private locationService: LocationService,
               private loadingCtrl: LoadingController,
               public homeService: HomeService,
               private settingsSetting: SettingsService,
               private alertService: AlertService,
-              public settingsService: SettingsService) { }
+              public settingsService: SettingsService,
+              private formBuilder: FormBuilder) { }
 
   ngOnInit() {
 
@@ -32,12 +41,56 @@ export class AtenuationGraphComponent implements OnInit {
 
     this.getLocationData();
 
-    // this.generateAtenuationGraph();
+  }
 
-    // this.showMap = this.homeService.showMap;
-    // this.showMap = true;
-    // this.homeService.showMap = true;
+  ionViewDidEnter() {
 
+    this.setAtenuationForm();
+
+  }
+
+  setAtenuationForm() {
+    this.atenuationForm = this.formBuilder.group({
+      frecuency: this.formBuilder.control(null, Validators.required),
+      frecuencyUnit: this.formBuilder.control(frecuencyUnit.HZ, Validators.required),
+    });
+    this.showForm = true;
+  }
+
+  // Convert the frecuency selected to GHZ unity
+
+  calcFrecuency(frecuency: number, unit: frecuencyUnit): number {
+
+    let frecuencyResult = frecuency;
+
+    if (unit === frecuencyUnit.MHZ) {
+      frecuencyResult = frecuencyResult / 1000;
+    } else if (unit === frecuencyUnit.HZ) {
+      frecuencyResult = frecuencyResult / 1000000000;
+    }
+
+    return frecuencyResult;
+
+  }
+
+  getAtenuation() {
+
+    if (this.atenuationForm.valid) {
+
+      let frecuency = this.calcFrecuency(this.atenuationForm.get("frecuency").value, 
+                                         this.atenuationForm.get("frecuencyUnit").value);
+      
+      this.locationService
+          .getSpecificAtenuation(this.settingsService.atmosphericPressure, 
+                                 this.settingsService.temperature,
+                                 frecuency)
+          .subscribe((response) => {
+            this.atenuationByFrecuency = response.atenuationValue;
+          })
+
+    } else {
+      console.log("No valido")
+    }
   }
 
   async getLocationData() {

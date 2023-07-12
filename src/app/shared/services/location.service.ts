@@ -9,8 +9,8 @@ import { ElevationData, LocationWeather } from '../models';
 })
 export class LocationService {
 
-  // uri: string = 'http://127.0.0.1:5000';
-  uri: string = 'http://abinassar.pythonanywhere.com';
+  uri: string = 'http://127.0.0.1:5000';
+  // uri: string = 'http://abinassar.pythonanywhere.com';
 
   constructor(private dataService: DataService) { }
 
@@ -33,10 +33,32 @@ export class LocationService {
     })
   }
 
+  getSpecificWaterVaporAtenuation(pressure: number, 
+                                  temperature: number,
+                                  waterDensity: number,
+                                  frecuency: number) {
+    return this.dataService.post(this.uri + "/get_specific_atmospheric_atenuation_water_vapor", {
+      pressure,
+      temperature,
+      waterDensity,
+      frecuency
+    })
+  }
+
   getAtenuation(pressure: number, temperature: number) {
     return this.dataService.post(this.uri + "/get_atmospheric_atenuation", {
       pressure,
       temperature
+    })
+  }
+
+  getSpecificAtenuation(pressure: number, 
+                        temperature: number, 
+                        frecuency: number) {
+    return this.dataService.post(this.uri + "/get_specific_atmospheric_atenuation", {
+      pressure,
+      temperature,
+      frecuency
     })
   }
 

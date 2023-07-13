@@ -37,7 +37,8 @@
   <ion-button (click)="getLocationData()">
     Obtener datos atmosféricos
   </ion-button>
-  <ion-card>
+  <ion-card [formGroup]="atmosphericForm"
+            *ngIf="showForm">
     <ion-card-header>
       <ion-card-title>Información atmosférica:</ion-card-title>
     </ion-card-header>
@@ -55,22 +56,44 @@
       </ion-row>
   
       <ion-row class="ion-padding pt-0px">
-        <ion-col>
+        <ion-col class="vertical-center">
           <h3>
             <ion-badge slot="start">Presión atmosférica:</ion-badge>
-            
-            <span>
-              {{settingsService.atmosphericPressure}} (hPa)
-            </span>
           </h3>
+          <ion-item>
+            <ion-input fill="outline"
+                        label="Presión atmosférica"
+                        labelPlacement="floating" 
+                        placeholder="Ingresa valor" 
+                        type="number"
+                        formControlName="atmosphericPressure"></ion-input>
+
+            <div *ngIf="atmosphericForm.get('atmosphericPressure').invalid && atmosphericForm.get('atmosphericPressure').touched" 
+                 slot="error">Debe ingresar un valor para la presión atmosférica.</div>
+          </ion-item>
+          <span>
+            (hPa)
+          </span>
         </ion-col>
-        <ion-col>
+        <ion-col class="vertical-center">
           <h3>
             <ion-badge slot="start">Temperatura:</ion-badge>
-            <span>
-              {{settingsService.temperature}} (C°)
-            </span>
           </h3>
+          <ion-item>
+            <ion-input fill="outline"
+                        label="Temperatura"
+                        labelPlacement="floating" 
+                        placeholder="Ingresa temperatura" 
+                        type="number"
+                        formControlName="temperature"></ion-input>
+
+            <div *ngIf="atmosphericForm.get('temperature').invalid && atmosphericForm.get('temperature').touched" 
+                 slot="error">Debe ingresar un valor de temperatura.</div>
+
+          </ion-item>
+          <span>
+            (C°)
+          </span>
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -78,7 +101,7 @@
 
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Obtener atenuacion en frecuencia dada</ion-card-title>
+      <ion-card-title>Obtener atenuación en una frecuencia</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
@@ -93,6 +116,10 @@
                          placeholder="Ingresa frecuencia" 
                          type="number"
                          formControlName="frecuency"></ion-input>
+            <div *ngIf="atenuationForm.get('frecuency').invalid && atenuationForm.get('frecuency').touched" 
+                 slot="error">Debe ingresar un valor de frecuencia.</div>
+
+
             </ion-item>
           </ion-col>
           <ion-col size="4">
@@ -105,17 +132,17 @@
             </ion-select>
           </ion-col>
         </ion-row>
-        <ion-row>
+        <ion-row class="ion-justify-content-center ion-align-self-center">
           <ion-col>
             <ion-button (click)="getAtenuation()">
-              Obtener atenuacion
+              Obtener atenuación
             </ion-button>
           </ion-col>
 
-          <ion-col>
-            <h3>
+          <ion-col class="center-container">
+            <h2>
               {{atenuationByFrecuency}} - (dB)
-            </h3>
+            </h2>
           </ion-col>
 
         </ion-row>
@@ -153,10 +180,14 @@
             <li>
               <p class="fs-20">
                 2.- Seleccionados los puntos, presiona el botón "Generar gráfica"
-                para obtener mostrar el gráfico.
+                para obtener mostrar el gráfico de atenuacion.
               </p>
             </li>
           </ul>
+          <strong>
+            Nota: Para obtener la atenuacion en una frecuencia especifica es necesario
+            obtener la informacion de presion atmosferica y temperatura.
+          </strong>
         </ion-card-content>      
       </ion-card>
 

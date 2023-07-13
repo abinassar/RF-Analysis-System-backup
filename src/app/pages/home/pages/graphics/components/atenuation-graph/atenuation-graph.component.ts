@@ -24,6 +24,7 @@ export class AtenuationGraphComponent implements OnInit {
     frecuencyUnit.GHZ
   ];
   atenuationForm: FormGroup;
+  atmosphericForm: FormGroup;
   showForm: boolean = false;
   atenuationByFrecuency: number = 0;
 
@@ -45,16 +46,29 @@ export class AtenuationGraphComponent implements OnInit {
 
   ionViewDidEnter() {
 
-    this.setAtenuationForm();
+    this.setForms();
 
   }
 
-  setAtenuationForm() {
+  setForms() {
+
     this.atenuationForm = this.formBuilder.group({
       frecuency: this.formBuilder.control(null, Validators.required),
       frecuencyUnit: this.formBuilder.control(frecuencyUnit.HZ, Validators.required),
     });
+
+    this.atmosphericForm = this.formBuilder.group({
+      atmosphericPressure: this.formBuilder.control(null, Validators.required),
+      temperature: this.formBuilder.control(null, Validators.required)
+    });
+
     this.showForm = true;
+
+  }
+
+  showForms() {
+    console.log("atmosphericForm ", this.atmosphericForm)
+    console.log("atenuationForm ", this.atenuationForm)
   }
 
   // Convert the frecuency selected to GHZ unity
@@ -75,7 +89,8 @@ export class AtenuationGraphComponent implements OnInit {
 
   getAtenuation() {
 
-    if (this.atenuationForm.valid) {
+    if (this.atenuationForm.valid
+        && this.atmosphericForm.valid) {
 
       let frecuency = this.calcFrecuency(this.atenuationForm.get("frecuency").value, 
                                          this.atenuationForm.get("frecuencyUnit").value);
@@ -89,7 +104,8 @@ export class AtenuationGraphComponent implements OnInit {
           })
 
     } else {
-      console.log("No valido")
+      this.atmosphericForm.markAllAsTouched();
+      this.atenuationForm.markAllAsTouched();
     }
   }
 
@@ -135,6 +151,8 @@ export class AtenuationGraphComponent implements OnInit {
             this.settingsService.locationName = response.name;
             this.settingsService.temperature = response.main.temp - 273.15;
             this.settingsService.atmosphericPressure = response.main.pressure;
+            this.atmosphericForm.get("temperature").setValue(this.settingsService.temperature);
+            this.atmosphericForm.get("atmosphericPressure").setValue(this.settingsService.atmosphericPressure);
 
             loadingAtmosData.dismiss();
             

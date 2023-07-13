@@ -8,3 +8,18 @@
         border-radius: 5px;
     }
 }
+
+.center-container {
+    display: flex;
+    align-items: center;
+}
+
+.vertical-center {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.mh-10px {
+    margin: 0 10px;
+}

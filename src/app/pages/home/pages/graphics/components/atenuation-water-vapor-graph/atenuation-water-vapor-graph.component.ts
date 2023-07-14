@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
-import { frecuencyUnit } from '@shared/models';
-import { LocationService, SettingsService } from '@shared/services';
+import { defaultPoints, frecuencyUnit } from '@shared/models';
+import { AlertService, LocationService, SettingsService } from '@shared/services';
+import { HomeService } from 'src/app/pages/home/home.service';
 
 @Component({
   selector: 'app-atenuation-water-vapor-graph',
@@ -22,80 +23,137 @@ export class AtenuationWaterVaporGraphComponent implements OnInit {
     frecuencyUnit.GHZ
   ];
   atenuationForm: FormGroup;
+  atmosphericForm: FormGroup;
   showForm: boolean = false;
   atenuationByFrecuency: number = 0;
 
   constructor(private locationService: LocationService,
               private loadingCtrl: LoadingController,
               private formBuilder: FormBuilder,
-              public settingsService: SettingsService) { }
+              public settingsService: SettingsService,
+              public homeService: HomeService,
+              private alertService: AlertService) { }
 
   ngOnInit() {
-    this.generateAtenuationGraph();
+    this.homeService.showMap = true;
+
+    this.getLocationData();
+  }
+
+  ionViewDidEnter() {
+
+    this.setForms();
+
+  }
+
+  setForms() {
+
+    this.atenuationForm = this.formBuilder.group({
+      frecuency: this.formBuilder.control(null, Validators.required),
+      frecuencyUnit: this.formBuilder.control(frecuencyUnit.HZ, Validators.required),
+    });
+
+    this.atmosphericForm = this.formBuilder.group({
+      atmosphericPressure: this.formBuilder.control(null, Validators.required),
+      temperature: this.formBuilder.control(null, Validators.required),
+      waterDensity: this.formBuilder.control(null, Validators.required)
+    });
+
+    this.showForm = true;
+
+  }
+
+  async getLocationData() {
+
+    if (this.settingsService.initialPoint !== defaultPoints) {
+
+      this.generateAtenuationGraph();
+
+    } else {
+
+      this.atenuationGraph = false;
+
+      this.alertService
+          .presentAlert("Gráfica de atenuación", 
+                        "Por favor selecciona al menos un punto en el mapa para mostrar la gráfica");
+
+    }
+
   }
 
   async generateAtenuationGraph() {
 
+    if (this.settingsService.initialPoint.lat === 0
+      && this.settingsService.finalPoint.lat === 0) {
+    
+  } else {
+
     const loading = await this.loadingCtrl.create({
-      message: 'Cargando gráfico...'
+      message: 'Obteniendo datos atmosféricos...'
     });
 
     await loading.present();
 
     this.locationService
-        .getWaterVaporAtenuation(1013, 15, 7.5)
-        .subscribe((response) => {
+          .getLocationData(this.settingsService.initialPoint.lat.toString(),
+                            this.settingsService.initialPoint.lng.toString())
+          .subscribe((response) => {
 
-          let atenuationPoints = response.atenuationsPoints;
+            // Convert temperature from kelvin unity to centigrade unity
 
-          for (let index = 0; index < atenuationPoints.length; index++) {
-            this.atenuationDataY.push(atenuationPoints[index].atenuation);
-            this.atenuationDataX.push(atenuationPoints[index].frecuency)
-          }
+            this.settingsService.locationName = response.name;
+            this.settingsService.temperature = response.main.temp - 273.15;
+            this.settingsService.atmosphericPressure = response.main.pressure;
+            this.settingsService.waterDensity = 7.5;
+            this.atmosphericForm.get("temperature").setValue(this.settingsService.temperature);
+            this.atmosphericForm.get("atmosphericPressure").setValue(this.settingsService.atmosphericPressure);
+            this.atmosphericForm.get("waterDensity").setValue(7.5);
 
-          console.log("atenuationDataX ", this.atenuationDataX)
-          console.log("atenuationDataY ", this.atenuationDataY)
-          console.log("this.atenuationDataY ", this.atenuationDataY.length)
-
-          this.elevationData = {
-            data: [
-              { x: this.atenuationDataX,
-                y: this.atenuationDataY,
-                mode: 'lines+markers', // El modo de la serie de datos es "lines" y "markers"
-                line: {              // Establecemos la configuracion de la linea
-                  shape: 'spline', // Configuramos la forma como "spline"
-                  color: '#7f7f7f', // Establecemos el color de la linea
-                  width: 1,
-                  opacity: 0.5
-                }
-              },
-            ],
-            layout: { 
-              title: 'Atenuación por Vapor de Agua',
-              yaxis: {
-                // showline: false,
-                // showgrid: false,
-                type: 'log'
-              },
-              xaxis: {
-                // showline: false,
-                // showgrid: false,
-                type: 'log'
-              }
-            }
-          };
-
-          this.atenuationGraph = true;
-          this.loadingCtrl.dismiss();
-
-        })
-
-  }
-
-  ionViewDidEnter() {
-
-    this.setAtenuationForm();
-
+            this.locationService
+                .getWaterVaporAtenuation(response.main.pressure, response.main.temp, 7.5)
+                .subscribe((response) => {
+        
+                  let atenuationPoints = response.atenuationsPoints;
+        
+                  for (let index = 0; index < atenuationPoints.length; index++) {
+                    this.atenuationDataY.push(atenuationPoints[index].atenuation);
+                    this.atenuationDataX.push(atenuationPoints[index].frecuency)
+                  }
+                
+                  this.elevationData = {
+                    data: [
+                      { x: this.atenuationDataX,
+                        y: this.atenuationDataY,
+                        mode: 'lines+markers', // El modo de la serie de datos es "lines" y "markers"
+                        line: {              // Establecemos la configuracion de la linea
+                          shape: 'spline', // Configuramos la forma como "spline"
+                          color: '#7f7f7f', // Establecemos el color de la linea
+                          width: 1,
+                          opacity: 0.5
+                        }
+                      },
+                    ],
+                    layout: { 
+                      title: 'Atenuación por Vapor de Agua',
+                      yaxis: {
+                        // showline: false,
+                        // showgrid: false,
+                        type: 'log'
+                      },
+                      xaxis: {
+                        // showline: false,
+                        // showgrid: false,
+                        type: 'log'
+                      }
+                    }
+                  };
+        
+                  this.atenuationGraph = true;
+                  this.loadingCtrl.dismiss();
+        
+                })
+          })
+    }
   }
 
   setAtenuationForm() {
@@ -124,7 +182,8 @@ export class AtenuationWaterVaporGraphComponent implements OnInit {
 
   getAtenuation() {
 
-    if (this.atenuationForm.valid) {
+    if (this.atenuationForm.valid
+        && this.atmosphericForm.valid) {
 
       let frecuency = this.calcFrecuency(this.atenuationForm.get("frecuency").value, 
                                          this.atenuationForm.get("frecuencyUnit").value);
@@ -138,7 +197,8 @@ export class AtenuationWaterVaporGraphComponent implements OnInit {
           })
 
     } else {
-      console.log("No valido")
+      this.atmosphericForm.markAllAsTouched();
+      this.atenuationForm.markAllAsTouched();
     }
   }
 

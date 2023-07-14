@@ -9,24 +9,116 @@
 
 <ion-content [fullscreen]="true"
              class="ion-padding">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <div *ngIf="atenuationGraph">
+  <ion-card>
+    <img src="../../../../../../../assets/images/desert.png" />
+    <ion-card-header>
+      <ion-card-subtitle>Atenuación debido a vapor de agua</ion-card-subtitle>
+      <ion-card-title>Enlaces de microondas</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      La atenuación debido a vapor de agua ....
+    </ion-card-content>
+  </ion-card>
 
-      <plotly-plot [data]="elevationData.data"
-                   [layout]="elevationData.layout"
-                   [useResizeHandler]="true"
-                   [style]="{position: 'relative', width: '100%', height: '100%'}">
-      </plotly-plot>
-  </div>
+  <ion-row class="cellphone-width justify-content-center align-items-center">
+    <ion-col>
+      <app-global-map class="map-container" 
+                      *ngIf="homeService.showMap"></app-global-map>
+    </ion-col>
+  </ion-row>
+
+  <ion-button (click)="getLocationData()">
+    Obtener datos atmosféricos
+  </ion-button>
+  <ion-card [formGroup]="atmosphericForm"
+            *ngIf="showForm">
+    <ion-card-header>
+      <ion-card-title>Información atmosférica:</ion-card-title>
+    </ion-card-header>
+    <ion-grid>
+
+      <ion-row class="ion-padding pt-0px">
+        <ion-col>
+          <h3>
+            <ion-badge slot="start">Locación:</ion-badge>
+            <span>
+              {{settingsService.locationName}}
+            </span>
+          </h3>
+        </ion-col>
+      </ion-row>
+  
+      <ion-row class="ion-padding pt-0px">
+        <ion-col class="vertical-center">
+          <h3>
+            <ion-badge slot="start">Presión atmosférica:</ion-badge>
+          </h3>
+          <ion-item>
+            <ion-input fill="outline"
+                        label="Presión atmosférica"
+                        labelPlacement="floating" 
+                        placeholder="Ingresa valor" 
+                        type="number"
+                        formControlName="atmosphericPressure"></ion-input>
+
+            <div *ngIf="atmosphericForm.get('atmosphericPressure').invalid && atmosphericForm.get('atmosphericPressure').touched" 
+                 slot="error">Debe ingresar un valor para la presión atmosférica.</div>
+          </ion-item>
+          <span>
+            (hPa)
+          </span>
+        </ion-col>
+        <ion-col class="vertical-center">
+          <h3>
+            <ion-badge slot="start">Temperatura:</ion-badge>
+          </h3>
+          <ion-item>
+            <ion-input fill="outline"
+                        label="Temperatura"
+                        labelPlacement="floating" 
+                        placeholder="Ingresa temperatura" 
+                        type="number"
+                        formControlName="temperature"></ion-input>
+
+            <div *ngIf="atmosphericForm.get('temperature').invalid && atmosphericForm.get('temperature').touched" 
+                 slot="error">Debe ingresar un valor de temperatura.</div>
+
+          </ion-item>
+          <span>
+            (C°)
+          </span>
+        </ion-col>
+      </ion-row>
+      <ion-row  class="ion-padding pt-0px">
+        <ion-col class="vertical-center">
+          <h3>
+            <ion-badge slot="start">Densidad del agua:</ion-badge>
+          </h3>
+          <ion-item>
+            <ion-input fill="outline"
+                        label="Densidad del agua"
+                        labelPlacement="floating" 
+                        placeholder="Ingresa valor" 
+                        type="number"
+                        formControlName="waterDensity"></ion-input>
+
+            <div *ngIf="atmosphericForm.get('waterDensity').invalid && atmosphericForm.get('waterDensity').touched" 
+                 slot="error">Debe ingresar un valor de densidad.</div>
+
+          </ion-item>
+          <span>
+            (C°)
+          </span>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </ion-card>
 
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Obtener atenuacion en frecuencia dada</ion-card-title>
+      <ion-card-title>Obtener atenuación en una frecuencia</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
@@ -41,6 +133,9 @@
                          placeholder="Ingresa frecuencia" 
                          type="number"
                          formControlName="frecuency"></ion-input>
+            <div *ngIf="atenuationForm.get('frecuency').invalid && atenuationForm.get('frecuency').touched" 
+                 slot="error">Debe ingresar un valor de frecuencia.</div>
+
             </ion-item>
           </ion-col>
           <ion-col size="4">
@@ -53,17 +148,17 @@
             </ion-select>
           </ion-col>
         </ion-row>
-        <ion-row>
+        <ion-row class="ion-justify-content-center ion-align-self-center">
           <ion-col>
             <ion-button (click)="getAtenuation()">
-              Obtener atenuacion
+              Obtener atenuación
             </ion-button>
           </ion-col>
 
-          <ion-col>
-            <h3>
+          <ion-col class="center-container">
+            <h2>
               {{atenuationByFrecuency}} - (dB)
-            </h3>
+            </h2>
           </ion-col>
 
         </ion-row>
@@ -72,5 +167,46 @@
 
     </ion-card-content>
   </ion-card>
+
+  <ng-container *ngIf="atenuationGraph; else noAtenuationGraphic"
+                class="graph-container">
+    
+    <plotly-plot [data]="elevationData.data"
+                  [layout]="elevationData.layout"
+                  [useResizeHandler]="true"
+                  [style]="{position: 'relative', width: '100%', height: '100%'}">
+    </plotly-plot>
+
+  </ng-container>
+
+  <ng-template #noAtenuationGraphic>
+
+    <ion-card class="ion-padding">
+      <ion-card-subtitle>Generar gráfica</ion-card-subtitle>
+      <ion-card-title>Procedimiento:</ion-card-title>
+
+      <ion-card-content>
+        <ul>
+          <li>
+            <p class="fs-20">
+              1.- Selecciona los dos puntos en el mapa donde quieres graficar el
+              perfil de elevación.
+            </p>
+          </li>
+          <li>
+            <p class="fs-20">
+              2.- Seleccionados los puntos, presiona el botón "Generar gráfica"
+              para obtener mostrar el gráfico de atenuación.
+            </p>
+          </li>
+        </ul>
+        <strong>
+          Nota: Para obtener la atenuación en una frecuencia específica es necesario
+          obtener la información de presión atmosférica y temperatura.
+        </strong>
+      </ion-card-content>      
+    </ion-card>
+
+  </ng-template>
 
 </ion-content>

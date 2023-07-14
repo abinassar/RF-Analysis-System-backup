@@ -152,45 +152,45 @@
     </ion-card-content>
   </ion-card>
 
-    <ng-container *ngIf="atenuationGraph; else noAtenuationGraphic"
-                  class="graph-container">
-      
-      <plotly-plot [data]="elevationData.data"
-                   [layout]="elevationData.layout"
-                   [useResizeHandler]="true"
-                   [style]="{position: 'relative', width: '100%', height: '100%'}">
-      </plotly-plot>
+  <ng-container *ngIf="atenuationGraph; else noAtenuationGraphic"
+                class="graph-container">
+    
+    <plotly-plot [data]="elevationData.data"
+                  [layout]="elevationData.layout"
+                  [useResizeHandler]="true"
+                  [style]="{position: 'relative', width: '100%', height: '100%'}">
+    </plotly-plot>
 
-    </ng-container>
+  </ng-container>
 
-    <ng-template #noAtenuationGraphic>
+  <ng-template #noAtenuationGraphic>
 
-      <ion-card class="ion-padding">
-        <ion-card-subtitle>Generar gráfica</ion-card-subtitle>
-        <ion-card-title>Procedimiento:</ion-card-title>
-  
-        <ion-card-content>
-          <ul>
-            <li>
-              <p class="fs-20">
-                1.- Selecciona los dos puntos en el mapa donde quieres graficar el
-                perfil de elevación.
-              </p>
-            </li>
-            <li>
-              <p class="fs-20">
-                2.- Seleccionados los puntos, presiona el botón "Generar gráfica"
-                para obtener mostrar el gráfico de atenuacion.
-              </p>
-            </li>
-          </ul>
-          <strong>
-            Nota: Para obtener la atenuacion en una frecuencia especifica es necesario
-            obtener la informacion de presion atmosferica y temperatura.
-          </strong>
-        </ion-card-content>      
-      </ion-card>
+    <ion-card class="ion-padding">
+      <ion-card-subtitle>Generar gráfica</ion-card-subtitle>
+      <ion-card-title>Procedimiento:</ion-card-title>
 
-    </ng-template>
+      <ion-card-content>
+        <ul>
+          <li>
+            <p class="fs-20">
+              1.- Selecciona los dos puntos en el mapa donde quieres graficar el
+              perfil de elevación.
+            </p>
+          </li>
+          <li>
+            <p class="fs-20">
+              2.- Seleccionados los puntos, presiona el botón "Generar gráfica"
+              para obtener mostrar el gráfico de atenuación.
+            </p>
+          </li>
+        </ul>
+        <strong>
+          Nota: Para obtener la atenuación en una frecuencia específica es necesario
+          obtener la información de presión atmosférica y temperatura.
+        </strong>
+      </ion-card-content>      
+    </ion-card>
+
+  </ng-template>
 
 </ion-content>

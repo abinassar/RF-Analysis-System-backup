@@ -31,7 +31,6 @@ export class AtenuationGraphComponent implements OnInit {
   constructor(private locationService: LocationService,
               private loadingCtrl: LoadingController,
               public homeService: HomeService,
-              private settingsSetting: SettingsService,
               private alertService: AlertService,
               public settingsService: SettingsService,
               private formBuilder: FormBuilder) { }
@@ -129,8 +128,8 @@ export class AtenuationGraphComponent implements OnInit {
 
   async generateAtenuationGraph() {
 
-    if (this.settingsSetting.initialPoint.lat === 0
-        && this.settingsSetting.finalPoint.lat === 0) {
+    if (this.settingsService.initialPoint.lat === 0
+        && this.settingsService.finalPoint.lat === 0) {
       
     } else {
 

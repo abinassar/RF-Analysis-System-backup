@@ -4,9 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { CompassPageRoutingModule } from './compass-routing.module';
+import { PowerBudgetPageRoutingModule } from './power-budget-routing.module';
 
-import { CompassPage } from './compass.page';
+import { PowerBudgetPage } from './power-budget.page';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
 
@@ -15,15 +15,15 @@ import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/n
     CommonModule,
     FormsModule,
     IonicModule,
-    CompassPageRoutingModule,
+    PowerBudgetPageRoutingModule,
     SharedModule,
     ReactiveFormsModule
   ],
   declarations: [
-    CompassPage
+    PowerBudgetPage
   ],
   providers: [
     ScreenOrientation
   ]
 })
-export class CompassPageModule {}
+export class PowerBudgetPageModule {}

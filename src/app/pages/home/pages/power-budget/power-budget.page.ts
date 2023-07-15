@@ -5,11 +5,11 @@ import { DeviceOrientation, DeviceOrientationCompassHeading } from '@ionic-nativ
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 
 @Component({
-  selector: 'app-compass',
-  templateUrl: './compass.page.html',
-  styleUrls: ['./compass.page.scss'],
+  selector: 'app-power-budget',
+  templateUrl: './power-budget.page.html',
+  styleUrls: ['./power-budget.page.scss'],
 })
-export class CompassPage {
+export class PowerBudgetPage {
 
   // We will call this variable on home.page.html file
   data: DeviceOrientationCompassHeading;
@@ -52,6 +52,16 @@ export class CompassPage {
 
   ionViewDidEnter() {
     this.setAntennaForm();
+  }
+
+  powerAddition(): number {
+    return this.antennaForm.get("txPower").value +
+           this.antennaForm.get("txAntennaGain").value +
+           this.antennaForm.get("txLoss").value +
+           this.antennaForm.get("freeSpaceLoss").value +
+           this.antennaForm.get("miscLoss").value +
+           this.antennaForm.get("rxAntennaGain").value +
+           this.antennaForm.get("rxLoss").value;
   }
 
   setAntennaForm() {

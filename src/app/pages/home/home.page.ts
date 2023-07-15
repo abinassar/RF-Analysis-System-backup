@@ -59,7 +59,7 @@ export class HomePage implements OnInit {
   }
 
   navPower() {
-    this.navigateToTab(`/home/compass`);
+    this.navigateToTab(`/home/power-budget`);
   }
 
 }

@@ -17,8 +17,8 @@ const routes: Routes = [
         loadChildren: () => import('./pages/graphics/graphics.module').then( m => m.GraphicsPageModule)
       },
       {
-        path: 'compass',
-        loadChildren: () => import('./pages/compass/compass.module').then( m => m.CompassPageModule)
+        path: 'power-budget',
+        loadChildren: () => import('./pages/power-budget/power-budget.module').then( m => m.PowerBudgetPageModule)
       },
       {
         path: '',

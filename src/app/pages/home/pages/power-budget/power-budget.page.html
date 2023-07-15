@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Data</ion-title>
+    <ion-title>Presupuesto de potencia</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -140,7 +140,7 @@
                     {{antennaForm.get('freeSpaceLoss').value}} (Lfs) -
                     {{antennaForm.get('miscLoss').value}} (Lm) +
                     {{antennaForm.get('rxAntennaGain').value}} (Grx) -
-                    {{antennaForm.get('rxLoss').value}} (Lrx)
+                    {{antennaForm.get('rxLoss').value}} (Lrx) = {{powerAddition()}}
 
             </h2>
 

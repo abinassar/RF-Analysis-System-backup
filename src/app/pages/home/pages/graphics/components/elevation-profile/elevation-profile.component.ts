@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { GeoPoint, defaultPoints } from '@shared/models';
@@ -72,11 +72,29 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
               private locationService: LocationService,
               private alertService: AlertService,
               private loadingCtrl: LoadingController,
-              public homeService: HomeService) { }
+              public homeService: HomeService,
+              private formBuilder: FormBuilder) { }
 
   ngOnInit() {
     // this.generateElevationGraph();
     this.homeService.showMap = true;
+  }
+
+  ionViewDidEnter() {
+
+    this.setSettingsForm();
+    this.showForm = true;
+
+  }
+
+  setSettingsForm() {
+
+    this.settingsForm = this.formBuilder.group({
+      antennaInitialHeight: this.formBuilder.control(this.settingsService.antennaInitialHeight === 0 ? null : this.settingsService.antennaInitialHeight),
+      antennaFinalHeight: this.formBuilder.control(this.settingsService.antennaFinalHeight === 0 ? null : this.settingsService.antennaFinalHeight)
+    });
+
+    console.log("this.settingsForm ", this.settingsForm)
   }
   
   generateElevationGraph() {
@@ -241,11 +259,13 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
           title: 'Gráfico de elevación',
           yaxis: {
             showline: false,
-            showgrid: false
+            showgrid: false,
+            title: 'Distancia (m)'
           },
           xaxis: {
             showline: false,
-            showgrid: false
+            showgrid: false,
+            title: 'Distancia (m)'
           }
         }
       };

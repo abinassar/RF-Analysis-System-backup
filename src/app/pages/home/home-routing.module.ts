@@ -22,14 +22,14 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/home/map',
+        redirectTo: '/home/graphics',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/home/map',
+    redirectTo: '/home/graphics',
     pathMatch: 'full'
   }
 ];

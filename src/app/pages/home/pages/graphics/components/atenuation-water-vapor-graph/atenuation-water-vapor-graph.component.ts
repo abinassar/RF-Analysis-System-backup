@@ -110,7 +110,7 @@ export class AtenuationWaterVaporGraphComponent implements OnInit {
             this.atmosphericForm.get("waterDensity").setValue(7.5);
 
             this.locationService
-                .getWaterVaporAtenuation(response.main.pressure, response.main.temp, 7.5)
+                .getWaterVaporAtenuation(response.main.pressure, this.settingsService.temperature, 7.5)
                 .subscribe((response) => {
         
                   let atenuationPoints = response.atenuationsPoints;
@@ -138,12 +138,14 @@ export class AtenuationWaterVaporGraphComponent implements OnInit {
                       yaxis: {
                         // showline: false,
                         // showgrid: false,
-                        type: 'log'
+                        type: 'log',
+                        title: 'Atenuación específica (dB/Km)'
                       },
                       xaxis: {
                         // showline: false,
                         // showgrid: false,
-                        type: 'log'
+                        type: 'log',
+                        title: 'Frecuencia (Ghz)'
                       }
                     }
                   };
@@ -189,9 +191,10 @@ export class AtenuationWaterVaporGraphComponent implements OnInit {
                                          this.atenuationForm.get("frecuencyUnit").value);
       
       this.locationService
-          .getSpecificAtenuation(this.settingsService.atmosphericPressure, 
-                                 this.settingsService.temperature,
-                                 frecuency)
+          .getSpecificWaterVaporAtenuation(this.settingsService.atmosphericPressure, 
+                                          this.settingsService.temperature,
+                                          7.5,
+                                          frecuency)
           .subscribe((response) => {
             this.atenuationByFrecuency = response.atenuationValue;
           })

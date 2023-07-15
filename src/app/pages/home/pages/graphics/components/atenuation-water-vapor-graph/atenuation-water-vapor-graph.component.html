@@ -11,13 +11,15 @@
              class="ion-padding">
 
   <ion-card>
-    <img src="../../../../../../../assets/images/desert.png" />
+    <img src="../../../../../../../assets/images/storm.jpg" />
     <ion-card-header>
       <ion-card-subtitle>Atenuación debido a vapor de agua</ion-card-subtitle>
       <ion-card-title>Enlaces de microondas</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      La atenuación debido a vapor de agua ....
+      La atenuación debido a vapor de agua es un fenómeno que afecta 
+      las señales de radiofrecuencia y microondas en la atmósfera terrestre, 
+      en particular cuando éstas se propagan a través de regiones con alta humedad.
     </ion-card-content>
   </ion-card>
 
@@ -157,7 +159,7 @@
 
           <ion-col class="center-container">
             <h2>
-              {{atenuationByFrecuency}} - (dB)
+              {{atenuationByFrecuency}} - (dB/Km)
             </h2>
           </ion-col>
 
@@ -168,20 +170,20 @@
     </ion-card-content>
   </ion-card>
 
-  <ng-container *ngIf="atenuationGraph; else noAtenuationGraphic"
-                class="graph-container">
-    
-    <plotly-plot [data]="elevationData.data"
-                  [layout]="elevationData.layout"
-                  [useResizeHandler]="true"
-                  [style]="{position: 'relative', width: '100%', height: '100%'}">
-    </plotly-plot>
+  <ion-card class="ion-padding">
+    <ng-container *ngIf="atenuationGraph; else noAtenuationGraphic"
+                  class="graph-container">
 
-  </ng-container>
+        <plotly-plot [data]="elevationData.data"
+                      [layout]="elevationData.layout"
+                      [useResizeHandler]="true"
+                      [style]="{position: 'relative', width: '100%', height: '100%'}">
+        </plotly-plot>
 
-  <ng-template #noAtenuationGraphic>
+    </ng-container>
 
-    <ion-card class="ion-padding">
+    <ng-template #noAtenuationGraphic>
+
       <ion-card-subtitle>Generar gráfica</ion-card-subtitle>
       <ion-card-title>Procedimiento:</ion-card-title>
 
@@ -205,8 +207,8 @@
           obtener la información de presión atmosférica y temperatura.
         </strong>
       </ion-card-content>      
-    </ion-card>
-
-  </ng-template>
+      
+    </ng-template>
+  </ion-card>
 
 </ion-content>

@@ -61,6 +61,52 @@
           </h3>
         </ion-col>
       </ion-row>
+
+    
+      <ion-row class="ph-10px">
+        <h3>
+          Altura de antenas
+        </h3>
+      </ion-row>
+  
+      <ion-row class="ph-10px"
+               [formGroup]="settingsForm"
+               *ngIf="showForm">
+        <ion-col>
+          <h6>
+            Altura Antena Initial
+          </h6>
+          <ion-item>
+            <ion-input fill="outline"
+                       label="Altura antena inicial"
+                       labelPlacement="floating" 
+                       placeholder="Ingresa Altura" 
+                       type="number"
+                       formControlName="antennaInitialHeight"></ion-input>
+              <h4 class="ml-10px">
+                mts
+              </h4>
+          </ion-item>
+        </ion-col>
+        <ion-col>
+          <h6>
+            Altura Antena Final
+          </h6>
+          <ion-item>
+            <ion-input fill="outline"
+                       label="Altura antena final"
+                       labelPlacement="floating" 
+                       placeholder="Ingresa Altura" 
+                       type="number"
+                       formControlName="antennaFinalHeight"></ion-input>
+              <h4 class="ml-10px">
+                mts
+              </h4>
+          </ion-item>
+        </ion-col>
+  
+      </ion-row>
+
     </ion-grid>
   </ion-card>
 

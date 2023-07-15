@@ -9,8 +9,8 @@ import { ElevationData, LocationWeather } from '../models';
 })
 export class LocationService {
 
-  uri: string = 'http://127.0.0.1:5000';
-  // uri: string = 'http://abinassar.pythonanywhere.com';
+  // uri: string = 'http://127.0.0.1:5000';
+  uri: string = 'http://abinassar.pythonanywhere.com';
 
   constructor(private dataService: DataService) { }
 

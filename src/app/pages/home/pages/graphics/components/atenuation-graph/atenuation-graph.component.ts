@@ -207,12 +207,14 @@ export class AtenuationGraphComponent implements OnInit {
               yaxis: {
                 // showline: false,
                 // showgrid: false,
-                type: 'log'
+                type: 'log',
+                title: 'Atenuación específica (dB/Km)'
               },
               xaxis: {
                 // showline: false,
                 // showgrid: false,
-                type: 'log'
+                type: 'log',
+                title: 'Frecuencia (Ghz)'
               }
             }
           };

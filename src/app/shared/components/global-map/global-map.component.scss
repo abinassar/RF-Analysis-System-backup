@@ -1,12 +1,18 @@
 #map {
-  // min-height: 100%;
-  // height: calc(100vh - 200px);
-  height: 400px;
   width: 100%;
   border-radius: 5px;
   .scroll-y {
     overflow-y: hidden !important;
   }
+}
+
+.inside-component-height {
+  height: 400px;
+}
+
+.full-height {
+  // min-height: 100%;
+  height: calc(100vh - 56px);
 }
 
 .left-min-50px {

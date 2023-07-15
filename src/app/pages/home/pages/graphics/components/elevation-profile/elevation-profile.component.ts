@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { GeoPoint, defaultPoints } from '@shared/models';
 import { AlertService, LocationService, SettingsService } from '@shared/services';
 import { HomeService } from 'src/app/pages/home/home.service';
+import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
 
 const SPEED_OF_LIGHT: number = 299792458;
 
@@ -65,7 +66,7 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
   startUpperObstruction: boolean = false;
   startLowerObstruction: boolean = false;
   clearMap: boolean = false;
-  showMap: boolean = false;
+  showMap: boolean = true;
   obstructionFieldPoints: any[] = [];
 
   constructor(public settingsService: SettingsService,
@@ -73,18 +74,34 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
               private alertService: AlertService,
               private loadingCtrl: LoadingController,
               public homeService: HomeService,
-              private formBuilder: FormBuilder) { }
+              private formBuilder: FormBuilder,
+              private router: Router,
+              private screenOrientation: ScreenOrientation) { }
 
   ngOnInit() {
     // this.generateElevationGraph();
     this.homeService.showMap = true;
   }
-
+  
   ionViewDidEnter() {
-
+    
     this.setSettingsForm();
     this.showForm = true;
+    
+  }
+  
+  ionViewWillEnter() {
+    this.showMap = true;
+    this.settingsService.showTabs = true;
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+  }
 
+  showFullScreenMap() {
+    this.showMap = false;
+    setTimeout(() => {
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
+      this.router.navigate([`/home/map`]);
+    }, 100);
   }
 
   setSettingsForm() {

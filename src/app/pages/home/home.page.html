@@ -1,10 +1,6 @@
 
-<ion-tabs (ionTabsWillChange)="onTabWillChange($event)">
+<ion-tabs [ngClass]="{'hide-tabs': !settingsService.showTabs}">
   <ion-tab-bar slot="bottom">
-    <!-- <ion-tab-button tab="map">
-      <ion-icon name="navigate-outline"></ion-icon>
-      <ion-label>Mapa</ion-label>
-    </ion-tab-button> -->
 
     <ion-tab-button tab="graphics">
       <ion-icon name="analytics-outline"></ion-icon>

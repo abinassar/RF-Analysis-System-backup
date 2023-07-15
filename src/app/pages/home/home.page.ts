@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HomeService } from './home.service';
 import { Router } from '@angular/router';
+import { SettingsService } from '@shared/services';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,8 @@ export class HomePage implements OnInit {
   firstChargeTab: boolean = true;
 
   constructor(private homeService: HomeService,
-    private router: Router) { }
+              private router: Router,
+              public settingsService: SettingsService) { }
 
   ngOnInit() {
   }

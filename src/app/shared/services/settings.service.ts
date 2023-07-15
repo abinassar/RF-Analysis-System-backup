@@ -27,7 +27,7 @@ export class SettingsService {
   finalPoint: GeoPoint = defaultPoints;
   antennaInitialHeight: number = 10;
   antennaFinalHeight: number = 15;
-
+  showTabs: boolean = true;
 
   constructor() { }
 }

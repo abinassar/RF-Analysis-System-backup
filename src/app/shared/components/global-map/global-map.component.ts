@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { ActionSheetController, MenuController, ModalController } from '@ionic/angular';
 import * as Leaflet from "leaflet";
 import { antPath } from 'leaflet-ant-path';
@@ -14,6 +14,7 @@ import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/n
 import { DeviceOrientation, DeviceOrientationCompassHeading } from '@ionic-native/device-orientation/ngx';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 import { HomeService } from 'src/app/pages/home/home.service';
+import { Router } from '@angular/router';
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
 const iconUrl = 'assets/marker-icon.png';
@@ -27,6 +28,8 @@ const shadowUrl = 'assets/marker-shadow.png';
 export class GlobalMapComponent implements OnDestroy {
 
   @ViewChild("mapContainer") mapContainer: ElementRef;
+  @Output() showFullScreenMap = new EventEmitter<void>();
+  @Input() insideComponent: boolean = false;
 
   map: Leaflet.Map;
   popup = Leaflet.popup({closeOnClick: false, autoClose: false, closeButton: true});
@@ -57,7 +60,7 @@ export class GlobalMapComponent implements OnDestroy {
 
   // Initial Qibla Location
   public qiblaLocation = 0;
-  showMap: boolean = true;
+  displayMap: boolean = true;
 
   constructor(private actionSheetController: ActionSheetController,
               private menu: MenuController,
@@ -65,7 +68,9 @@ export class GlobalMapComponent implements OnDestroy {
               private settingsService: SettingsService,
               private deviceOrientation: DeviceOrientation,
               private geolocation: Geolocation,
-              private homeService: HomeService) {
+              private homeService: HomeService,
+              private screenOrientation: ScreenOrientation,
+              private router: Router) {
 
 
     // Watch the device compass heading change
@@ -89,6 +94,26 @@ export class GlobalMapComponent implements OnDestroy {
         this.currentLocation = res;
     });
 
+  }
+
+  landscapeOrientation() {
+
+    if (this.insideComponent) {
+
+      this.showFullScreenMap.emit();
+      
+    } else {
+
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
+
+    }
+
+  }
+
+  portraitOrientation() {
+    if (!this.insideComponent) {
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    }
   }
 
   refreshMap() {
@@ -158,8 +183,29 @@ export class GlobalMapComponent implements OnDestroy {
 
   }
 
+  hideMap() {
+
+    this.displayMap = false;
+
+    // Ocultar el mapa
+
+    document.getElementById('map').style.display = 'none';
+
+  }
+
+  showMap() {
+
+    this.displayMap = true;
+
+    // Mostrar el mapa
+
+    document.getElementById('map').style.display = '';
+
+  }
+
   ngOnInit() {
 
+    this.displayMap = true;
     this.initMap();
 
     // Check if there points of connection

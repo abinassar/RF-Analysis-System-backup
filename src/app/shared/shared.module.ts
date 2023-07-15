@@ -7,6 +7,7 @@ import { AntennaListModule } from './components/antenna-list/antenna-list.module
 import { GlobalMapComponent } from './components/global-map/global-map.component';
 import { TruncatePipe } from './pipes';
 import { OptionsModalComponent } from './components/options-modal/options-modal.component';
+import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,9 @@ import { OptionsModalComponent } from './components/options-modal/options-modal.
     GlobalMapComponent,
     TruncatePipe,
     OptionsModalComponent
+  ],
+  providers: [
+    ScreenOrientation
   ]
 })
 export class SharedModule { }

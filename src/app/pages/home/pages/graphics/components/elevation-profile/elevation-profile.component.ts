@@ -312,7 +312,8 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
       this.loadingCtrl.dismiss();
       this.alertService
           .presentAlert("Error", 
-                        "Ha ocurrido un error obteniendo la informacion, más tarde");
+          // "Ha ocurrido un error obteniendo la informacion, intente más tarde");
+          JSON.stringify(error));
 
     })
 

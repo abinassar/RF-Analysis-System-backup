@@ -21,7 +21,8 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
 
   // Lambda referente a una freceucnia de 20 Ghz  
 
-  lambda: number = SPEED_OF_LIGHT/(20 * 1e9);
+  // lambda: number = SPEED_OF_LIGHT/(20 * 1e9);
+  lambda: number = SPEED_OF_LIGHT/(20 * 1e6);
   distance1!: number;
   distance2!: number;
   dataFresnelx: number[] = [];
@@ -296,6 +297,8 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
       antenaOneHeight += this.elevationDataY[0];
       antenaTwoHeight += this.elevationDataY[this.elevationDataY.length - 1];
 
+      console.log("data de elevacion x ", this.elevationDataX)
+
       this.createElipseCurve(this.elevationDataX[0], 
                             antenaOneHeight, 
                             this.elevationDataX[this.elevationData.data[0].x.length - 1], 
@@ -333,6 +336,8 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
     // console.log("Yinitial ", Yinitial)
     // console.log("Yfinal ", Yfinal)
 
+    // Calculo distancia en x y y
+
     let diferenceX = Math.abs(Xfinal - Xinitial);
     let diferenceY = Math.abs(Yfinal - Yinitial);
 
@@ -343,7 +348,8 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
 
     let rectDistance = Math.sqrt(Math.pow(diferenceX, 2) + Math.pow(diferenceY, 2));
 
-    // console.log('distancia de la recta ', rectDistance);
+    // Divido la distancia en fracciones de igual valor 
+    // A las fracciones que se dividieron los puntos de elevacion
 
     let xFractioned = Math.abs(Xfinal - Xinitial)/fraction;
 
@@ -385,10 +391,10 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
       angleCounterClkSenseTransferred += 2*Math.PI;
     }
 
-    console.log("Angulo de la recta en radianes", angleRectRadian)
+    // console.log("Angulo de la recta en radianes", angleRectRadian)
 
-    console.log("Angulo transladado ens entido de agujas del reloj ", angleClkSenseTransferred)
-    console.log("Angulo transladado ens entido contrario de agujas del reloj ", angleCounterClkSenseTransferred)
+    // console.log("Angulo transladado ens entido de agujas del reloj ", angleClkSenseTransferred)
+    // console.log("Angulo transladado ens entido contrario de agujas del reloj ", angleCounterClkSenseTransferred)
 
     let P1x = Xinitial;
     let P1y = Yinitial;
@@ -419,7 +425,9 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
     
     let distanceFraction = rectDistance/fraction;
 
-    let fresnelPoints = this.createFresnelPoints(1,
+    // Calculo de la primera zona de fresnel
+
+    const fresnelPoints = this.createFresnelPoints(1,
                                                 fraction, 
                                                 rectDataX, 
                                                 rectDataY, 
@@ -441,7 +449,9 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
                                                 xFractioned,
                                                 distanceFraction);
 
-    let fresnel70PercentPoints = this.createFresnelPoints(0.7,
+    // Calculo del 60% de la zona de fresnel
+
+    const fresnel60PercentPoints = this.createFresnelPoints(0.6,
                                                 fraction, 
                                                 rectDataX, 
                                                 rectDataY, 
@@ -464,23 +474,25 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
                                                 distanceFraction);
     // TODO: Put fresnel points function
 
-    this.elevationData.data.push({
-      x: fresnel70PercentPoints.fresnelDataX,
-      y: fresnel70PercentPoints.fresnelDataY,
-      type: 'scatter',
-      line: {
-        color: '#9a37c4'
-      }
-    })
+    // this.elevationData.data.push({
+    //   x: fresnel60PercentPoints.fresnelDataX,
+    //   y: fresnel60PercentPoints.fresnelDataY,
+    //   type: 'scatter',
+    //   line: {
+    //     color: '#9a37c4'
+    //   },
+    //   name: 'Zona de fresnel inferior a 60%'
+    // });
 
-    this.elevationData.data.push({
-      x: fresnel70PercentPoints.fresnelInvertedDataX,
-      y: fresnel70PercentPoints.fresnelInvertedDataY,
-      type: 'scatter',
-      line: {
-        color: '#9a37c4'
-      }
-    })
+    // this.elevationData.data.push({
+    //   x: fresnel60PercentPoints.fresnelInvertedDataX,
+    //   y: fresnel60PercentPoints.fresnelInvertedDataY,
+    //   type: 'scatter',
+    //   line: {
+    //     color: '#9a37c4'
+    //   },
+    //   name: 'Zona de fresnel superior a 60%'
+    // });
 
     // this.elevationData.data.push({
     //   x: fresnelPoints.fresnelDataX,
@@ -488,23 +500,37 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
     //   type: 'scatter',
     //   line: {
     //     color: '#17BECF'
-    //   }
-    // })
+    //   },
+    //   name: 'zona de fresnel inferior'
+    // });
+
+    this.elevationData.data.push({
+      x: fresnelPoints.fresnelInvertedDataX,
+      y: fresnelPoints.fresnelInvertedDataY,
+      type: 'scatter',
+      line: {
+        color: '#17BECF'
+      },
+      name: 'zona de fresnel superior'
+    },
+    {
+      x: fresnel60PercentPoints.fresnelInvertedDataX,
+      y: fresnel60PercentPoints.fresnelInvertedDataY,
+      type: 'scatter',
+      line: {
+        color: '#9a37c4'
+      },
+      name: 'Zona de fresnel superior a 60%'
+    });
 
     // this.elevationData.data.push({
-    //   x: fresnelPoints.fresnelInvertedDataX,
-    //   y: fresnelPoints.fresnelInvertedDataY,
+    //   x: fresnelPoints.rectDataX,
+    //   y: fresnelPoints.rectDataY,
     //   type: 'scatter',
     //   line: {
     //     color: '#17BECF'
     //   }
     // })
-
-    this.elevationData.data.push({
-      x: fresnelPoints.rectDataX,
-      y: fresnelPoints.rectDataY,
-      type: 'scatter'
-    })
 
     this.elevationData.data.push({
       x: this.obstructionPointsX,
@@ -513,8 +539,9 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
       type: 'scatter',
       line: {
         color: '#d91313'
-      }
-    })
+      },
+      name: 'puntos de obstruccion inferior'
+    });
 
     this.elevationData.data.push({
       x: this.obstructionPointsInvertedX,
@@ -523,8 +550,9 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
       type: 'scatter',
       line: {
         color: '#d91313'
-      }
-    })
+      },
+      name: 'puntos de obstruccion superior'
+    });
 
     this.elevationGraph = true;
 
@@ -746,7 +774,17 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
   }
 
   fresnelRadio(lambda: number, d1: number, d2: number): number {
-    return Math.sqrt((lambda*d1*d2)/(d1 + d2));
+    // return Math.sqrt((lambda*d1*d2)/(d1 + d2));
+
+    // Convierto lambda a frecuencia
+    // Nota: la frecuecnia debe estar en Ghz
+
+    // let frecuency = SPEED_OF_LIGHT/lambda;
+    // Uso frecuencia de 20 Ghz
+    let frecuency = 20;
+
+    return 17.32 * Math.sqrt((d1 * d2)/((d1 + d2) * frecuency));
+
   }
 
   ngOnDestroy(): void {

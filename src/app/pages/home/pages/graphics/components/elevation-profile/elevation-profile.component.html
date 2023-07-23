@@ -155,7 +155,15 @@
 
   <ion-card *ngIf="elevationGraph">
     <ion-card-header>
-      <ion-card-title>Puntos de obstrucción:</ion-card-title>
+      <ion-card-title>
+        <ion-badge color="warning">IMPORTANTE</ion-badge>
+        Puntos de obstrucción: 
+      </ion-card-title>
+      <ion-card-subtitle>
+        Es importante que revises la configuracion del enlace, ya que existen puntos de obstruccion en 
+        el 60% de la primera zona de fresnel, por lo que esta afectada la factilidad del radienlace.
+        
+      </ion-card-subtitle>
     </ion-card-header>
     <ion-grid>
   
@@ -165,7 +173,7 @@
           <h3>
             <ion-badge slot="start">N°{{i + 1}}:</ion-badge>
             <span>
-              Distancia: {{obstructionPoint.distance}} Km (aprox.) ; Lat: {{obstructionPoint.lat}} - Lng: {{obstructionPoint.lng}}
+              Distancia: {{obstructionPoint.distance / 1000 | truncate: 7}} Km (aprox.) ; Lat: {{obstructionPoint.lat | truncate: 10}} - Lng: {{obstructionPoint.lng | truncate: 10}}
             </span>
           </h3>
         </ion-col>

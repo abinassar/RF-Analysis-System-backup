@@ -65,7 +65,6 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
   obstruction60PercentPointsY: number[] = [];
   obstruction60PercentPointsInvertedY: number[] = [];
 
-
   anthenaOneHeight: number = 5;
   anthenaTwoHeight: number = 3;
 
@@ -274,14 +273,20 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
 
       this.elevationData = {
         data: [
-          { x: this.elevationDataX,
+          { 
+            name: 'Puntos de Elevacion',
+            x: this.elevationDataX,
             y: this.elevationDataY,
             mode: 'lines+markers', // El modo de la serie de datos es "lines" y "markers"
+            fill: 'tozeroy',
+            opacity: 0.5,
             line: {              // Establecemos la configuracion de la linea
               shape: 'spline', // Configuramos la forma como "spline"
-              color: '#7f7f7f', // Establecemos el color de la linea
+              color: '#afafaf', // Establecemos el color de la linea
               width: 1,
-              opacity: 0.5
+            },
+            marker: {
+              size: 2
             }
           },
         ],
@@ -308,8 +313,6 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
 
       antenaOneHeight += this.elevationDataY[0];
       antenaTwoHeight += this.elevationDataY[this.elevationDataY.length - 1];
-
-      console.log("data de elevacion x ", this.elevationDataX)
 
       this.createElipseCurve(this.elevationDataX[0], 
                             antenaOneHeight, 
@@ -524,134 +527,70 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
                                                 xFractioned,
                                                 distanceFraction);
 
-    // Calculo del 60% de la zona de fresnel
-
-    // const fresnel60PercentPoints = this.createFresnelPoints60Percent(0.6,
-    //                                             fraction, 
-    //                                             rectDataX, 
-    //                                             rectDataY, 
-    //                                             P1x, 
-    //                                             P1y, 
-    //                                             distance1, 
-    //                                             distance2, 
-    //                                             angleCounterClkSenseTransferred, 
-    //                                             angleClkSenseTransferred,
-    //                                             Xfinal,
-    //                                             Yfinal,
-    //                                             Xinitial,
-    //                                             Yinitial,
-    //                                             fresnelDataX,
-    //                                             fresnelDataY,
-    //                                             fresnelInvertedDataX,
-    //                                             fresnelInvertedDataY,
-    //                                             mRect,
-    //                                             xFractioned,
-    //                                             distanceFraction);
-    // TODO: Put fresnel points function
-
-    // this.elevationData.data.push({
-    //   x: fresnel60PercentPoints.fresnelDataX,
-    //   y: fresnel60PercentPoints.fresnelDataY,
-    //   type: 'scatter',
-    //   line: {
-    //     color: '#9a37c4'
-    //   },
-    //   name: 'Zona de fresnel inferior a 60%'
-    // });
-
-    // this.elevationData.data.push({
-    //   x: fresnel60PercentPoints.fresnelInvertedDataX,
-    //   y: fresnel60PercentPoints.fresnelInvertedDataY,
-    //   type: 'scatter',
-    //   line: {
-    //     color: '#9a37c4'
-    //   },
-    //   name: 'Zona de fresnel superior a 60%'
-    // });
-
-    this.elevationData.data.push({
-      x: fresnelPoints.fresnelDataX,
-      y: fresnelPoints.fresnelDataY,
-      type: 'scatter',
-      line: {
-        color: '#17BECF'
+    this.elevationData.data.push(
+      {
+        x: fresnelPoints.fresnelDataX,
+        y: fresnelPoints.fresnelDataY,
+        type: 'scatter',
+        line: {
+          color: '#17BECF'
+        },
+        name: 'zona de fresnel inferior'
       },
-      name: 'zona de fresnel inferior'
-    });
+      {
+        x: fresnelPoints.fresnelInvertedDataX,
+        y: fresnelPoints.fresnelInvertedDataY,
+        type: 'scatter',
+        line: {
+          color: '#17BECF'
+        },
+        name: 'zona de fresnel superior'
+      },
+      {
+        x: fresnelPoints.fresnelData60PercentX,
+        y: fresnelPoints.fresnelData60PercentY,
+        type: 'scatter',
+        line: {
+          color: '#9a37c4'
+        },
+        name: 'zona de fresnel 60% inferior'
+      },
+      {
+        x: fresnelPoints.fresnelInvertedData60PercentX,
+        y: fresnelPoints.fresnelInvertedData60PercentY,
+        type: 'scatter',
+        line: {
+          color: '#9a37c4'
+        },
+        name: 'zona de fresnel 60% superior'
+      },
+    
+    );
 
     this.elevationData.data.push(
       {
-      x: fresnelPoints.fresnelInvertedDataX,
-      y: fresnelPoints.fresnelInvertedDataY,
-      type: 'scatter',
-      line: {
-        color: '#17BECF'
+        x: this.obstructionPointsX,
+        y: this.obstructionPointsY,
+        mode: 'markers',
+        type: 'scatter',
+        opacity: 0.8,
+        line: {
+          color: '#d91313'
+        },
+        name: 'puntos de obstruccion inferior'
       },
-      name: 'zona de fresnel superior'
-    },
-    // {
-    //   x: fresnel60PercentPoints.fresnelInvertedDataX,
-    //   y: fresnel60PercentPoints.fresnelInvertedDataY,
-    //   type: 'scatter',
-    //   line: {
-    //     color: '#9a37c4'
-    //   },
-    //   name: 'Zona de fresnel superior a 60%'
-    // }
+      {
+        x: this.obstructionPointsInvertedX,
+        y: this.obstructionPointsInvertedY,
+        mode: 'markers',
+        type: 'scatter',
+        opacity: 0.8,
+        line: {
+          color: '#d91313'
+        },
+        name: 'puntos de obstruccion superior'
+      },
     );
-
-    // this.elevationData.data.push({
-    //   x: fresnelPoints.rectDataX,
-    //   y: fresnelPoints.rectDataY,
-    //   type: 'scatter',
-    //   line: {
-    //     color: '#17BECF'
-    //   }
-    // });
-
-    // this.elevationData.data.push({
-    //   x: this.obstruction60PercentPointsX,
-    //   y: this.obstruction60PercentPointsY,
-    //   mode: 'markers',
-    //   type: 'scatter',
-    //   line: {
-    //     color: '#000000'
-    //   },
-    //   name: 'puntos de obstruccion inferior a 60 porciento'
-    // });
-
-    // this.elevationData.data.push({
-    //   x: this.obstruction60PercentPointsInvertedX,
-    //   y: this.obstruction60PercentPointsInvertedY,
-    //   mode: 'markers',
-    //   type: 'scatter',
-    //   line: {
-    //     color: '#000000'
-    //   },
-    //   name: 'puntos de obstruccion superior a 60 porciento'
-    // });
-
-    this.elevationData.data.push({
-      x: this.obstructionPointsX,
-      y: this.obstructionPointsY,
-      mode: 'markers',
-      type: 'scatter',
-      line: {
-        color: '#d91313'
-      },
-      name: 'puntos de obstruccion inferior'
-    });
-
-    this.elevationData.data.push({
-      x: this.obstructionPointsInvertedX,
-      y: this.obstructionPointsInvertedY,
-      mode: 'markers',
-      type: 'scatter',
-      line: {
-        color: '#d91313'
-      },
-      name: 'puntos de obstruccion superior'
-    });
 
     this.elevationGraph = true;
 
@@ -725,46 +664,6 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
                                                          Yfinal,
                                                          Yinitial);
 
-      // // Get the point Y and X of fresnel in positive and negative
-
-      // let fresnelPositiveXPoint;
-      // let fresnelNegativeXPoint;
-      
-      // let fresnelPositiveYPoint;
-      // let fresnelNegativeYPoint;
-
-      // if (radio !== 0
-      //     && !Number.isNaN(radio)) {
-  
-      //   fresnelPositiveXPoint = this.getXTranferredPoint(P1x, radio, angleCounterClkSenseTransferred);
-      //   fresnelNegativeXPoint = this.getXTranferredPoint(P1x, radio, angleClkSenseTransferred);
-        
-      //   fresnelPositiveYPoint = this.getYTranferredPoint(P1y, radio, angleCounterClkSenseTransferred);
-      //   fresnelNegativeYPoint = this.getYTranferredPoint(P1y, radio, angleClkSenseTransferred);
-        
-      // } else {
-
-      //   // Evaluo si estoy parado en el punto inicial o final
-
-      //   if (index === fraction) {
-
-      //     fresnelPositiveXPoint = Xfinal; 
-      //     fresnelNegativeXPoint = Xfinal; 
-          
-      //     fresnelPositiveYPoint = Yfinal; 
-      //     fresnelNegativeYPoint = Yfinal; 
-          
-      //   } else {
-
-      //     fresnelPositiveXPoint = Xinitial; 
-      //     fresnelNegativeXPoint = Xinitial; 
-          
-      //     fresnelPositiveYPoint = Yinitial; 
-      //     fresnelNegativeYPoint = Yinitial; 
-
-      //   }
-      // }
-
       // Agrego punto de zona de fresnel a 60 porciento
 
       fresnelData60PercentX.push(fresnel60PercentPoint.fresnelPositiveXPoint);
@@ -805,9 +704,9 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
 
       if (elevationProfilePointY >= fresnelData60PercentY[indexOfPositionX]) {
 
-        if (!this.startUpperObstruction) {
+        if (!this.startLowerObstruction) {
 
-          this.startUpperObstruction = true;
+          this.startLowerObstruction = true;
 
           // I check that the point does not exist so as not to add again
 
@@ -828,7 +727,7 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
 
       } else {
 
-        this.startUpperObstruction = false;
+        this.startLowerObstruction = false;
 
       }
 
@@ -839,9 +738,9 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
 
       if (elevationProfilePointY >= fresnelInvertedData60PercentY[indexOfPositionInvertedX]) {
 
-        if (!this.startLowerObstruction) {
+        if (!this.startUpperObstruction) {
 
-          this.startLowerObstruction = true;
+          this.startUpperObstruction = true;
 
           // I check that the point does not exist so as not to add again
 
@@ -857,274 +756,12 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
           }
 
         }
-
-        console.log("indexOfPositionInvertedX ", indexOfPositionInvertedX)
         
         this.obstructionPointsInvertedX.push(fresnelInvertedData60PercentX[indexOfPositionInvertedX]);
         this.obstructionPointsInvertedY.push(fresnelInvertedData60PercentY[indexOfPositionInvertedX]);
 
       } else {
-        this.startLowerObstruction = true;
-      }
-
-    });
-
-
-    // Busco puntos de obstruccion en zona de fresnel
-
-    // this.elevationDataY.forEach((elevationProfilePointY, index) => {
-
-    //   // Busco un punto que este mas o menos en el valor de x de la zona de fresnel
-      
-    //   let indexOfPositionX = fresnelDataX.findIndex((fresnelPointX) => {
-    //     return (fresnelPointX > this.elevationDataX[index] - distanceFraction 
-    //            && fresnelPointX < this.elevationDataX[index] + distanceFraction);
-    //   });
-
-    //   if (elevationProfilePointY >= fresnelDataY[indexOfPositionX]) {
-
-    //     if (!this.startUpperObstruction) {
-
-    //       this.startUpperObstruction = true;
-
-    //       // I check that the point does not exist so as not to add again
-
-    //       let pointExist = this.obstructionSelectedPoints.findIndex((point) => {
-    //         return point.distance === fresnelDataX[indexOfPositionX]
-    //       });
-
-    //       if (pointExist === -1) {
-    //         this.obstructionSelectedPoints.push({
-    //           distance: fresnelDataX[indexOfPositionX],
-    //           elevation: fresnelDataY[indexOfPositionX]
-    //         });
-    //       }
-    //     }
-
-    //     this.obstructionPointsX.push(fresnelDataX[indexOfPositionX]);
-    //     this.obstructionPointsY.push(fresnelDataY[indexOfPositionX]);
-
-    //   } else {
-
-    //     this.startUpperObstruction = false;
-
-    //   }
-
-    //   let indexOfPositionInvertedX = fresnelInvertedDataX.findIndex((fresnelPointX) => {
-    //     return (fresnelPointX > this.elevationDataX[index] - distanceFraction 
-    //            && fresnelPointX < this.elevationDataX[index] + distanceFraction);
-    //   });
-
-    //   if (elevationProfilePointY >= fresnelInvertedDataY[indexOfPositionInvertedX]) {
-
-    //     if (!this.startLowerObstruction) {
-
-    //       this.startLowerObstruction = true;
-
-    //       // I check that the point does not exist so as not to add again
-
-    //       let pointExist = this.obstructionSelectedPoints.findIndex((point) => {
-    //         return point.distance === fresnelInvertedDataX[indexOfPositionX]
-    //       });
-
-    //       if (pointExist === -1) {
-    //         this.obstructionSelectedPoints.push({
-    //           distance: fresnelInvertedDataX[indexOfPositionX],
-    //           elevation: fresnelInvertedDataY[indexOfPositionX]
-    //         });
-    //       }
-
-    //     }
-
-    //     console.log("indexOfPositionInvertedX ", indexOfPositionInvertedX)
-        
-    //     this.obstructionPointsInvertedX.push(fresnelInvertedDataX[indexOfPositionInvertedX]);
-    //     this.obstructionPointsInvertedY.push(fresnelInvertedDataY[indexOfPositionInvertedX]);
-
-    //   } else {
-    //     this.startLowerObstruction = true;
-    //   }
-
-    // });
-
-    let fresnelPoints = {
-      fresnelDataX,
-      fresnelDataY,
-      fresnelInvertedDataX,
-      fresnelInvertedDataY,
-      rectDataX,
-      rectDataY
-    }
-
-    return fresnelPoints;
-
-  }
-
-  createFresnelPoints60Percent(radioPercent = 1,
-                      fraction, 
-                      rectDataX, 
-                      rectDataY, 
-                      P1x, 
-                      P1y, 
-                      distance1, 
-                      distance2, 
-                      angleCounterClkSenseTransferred, 
-                      angleClkSenseTransferred,
-                      Xfinal,
-                      Yfinal,
-                      Xinitial,
-                      Yinitial,
-                      fresnelDataX,
-                      fresnelDataY,
-                      fresnelInvertedDataX,
-                      fresnelInvertedDataY,
-                      mRect,
-                      xFractioned,
-                      distanceFraction) {
-
-    for (let index = 0; index <= fraction; index++) {
-      
-      // Add point to rect data
-        
-      rectDataX.push(P1x);
-      rectDataY.push(P1y);
-
-      // Create the fresnel zone points
-
-      let radio = radioPercent * this.fresnelRadio(this.lambda, distance1, distance2);
-
-      if (radio < 0.00001) {
-        radio = 0;
-      }
-      // Get the point Y and X of fresnel in positive and negative
-
-      let fresnelPositiveXPoint;
-      let fresnelNegativeXPoint;
-      
-      let fresnelPositiveYPoint;
-      let fresnelNegativeYPoint;
-
-      if (radio !== 0
-          && !Number.isNaN(radio)) {
-  
-        fresnelPositiveXPoint = this.getXTranferredPoint(P1x, radio, angleCounterClkSenseTransferred);
-        fresnelNegativeXPoint = this.getXTranferredPoint(P1x, radio, angleClkSenseTransferred);
-        
-        fresnelPositiveYPoint = this.getYTranferredPoint(P1y, radio, angleCounterClkSenseTransferred);
-        fresnelNegativeYPoint = this.getYTranferredPoint(P1y, radio, angleClkSenseTransferred);
-        
-      } else {
-
-        // Evaluo si estoy parado en el punto inicial o final
-
-        if (index === fraction) {
-
-          fresnelPositiveXPoint = Xfinal; 
-          fresnelNegativeXPoint = Xfinal; 
-          
-          fresnelPositiveYPoint = Yfinal; 
-          fresnelNegativeYPoint = Yfinal; 
-          
-        } else {
-
-          fresnelPositiveXPoint = Xinitial; 
-          fresnelNegativeXPoint = Xinitial; 
-          
-          fresnelPositiveYPoint = Yinitial; 
-          fresnelNegativeYPoint = Yinitial; 
-
-        }
-      }
-
-      fresnelDataX.push(fresnelPositiveXPoint);
-      fresnelInvertedDataX.push(fresnelNegativeXPoint);
-
-      fresnelDataY.push(fresnelPositiveYPoint);
-      fresnelInvertedDataY.push(fresnelNegativeYPoint);
-
-      P1y = this.getFinalPointY(mRect, (P1x + xFractioned), P1x, P1y);
-      P1x += xFractioned;
-
-      // // Update the distance 1 and distance 2 to next loop
-  
-      distance1 += distanceFraction;
-      distance2 = Math.abs(distance2 - distanceFraction);
-
-    }
-
-    // Busco puntos de obstruccion en zona de fresnel
-
-    this.elevationDataY.forEach((elevationProfilePointY, index) => {
-
-      // Busco un punto que este mas o menos en el valor de x de la zona de fresnel
-      
-      let indexOfPositionX = fresnelDataX.findIndex((fresnelPointX) => {
-        return (fresnelPointX > this.elevationDataX[index] - distanceFraction 
-               && fresnelPointX < this.elevationDataX[index] + distanceFraction);
-      });
-
-      if (elevationProfilePointY >= fresnelDataY[indexOfPositionX]) {
-
-        if (!this.startUpperObstruction) {
-
-          this.startUpperObstruction = true;
-
-          // I check that the point does not exist so as not to add again
-
-          let pointExist = this.obstruction60PercentSelectedPoints.findIndex((point) => {
-            return point.distance === fresnelDataX[indexOfPositionX]
-          });
-
-          if (pointExist === -1) {
-            this.obstruction60PercentSelectedPoints.push({
-              distance: fresnelDataX[indexOfPositionX],
-              elevation: fresnelDataY[indexOfPositionX]
-            });
-          }
-        }
-
-        this.obstruction60PercentPointsX.push(fresnelDataX[indexOfPositionX]);
-        this.obstruction60PercentPointsY.push(fresnelDataY[indexOfPositionX]);
-
-      } else {
-
         this.startUpperObstruction = false;
-
-      }
-
-      let indexOfPositionInvertedX = fresnelInvertedDataX.findIndex((fresnelPointX) => {
-        return (fresnelPointX > this.elevationDataX[index] - distanceFraction 
-               && fresnelPointX < this.elevationDataX[index] + distanceFraction);
-      });
-
-      if (elevationProfilePointY >= fresnelInvertedDataY[indexOfPositionInvertedX]) {
-
-        if (!this.startLowerObstruction) {
-
-          this.startLowerObstruction = true;
-
-          // I check that the point does not exist so as not to add again
-
-          let pointExist = this.obstruction60PercentSelectedPoints.findIndex((point) => {
-            return point.distance === fresnelInvertedDataX[indexOfPositionX]
-          });
-
-          if (pointExist === -1) {
-            this.obstruction60PercentSelectedPoints.push({
-              distance: fresnelInvertedDataX[indexOfPositionX],
-              elevation: fresnelInvertedDataY[indexOfPositionX]
-            });
-          }
-
-        }
-
-        console.log("indexOfPositionInvertedX ", indexOfPositionInvertedX)
-        
-        this.obstruction60PercentPointsInvertedX.push(fresnelInvertedDataX[indexOfPositionInvertedX]);
-        this.obstruction60PercentPointsInvertedY.push(fresnelInvertedDataY[indexOfPositionInvertedX]);
-
-      } else {
-        this.startLowerObstruction = true;
       }
 
     });
@@ -1135,7 +772,11 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
       fresnelInvertedDataX,
       fresnelInvertedDataY,
       rectDataX,
-      rectDataY
+      rectDataY,
+      fresnelData60PercentX,
+      fresnelData60PercentY,
+      fresnelInvertedData60PercentX,
+      fresnelInvertedData60PercentY
     }
 
     return fresnelPoints;

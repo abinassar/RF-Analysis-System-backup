@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Selección de Antena</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()">Confirm</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form [formGroup]="antennaSettingsForm">
+    <ion-grid class="ion-align-items-center ion-justify-content-center">
+      <ion-row *ngFor="let antenna of antennaList; let index=index"
+               formArrayName="antennaSelected">
+  
+        <ion-col size="1"
+                  class="m-auto"
+                  [formGroupName]="index">
+
+          <ion-checkbox (ionChange)="changedAntenna($event, index)"
+                        formControlName="checked">
+
+          </ion-checkbox>
+
+        </ion-col>
+  
+        <ion-col>
+          <ion-accordion-group>
+            <ion-accordion>
+        
+              <ion-item slot="header" color="light">
+                
+                <ion-avatar slot="start"> 
+                  <img src="{{antenna.imgPath}}">
+                </ion-avatar>
+                <ion-label>
+                  <h2>{{antenna.name}}</h2>
+                  <p>{{antenna.frecuency}} Ghz, Ganancia: {{antenna.gain}}</p>
+                </ion-label>
+              </ion-item>
+        
+              <div class="ion-padding" 
+                   slot="content">
+                <ion-grid>
+                  <ion-row>
+                    <ion-col>
+                      Frecuencia:
+                    </ion-col>
+                    <ion-col>2</ion-col>
+                  </ion-row>
+                </ion-grid>
+              </div>
+            </ion-accordion>
+          </ion-accordion-group>
+        
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+
+
+
+</ion-content>

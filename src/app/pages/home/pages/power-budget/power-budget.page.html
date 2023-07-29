@@ -7,12 +7,32 @@
 <ion-content [fullscreen]="true"
              class="ion-padding">
 
-  <div id="container">
+  <ion-row size="12" class="ion-justify-content-center ion-align-self-center">
+      <ion-avatar>
+        <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" />
+      </ion-avatar>
+  </ion-row>
+
+  <ion-row size="12" class="ion-justify-content-center ion-align-self-center">
+    <h2>
+      Antena seleccionada: {{selectedAntenna}}
+    </h2>
+  </ion-row>
+
+  <ion-row size="12" class="ion-justify-content-center ion-align-self-center">
+    <ion-button  (click)="navToAntennaList()">
+      Cambiar
+    </ion-button>
+  </ion-row>
+
+  <!-- <app-antenna-list></app-antenna-list>              -->
+
+  <!-- <div id="container">
     <p>Ubicación actual:
         <br>
       {{!!currentLocation ? "["+currentLocation.coords.latitude+","+currentLocation.coords.longitude+"]" : 'No permitida'}}
     </p>
-  </div>
+  </div> -->
 
   <ion-card class="ion-padding">
     <ion-card-header>

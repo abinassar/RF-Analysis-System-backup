@@ -9,6 +9,7 @@ import { PowerBudgetPageRoutingModule } from './power-budget-routing.module';
 import { PowerBudgetPage } from './power-budget.page';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
+import { AntennaListModule } from './components/antenna-list/antenna-list.module';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/n
     IonicModule,
     PowerBudgetPageRoutingModule,
     SharedModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AntennaListModule
   ],
   declarations: [
     PowerBudgetPage

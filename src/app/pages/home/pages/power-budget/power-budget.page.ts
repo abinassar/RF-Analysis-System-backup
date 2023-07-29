@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
 import { DeviceOrientation, DeviceOrientationCompassHeading } from '@ionic-native/device-orientation/ngx';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
+import { ModalController } from '@ionic/angular';
+import { AntennaListComponent } from './components/antenna-list/antenna-list.component';
 
 @Component({
   selector: 'app-power-budget',
@@ -23,10 +26,12 @@ export class PowerBudgetPage {
 
   antennaForm: FormGroup;
   showForm: boolean = false;
+  selectedAntenna: string = "AirMax U-OMT-Dish-5";
 
   constructor(private deviceOrientation: DeviceOrientation,
               private geolocation: Geolocation,
-              private formBuilder: FormBuilder) {
+              private formBuilder: FormBuilder,
+              public modalController: ModalController) {
 
     // Watch the device compass heading change
     this.deviceOrientation.watchHeading().subscribe((res: DeviceOrientationCompassHeading) => {
@@ -52,6 +57,15 @@ export class PowerBudgetPage {
 
   ionViewDidEnter() {
     this.setAntennaForm();
+  }
+
+  async navToAntennaList() {
+    // this.router.navigate(["/home/power-budget/antenna-list"]);
+    const modal = await this.modalController.create({
+      component: AntennaListComponent,
+      cssClass: 'my-custom-class',
+    });
+    return await modal.present();
   }
 
   powerAddition(): number {

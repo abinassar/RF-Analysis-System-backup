@@ -14,6 +14,13 @@ import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 
+// Firebase
+
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { environment } from "../environments/environment"
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -21,7 +28,10 @@ import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
     IonicModule.forRoot(), 
     AppRoutingModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireAuthModule,
+    AngularFirestoreModule
   ],
   providers: [{ 
     provide: RouteReuseStrategy, 

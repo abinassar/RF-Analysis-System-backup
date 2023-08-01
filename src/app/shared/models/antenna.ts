@@ -7,3 +7,9 @@ export interface Antenna {
     imgPath: string;
     checked: boolean;
 }
+
+export interface AntennaSelected {
+    frecuency: number;
+    gain: number;
+    name: string;
+}

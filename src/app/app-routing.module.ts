@@ -8,18 +8,18 @@ const routes: Routes = [
   },
   {
     path: 'register-user',
-    loadChildren: () => import('./pages/register-user/register-user.module').then( m => m.RegisterUserPageModule)
+    loadChildren: () => import('./pages/sign-in/pages/register-user/register-user.module').then( m => m.RegisterUserPageModule)
   },
   {
     path: 'forgot-password',
-    loadChildren: () => import('./pages/forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
+    loadChildren: () => import('./pages/sign-in/pages/forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
   },
   {
     path: 'verify-email-address',
-    loadChildren: () => import('./pages/verify-email-address/verify-email-address.module').then( m => m.VerifyEmailAddressPageModule)
+    loadChildren: () => import('./pages/sign-in/pages/verify-email-address/verify-email-address.module').then( m => m.VerifyEmailAddressPageModule)
   },
   {
-    path: '',
+    path: 'home',
     loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule)
   }
 ];

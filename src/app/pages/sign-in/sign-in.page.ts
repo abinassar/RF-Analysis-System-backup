@@ -29,8 +29,6 @@ export class SignInPage implements OnInit {
 
     console.log("sign in form ", this.signInForm)
 
-    this.signinService.SignIn("abinassar@gmail.com", "Franco.244.")
-
     if (this.signInForm.valid) {
       
       let email = this.signInForm.get('email').value;

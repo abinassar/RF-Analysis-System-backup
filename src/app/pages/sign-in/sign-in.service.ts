@@ -8,6 +8,7 @@ import {
 } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { User } from '@shared/models/user';
+import { LinkSettings } from '@shared/models';
 @Injectable({
   providedIn: 'root',
 })
@@ -127,7 +128,7 @@ export class SignInService {
       merge: true,
     });
   }
-  
+
   // Sign out
   SignOut() {
     return this.afAuth.signOut().then(() => {
@@ -135,4 +136,5 @@ export class SignInService {
       this.router.navigate(['sign-in']);
     });
   }
+
 }

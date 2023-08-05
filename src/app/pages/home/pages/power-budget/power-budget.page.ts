@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
 import { DeviceOrientation, DeviceOrientationCompassHeading } from '@ionic-native/device-orientation/ngx';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 import { ModalController } from '@ionic/angular';
 import { AntennaListComponent } from './components/antenna-list/antenna-list.component';
+import { AlertService, SettingsService } from '@shared/services';
+import { LinkSettings } from '@shared/models';
 
 @Component({
   selector: 'app-power-budget',
@@ -31,7 +33,9 @@ export class PowerBudgetPage {
   constructor(private deviceOrientation: DeviceOrientation,
               private geolocation: Geolocation,
               private formBuilder: FormBuilder,
-              public modalController: ModalController) {
+              public modalController: ModalController,
+              private settingsService: SettingsService,
+              private alertService: AlertService) {
 
     // Watch the device compass heading change
     this.deviceOrientation.watchHeading().subscribe((res: DeviceOrientationCompassHeading) => {
@@ -56,7 +60,7 @@ export class PowerBudgetPage {
   }
 
   ionViewDidEnter() {
-    this.setAntennaForm();
+    this.getUserLinks();
   }
 
   async navToAntennaList() {
@@ -65,7 +69,96 @@ export class PowerBudgetPage {
       component: AntennaListComponent,
       cssClass: 'my-custom-class',
     });
-    return await modal.present();
+
+    await modal.present()
+               .then((response) => {
+                console.log("repsonse ", response)
+               })
+               .catch((cancel) => {
+                console.log("cancel ", cancel)
+               })
+
+
+
+  }
+
+  getUserLinks() {
+
+    this.alertService.showLoading("Obteniendo datos del enlace...");
+    
+    this.settingsService
+        .getUserLinks("DSVlv21Tk8ZcPjwwvmrlzzMk2472")
+        .then((response: any) => {
+
+          console.log("repsonse ", response)
+
+          const linksSettings: LinkSettings[] = response.linkSettings;
+
+          this.alertService.closeLoading();
+          
+          this.settingsService.linkSettings = linksSettings[0];
+          
+          this.setAntennaForm();
+
+        })
+        .catch((error) => {
+          
+          this.alertService.closeLoading();
+          this.setAntennaForm();
+
+        });
+
+  }
+
+  saveLinkSettings() {
+    
+    if (this.antennaForm.valid) {
+      
+      this.alertService.showLoading("Guardando datos del enlace...");
+
+      let antennaSettings = {...this.settingsService.linkSettings.antennaSelected};
+      antennaSettings.txPower = this.antennaForm.get("txPower").value;
+      antennaSettings.txAntennaGain = this.antennaForm.get("txAntennaGain").value;
+      antennaSettings.txLoss = this.antennaForm.get("txLoss").value;
+      antennaSettings.freeSpaceLoss = this.antennaForm.get("freeSpaceLoss").value;
+      antennaSettings.miscLoss = this.antennaForm.get("miscLoss").value;
+      antennaSettings.rxAntennaGain = this.antennaForm.get("rxAntennaGain").value;
+      antennaSettings.rxLoss = this.antennaForm.get("rxLoss").value;
+
+      const linkSettings: LinkSettings = {
+        P1: this.settingsService.linkSettings.P1,
+        P2: this.settingsService.linkSettings.P2,
+        antennaOneHeight: this.settingsService.linkSettings.antennaOneHeight,
+        antennaTwoHeight: this.settingsService.linkSettings.antennaTwoHeight,
+        antennaSelected: antennaSettings,
+        atmosphericPressure: this.settingsService.linkSettings.atmosphericPressure,
+        temperature: this.settingsService.linkSettings.temperature,
+        waterDensity: this.settingsService.linkSettings.waterDensity,
+        linkName: this.settingsService.linkSettings.linkName
+      }
+
+      this.settingsService
+          .SetUserLinkSettingsData("DSVlv21Tk8ZcPjwwvmrlzzMk2472", [linkSettings])
+          .subscribe((response) => {
+
+            this.alertService.closeLoading();
+
+          },
+          (error) => {
+            this.alertService.closeLoading();
+            this.alertService.presentAlert("Hubo un problema guadrando la configuracion",
+                                           "Por favor, intenta mas tarde")
+          });
+
+    } else {
+
+      this.antennaForm.markAllAsTouched();
+      this.alertService
+          .presentAlert("Salvar configuración", 
+                        "Por favor completa los datos para poder guardar los datos del enlace");
+
+    }
+
   }
 
   powerAddition(): number {
@@ -81,13 +174,13 @@ export class PowerBudgetPage {
   setAntennaForm() {
 
     this.antennaForm = this.formBuilder.group({
-      txPower: this.formBuilder.control(0),
-      txAntennaGain: this.formBuilder.control(0),
-      txLoss: this.formBuilder.control(0),
-      freeSpaceLoss: this.formBuilder.control(0),
-      miscLoss: this.formBuilder.control(0),
-      rxAntennaGain: this.formBuilder.control(0),
-      rxLoss: this.formBuilder.control(0)
+      txPower: this.formBuilder.control(this.settingsService.linkSettings.antennaSelected.txPower === 0 ? null : this.settingsService.linkSettings.antennaSelected.txPower, Validators.required),
+      txAntennaGain: this.formBuilder.control(this.settingsService.linkSettings.antennaSelected.txAntennaGain === 0 ? null : this.settingsService.linkSettings.antennaSelected.txAntennaGain, Validators.required),
+      txLoss: this.formBuilder.control(this.settingsService.linkSettings.antennaSelected.txLoss === 0 ? null : this.settingsService.linkSettings.antennaSelected.txLoss, Validators.required),
+      freeSpaceLoss: this.formBuilder.control(this.settingsService.linkSettings.antennaSelected.freeSpaceLoss === 0 ? null : this.settingsService.linkSettings.antennaSelected.freeSpaceLoss, Validators.required),
+      miscLoss: this.formBuilder.control(this.settingsService.linkSettings.antennaSelected.miscLoss === 0 ? null : this.settingsService.linkSettings.antennaSelected.miscLoss, Validators.required),
+      rxAntennaGain: this.formBuilder.control(this.settingsService.linkSettings.antennaSelected.rxAntennaGain === 0 ? null : this.settingsService.linkSettings.antennaSelected.rxAntennaGain, Validators.required),
+      rxLoss: this.formBuilder.control(this.settingsService.linkSettings.antennaSelected.rxLoss === 0 ? null : this.settingsService.linkSettings.antennaSelected.rxLoss, Validators.required)
     });
 
     this.showForm = true;

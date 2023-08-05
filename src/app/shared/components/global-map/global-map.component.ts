@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ActionSheetController, MenuController, ModalController } from '@ionic/angular';
 import * as Leaflet from "leaflet";
 import { antPath } from 'leaflet-ant-path';
@@ -25,11 +25,14 @@ const shadowUrl = 'assets/marker-shadow.png';
   templateUrl: './global-map.component.html',
   styleUrls: ['./global-map.component.scss'],
 })
-export class GlobalMapComponent implements OnDestroy {
+export class GlobalMapComponent implements OnDestroy, OnChanges {
 
   @ViewChild("mapContainer") mapContainer: ElementRef;
   @Output() showFullScreenMap = new EventEmitter<void>();
+  @Output() sendPoint = new EventEmitter<GeoPoint>();
   @Input() insideComponent: boolean = false;
+  @Input() P1: GeoPoint;
+  @Input() P2: GeoPoint;
 
   map: Leaflet.Map;
   popup = Leaflet.popup({closeOnClick: false, autoClose: false, closeButton: true});
@@ -96,6 +99,35 @@ export class GlobalMapComponent implements OnDestroy {
 
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+
+    console.log("changes ", changes)
+
+    if (changes.P1.currentValue
+        && changes.P1.currentValue.lng !== 0
+        && changes.P1.currentValue.lat !== 0) {
+
+      setTimeout(() => {
+        
+        this.addMarker(changes.P1.currentValue);
+        
+      }, 500);
+
+    }
+
+    if (changes.P2.currentValue
+        && changes.P2.currentValue.lng !== 0
+        && changes.P2.currentValue.lat !== 0) {
+
+      setTimeout(() => {
+        
+        this.addMarker(changes.P2.currentValue)
+      }, 500);
+
+      
+    }    
+  }
+
   landscapeOrientation() {
 
     if (this.insideComponent) {
@@ -120,6 +152,7 @@ export class GlobalMapComponent implements OnDestroy {
     this.map.off();
     this.map.remove();
     this.initMap();
+    this.setInitialPoints();
   }
 
   initMap() {
@@ -208,16 +241,23 @@ export class GlobalMapComponent implements OnDestroy {
     this.displayMap = true;
     this.initMap();
 
-    // Check if there points of connection
+  }
 
-    if (this.settingsService.initialPoint.lat !== 0) {
-      this.addMarker(this.settingsService.initialPoint);
+  setInitialPoints() {
+
+    if (this.settingsService.linkSettings.P1.lng !== 0
+        && this.settingsService.linkSettings.P1.lat !== 0) {
+
+      this.addMarker(this.settingsService.linkSettings.P1, false);
+      
     }
 
-    if (this.settingsService.finalPoint.lat !== 0) {
-      this.addMarker(this.settingsService.finalPoint);
-    }
+    if (this.settingsService.linkSettings.P2.lng !== 0
+        && this.settingsService.linkSettings.P2.lat !== 0) {
 
+      this.addMarker(this.settingsService.linkSettings.P2, false);
+      
+    }    
   }
 
   async presentActionSheet(lat: number, long: number, e) {
@@ -255,7 +295,8 @@ export class GlobalMapComponent implements OnDestroy {
     this.menu.open('first');
   }
 
-  addMarker(point: GeoPoint) {
+  addMarker(point: GeoPoint,
+            updateGeopoints: boolean = true) {
 
     if (this.markersArray.length === 2) {
 
@@ -294,7 +335,7 @@ export class GlobalMapComponent implements OnDestroy {
       this.antPathArray.push(antPathVar);
     }
 
-    this.updateGeoPoints(this.markersArray);
+    if (updateGeopoints) this.updateGeoPoints(this.markersArray);
 
   }
 
@@ -312,14 +353,16 @@ export class GlobalMapComponent implements OnDestroy {
 
       if (index === 0) {
 
-        this.settingsService.initialPoint = point;
+        this.settingsService.linkSettings.P1 = point;
 
       } else {
 
-        this.settingsService.finalPoint = point;
+        this.settingsService.linkSettings.P2 = point;
 
       }
-    })
+    });
+
+    this.settingsService.updateGeoPoints.next();
 
   }
     

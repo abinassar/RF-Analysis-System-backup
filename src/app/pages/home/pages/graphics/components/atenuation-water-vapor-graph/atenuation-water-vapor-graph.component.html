@@ -25,8 +25,11 @@
 
   <ion-row class="cellphone-width justify-content-center align-items-center">
     <ion-col>
-      <app-global-map class="map-container" 
-                      *ngIf="homeService.showMap"></app-global-map>
+      <app-global-map class="map-container"
+                      (showFullScreenMap)="showFullScreenMap()"
+                      [P1]="P1"
+                      [P2]="P2"
+                      [insideComponent]="true"></app-global-map>
     </ion-col>
   </ion-row>
 
@@ -212,3 +215,16 @@
   </ion-card>
 
 </ion-content>
+
+<ion-fab slot="fixed" 
+          vertical="bottom" 
+          horizontal="end">
+  <ion-fab-button>
+    <ion-icon name="settings-outline"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-list side="top">
+    <ion-fab-button (click)="saveLinkSettings()">
+      <ion-icon name="refresh"></ion-icon>
+    </ion-fab-button>
+  </ion-fab-list>
+</ion-fab>

@@ -67,7 +67,7 @@ export class AntennaListComponent implements OnInit {
 
     console.log("Antena seleccionada = ", this.antennaList[this.antennaSelectedIndex]);
 
-    return this.modalCtrl.dismiss();
+    return this.modalCtrl.dismiss(this.antennaList[this.antennaSelectedIndex]);
   }
 
   changedAntenna($event, index) {    

@@ -29,14 +29,14 @@ export class AppComponent implements OnInit {
 
   saveSettings() {
     
-    let settings = {
-      anthenaOneHigh: this.settingsForm.get("anthenaOneHigh").value,
-      anthenaTwoHigh: this.settingsForm.get("anthenaTwoHigh").value      
-    }
+    // let settings = {
+    //   anthenaOneHigh: this.settingsForm.get("anthenaOneHigh").value,
+    //   anthenaTwoHigh: this.settingsForm.get("anthenaTwoHigh").value      
+    // }
 
-    this.settingsService.linkSettings.next(settings);
+    // this.settingsService.setLinkSettings.next(settings);
 
-    this.closeConfiguration();
+    // this.closeConfiguration();
 
   }
 

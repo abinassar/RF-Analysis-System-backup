@@ -7,10 +7,17 @@
 <ion-content [fullscreen]="true"
              class="ion-padding">
 
-  <!-- <ion-button (click)="showMap()">
-  showMap()
-  </ion-button> -->
-
+  <ion-row class="cellphone-width justify-content-center align-items-center"
+           *ngIf="showMap">
+    <ion-col>
+      <app-global-map class="map-container"
+                      (showFullScreenMap)="showFullScreenMap()"
+                      [P1]="P1"
+                      [P2]="P2"
+                      [insideComponent]="true"></app-global-map>
+    </ion-col>
+  </ion-row>
+  
   <ion-card class="ion-padding">
 
     <ion-card-header>
@@ -143,9 +150,6 @@
           </ion-col>
     
         </ion-row>
-    
-    
-    
       </ion-grid>
     </ion-card-content>
   
@@ -184,3 +188,16 @@
   </ion-card>
 
 </ion-content>
+
+<ion-fab slot="fixed" 
+          vertical="bottom" 
+          horizontal="end">
+  <ion-fab-button>
+    <ion-icon name="settings-outline"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-list side="top">
+    <ion-fab-button (click)="saveLinkSettings()">
+      <ion-icon name="refresh"></ion-icon>
+    </ion-fab-button>
+  </ion-fab-list>
+</ion-fab>

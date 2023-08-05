@@ -4,6 +4,8 @@ import { HttpClient,
           HttpHeaders, 
           HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AntennaSelected, LinkSettings } from '@shared/models';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,8 @@ import { Observable } from 'rxjs';
 
 export class DataService {
 
-  constructor( private http: HttpClient ) { }
+  constructor( private http: HttpClient,
+               private db: AngularFirestore ) { }
 
     // Http service
 
@@ -42,4 +45,12 @@ export class DataService {
                                     });
 
   }  
+
+  updateUserAntenna(_id:any, antennaSelected: AntennaSelected) {
+    return this.db.doc(`users/${_id}`).update({antennaSelected});
+  }
+
+  updateUserLinkSettings(_id:any, linkSettings: LinkSettings) {
+    return this.db.doc(`LinkSettings/${_id}`).update({linkSettings});
+  }
 }

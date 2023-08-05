@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
-import { GeoPoint, defaultPoints } from '@shared/models';
+import { GeoPoint, LinkSettings, defaultPoints } from '@shared/models';
 import { AlertService, LocationService, SettingsService } from '@shared/services';
 import { HomeService } from 'src/app/pages/home/home.service';
 import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
@@ -14,15 +14,9 @@ const SPEED_OF_LIGHT: number = 299792458;
   templateUrl: './elevation-profile.component.html',
   styleUrls: ['./elevation-profile.component.scss'],
 })
-export class ElevationProfileComponent implements OnInit, OnDestroy {
+export class ElevationProfileComponent implements OnDestroy {
 
-  initialPoint: GeoPoint;
-  finalPoint: GeoPoint;
-
-  // Lambda referente a una freceucnia de 20 Ghz  
-
-  // lambda: number = SPEED_OF_LIGHT/(20 * 1e9);
-  lambda: number = SPEED_OF_LIGHT/(20 * 1e6);
+  lambda: number = SPEED_OF_LIGHT/(this.settingsService.linkSettings.antennaSelected.frecuency * 1e6);
   distance1!: number;
   distance2!: number;
   dataFresnelx: number[] = [];
@@ -65,9 +59,6 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
   obstruction60PercentPointsY: number[] = [];
   obstruction60PercentPointsInvertedY: number[] = [];
 
-  anthenaOneHeight: number = 5;
-  anthenaTwoHeight: number = 3;
-
   pointsFraction: number = 1000;
 
   settingsForm: FormGroup;
@@ -77,8 +68,10 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
   startUpperObstruction: boolean = false;
   startLowerObstruction: boolean = false;
   clearMap: boolean = false;
-  showMap: boolean = true;
+  showMap: boolean = false;
   obstructionFieldPoints: any[] = [];
+  P1: GeoPoint;
+  P2: GeoPoint;
 
   constructor(public settingsService: SettingsService,
               private locationService: LocationService,
@@ -88,23 +81,11 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
               private formBuilder: FormBuilder,
               private router: Router,
               private screenOrientation: ScreenOrientation) { }
-
-  ngOnInit() {
-    // this.generateElevationGraph();
-    this.homeService.showMap = true;
-  }
-  
-  ionViewDidEnter() {
-    
-    this.setSettingsForm();
-    this.showForm = true;
-    
-  }
   
   ionViewWillEnter() {
-    this.showMap = true;
-    this.settingsService.showTabs = true;
-    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+
+    this.getUserLinks();
+
   }
 
   showFullScreenMap() {
@@ -118,17 +99,100 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
   setSettingsForm() {
 
     this.settingsForm = this.formBuilder.group({
-      antennaInitialHeight: this.formBuilder.control(this.settingsService.antennaInitialHeight === 0 ? null : this.settingsService.antennaInitialHeight),
-      antennaFinalHeight: this.formBuilder.control(this.settingsService.antennaFinalHeight === 0 ? null : this.settingsService.antennaFinalHeight)
+      antennaInitialHeight: this.formBuilder.control(this.settingsService.linkSettings.antennaOneHeight === 0 ? null : this.settingsService.linkSettings.antennaOneHeight, Validators.required),
+      antennaFinalHeight: this.formBuilder.control(this.settingsService.linkSettings.antennaTwoHeight === 0 ? null : this.settingsService.linkSettings.antennaTwoHeight, Validators.required)
     });
 
-    console.log("this.settingsForm ", this.settingsForm)
+  };
+
+  getUserLinks() {
+
+    this.alertService.showLoading("Obteniendo datos del enlace...");
+    
+    this.settingsService
+        .getUserLinks("DSVlv21Tk8ZcPjwwvmrlzzMk2472")
+        .then((response: any) => {
+
+          console.log("repsonse ", response)
+
+          const linksSettings: LinkSettings[] = response.linkSettings;
+
+          this.alertService.closeLoading();
+          
+          this.settingsService.linkSettings = linksSettings[0];
+
+          this.P1 = {...linksSettings[0].P1};
+          this.P2 = {...linksSettings[0].P2};
+          
+          this.setSettingsForm();
+          this.showForm = true;
+          
+          this.P1 = {...this.settingsService.linkSettings.P1};
+          this.P2 = {...this.settingsService.linkSettings.P2};
+          
+          this.showMap = true;
+          this.settingsService.showTabs = true;
+          this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+          
+
+        })
+        .catch((error) => {
+          
+          this.alertService.closeLoading();
+          this.setSettingsForm();
+          this.showForm = true;
+
+        });
+
+  }
+
+  saveLinkSettings() {
+
+    
+    if (this.settingsForm.valid) {
+      
+      this.alertService.showLoading("Guardando datos del enlace...");
+
+      const linkSettings: LinkSettings = {
+        P1: this.settingsService.linkSettings.P1,
+        P2: this.settingsService.linkSettings.P2,
+        antennaOneHeight: this.settingsForm.get("antennaInitialHeight").value,
+        antennaTwoHeight: this.settingsForm.get("antennaFinalHeight").value,
+        antennaSelected: this.settingsService.linkSettings.antennaSelected,
+        atmosphericPressure: this.settingsService.linkSettings.atmosphericPressure,
+        temperature: this.settingsService.linkSettings.temperature,
+        waterDensity: this.settingsService.linkSettings.waterDensity,
+        linkName: this.settingsService.linkSettings.linkName
+      }
+
+      this.settingsService
+          .SetUserLinkSettingsData("DSVlv21Tk8ZcPjwwvmrlzzMk2472", [linkSettings])
+          .subscribe((response) => {
+
+            this.alertService.closeLoading();
+
+          },
+          (error) => {
+            this.alertService.closeLoading();
+            this.alertService.presentAlert("Hubo un problema guadrando la configuracion",
+                                           "Por favor, intenta mas tarde")
+          });
+
+    } else {
+
+      this.settingsForm.markAllAsTouched();
+      this.alertService
+          .presentAlert("Salvar configuración", 
+                        "Por favor completa los datos para poder guardar los datos del enlace");
+
+    }
+
   }
   
   generateElevationGraph() {
 
-    if (this.settingsService.initialPoint !== defaultPoints
-        && this.settingsService.finalPoint) {
+    if (this.settingsService.linkSettings.P1 !== defaultPoints
+        && this.settingsService.linkSettings.P2 !== defaultPoints) {
 
       this.getElevationProfile();
 
@@ -176,15 +240,15 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
 
   setObstructionPoints() {
     this.obstructionFieldPoints = [];
-    let bearing = this.getBearingRobot(this.settingsService.initialPoint.lat,
-                                       this.settingsService.initialPoint.lng,
-                                       this.settingsService.finalPoint.lat,
-                                       this.settingsService.finalPoint.lng);
+    let bearing = this.getBearingRobot(this.settingsService.linkSettings.P1.lat,
+                                       this.settingsService.linkSettings.P1.lng,
+                                       this.settingsService.linkSettings.P2.lat,
+                                       this.settingsService.linkSettings.P2.lng);
 
     this.obstructionSelectedPoints.forEach((point) => {
 
-      let finalPointCoordinates = this.getDestinationLatLong(this.settingsService.initialPoint.lat,
-                                                             this.settingsService.initialPoint.lng,
+      let finalPointCoordinates = this.getDestinationLatLong(this.settingsService.linkSettings.P1.lat,
+                                                             this.settingsService.linkSettings.P1.lng,
                                                              bearing,
                                                              point.distance);
 
@@ -229,7 +293,7 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
     await loading.present();
 
     this.locationService
-        .getElevationProfile(this.settingsService.initialPoint, this.settingsService.finalPoint)
+        .getElevationProfile(this.settingsService.linkSettings.P1, this.settingsService.linkSettings.P2)
         .subscribe((response) => {
 
       // Reset the elevation points
@@ -239,9 +303,6 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
       this.elevationDataY = [];
       this.obstructionSelectedPoints = [];
       this.obstruction60PercentSelectedPoints = [];
-
-      console.log("data: ", JSON.stringify(response.elevations))
-      console.log("distance: ", response.linkDistance)
 
       let distanceFraction = response.linkDistance*1000/this.pointsFraction;
       let positionX = 0;
@@ -308,8 +369,8 @@ export class ElevationProfileComponent implements OnInit, OnDestroy {
       // Agregar la altura por defecto de la elevacion de la tierra
       // A la altura de la antena
 
-      let antenaOneHeight = this.anthenaOneHeight;
-      let antenaTwoHeight = this.anthenaTwoHeight;
+      let antenaOneHeight = this.settingsService.linkSettings.antennaOneHeight;
+      let antenaTwoHeight = this.settingsService.linkSettings.antennaTwoHeight;
 
       antenaOneHeight += this.elevationDataY[0];
       antenaTwoHeight += this.elevationDataY[this.elevationDataY.length - 1];

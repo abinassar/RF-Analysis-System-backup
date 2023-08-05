@@ -9,10 +9,6 @@
 
 <ion-content class="ion-padding">
 
-  <!-- <ion-button (click)="showMapp()">
-    showMap()
-  </ion-button> -->
-
   <ion-card>
     <img src="../../../../../../../assets/images/telecom-towers.png" />
     <ion-card-header>
@@ -34,6 +30,8 @@
     <ion-col>
       <app-global-map class="map-container"
                       (showFullScreenMap)="showFullScreenMap()"
+                      [P1]="P1"
+                      [P2]="P2"
                       [insideComponent]="true"></app-global-map>
     </ion-col>
   </ion-row>
@@ -50,7 +48,7 @@
             <ion-badge slot="start">Punto N°1:</ion-badge>
             
             <span>
-              Latitud: {{settingsService.initialPoint.lat}} - Longitud: {{settingsService.initialPoint.lng}}
+              Latitud: {{settingsService.linkSettings.P1.lat}} - Longitud: {{settingsService.linkSettings.P1.lng}}
             </span>
           </h3>
         </ion-col>
@@ -58,7 +56,7 @@
           <h3>
             <ion-badge slot="start">Punto N°2:</ion-badge>
             <span>
-              Latitud: {{settingsService.finalPoint.lat}} - Longitud: {{settingsService.finalPoint.lng}}
+              Latitud: {{settingsService.linkSettings.P2.lat}} - Longitud: {{settingsService.linkSettings.P2.lng}}
             </span>
           </h3>
         </ion-col>
@@ -153,7 +151,8 @@
 
   </ion-card>
 
-  <ion-card *ngIf="elevationGraph">
+  <ion-card *ngIf="elevationGraph
+                   && obstructionFieldPoints.length > 0">
     <ion-card-header>
       <ion-card-title>
         <ion-badge color="warning">IMPORTANTE</ion-badge>
@@ -182,3 +181,16 @@
   </ion-card>
 
 </ion-content>
+
+<ion-fab slot="fixed" 
+          vertical="bottom" 
+          horizontal="end">
+  <ion-fab-button>
+    <ion-icon name="settings-outline"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-list side="top">
+    <ion-fab-button (click)="saveLinkSettings()">
+      <ion-icon name="refresh"></ion-icon>
+    </ion-fab-button>
+  </ion-fab-list>
+</ion-fab>

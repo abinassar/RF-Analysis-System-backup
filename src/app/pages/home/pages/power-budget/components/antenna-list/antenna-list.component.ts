@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { Antenna } from '@shared/models';
+import { Antenna, antennasList } from '@shared/models';
 
 @Component({
   selector: 'app-antenna-list',
@@ -12,26 +12,7 @@ export class AntennaListComponent implements OnInit {
 
   antennaSelectedIndex: number = 0;
 
-  antennaList: Antenna[] = [
-    {
-      name: "AIRMAX U-OMT-DISH-5 1",
-      imgPath: "https://www.crsl.es/9909-large_default/ubiquiti-airmax-u-omt-dish-5-antena-dish-de-5ghz-de-27dbi-con-soporte.jpg",
-      efficiency: 27,
-      frecuency: 5,
-      wavelength: 5,
-      gain: 5,
-      checked: true
-    },
-    {
-      name: "AIRMAX U-OMT-DISH-5 2",
-      imgPath: "https://www.crsl.es/9909-large_default/ubiquiti-airmax-u-omt-dish-5-antena-dish-de-5ghz-de-27dbi-con-soporte.jpg",
-      efficiency: 27,
-      frecuency: 5,
-      wavelength: 5,
-      gain: 5,
-      checked: false
-    }
-  ];
+  antennaList: Antenna[] = antennasList;
 
   antennaSettingsForm: FormGroup;
 

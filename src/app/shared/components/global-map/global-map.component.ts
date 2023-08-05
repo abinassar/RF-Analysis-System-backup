@@ -2,7 +2,6 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Outpu
 import { ActionSheetController, MenuController, ModalController } from '@ionic/angular';
 import * as Leaflet from "leaflet";
 import { antPath } from 'leaflet-ant-path';
-import { LinkConfigurationComponent } from '@shared/components/link-configuration/link-configuration.component';
 import { SettingsService } from '@shared/services/settings.service';
 import { GeoPoint } from '@shared/models/geographic';
 // import "leaflet-control-geocoder/dist/Control.Geocoder.scss";
@@ -282,13 +281,6 @@ export class GlobalMapComponent implements OnDestroy, OnChanges {
     });
 
     await actionSheet.present();
-  }
-
-  async linkConfiguration() {
-    const modal = await this.linkModalCtrl.create({
-      component: LinkConfigurationComponent,
-    });
-    modal.present();
   }
 
   openConfiguration() {

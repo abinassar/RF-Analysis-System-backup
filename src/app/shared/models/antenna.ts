@@ -2,10 +2,9 @@ import { GeoPoint, defaultPoints } from "./geographic";
 
 export interface Antenna {
     name: string;
-    gain: number;
-    efficiency: number;
+    txAntennaGain: number;
     frecuency: number;
-    wavelength: number;
+    maxDistanceKm: string;
     imgPath: string;
     checked: boolean;
 }
@@ -57,3 +56,102 @@ export const defaultLinkSettings: LinkSettings = {
     antennaSelected: defaultAntenna,
     linkName: "Mi primer enlace"
 }
+
+export const antennasList: Antenna[] = [
+    {
+      name: "UBIQUITI AIRMAX U-OMT-DISH-5",
+      txAntennaGain: 27,
+      frecuency: 5,
+      maxDistanceKm: "5 Km",
+      imgPath: "../../../assets/images/antennas/UBIQUITI AIRMAX U-OMT-DISH-5.png",
+      checked: false
+    },
+    {
+      name: "Ubiquiti airFiber 60 LR",
+      txAntennaGain: 38,
+      frecuency: 60,
+      maxDistanceKm: "15 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti airFiber 60 LR.png",
+      checked: false
+    },   
+    {
+      name: "Ubiquiti airFiber 60 XR",
+      txAntennaGain: 26,
+      frecuency: 60,
+      maxDistanceKm: "15 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti airFiber 60 XR.png",
+      checked: false
+    },   
+    {
+      name: "Ubiquiti airFiber 60 XG",
+      txAntennaGain: 43,
+      frecuency: 60,
+      maxDistanceKm: "4 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti airFiber 60 XG.png",
+      checked: false
+    }, 
+    {
+      name: "Ubiquiti airFiber 60 HD",
+      txAntennaGain: 35,
+      frecuency: 60,
+      maxDistanceKm: "2 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti airFiber 60 HD.png",
+      checked: false
+    },    
+    {
+      name: "Ubiquiti GigaBeam",
+      txAntennaGain: 38,
+      frecuency: 60,
+      maxDistanceKm: "2 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti GigaBeam.png",
+      checked: false
+    },   
+    {
+      name: "Ubiquiti AirFiber 24",
+      txAntennaGain: 33,
+      frecuency: 24.1,
+      maxDistanceKm: "13 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti AirFiber 24 - 1.png",
+      checked: false
+    },     
+    {
+      name: "Ubiquiti AirFiber 24 HD",
+      txAntennaGain: 33,
+      frecuency: 24.05,
+      maxDistanceKm: "20 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti AirFiber 24 HD - 1.png",
+      checked: false
+    },  
+    {
+      name: "Ubiquiti Powerbeam PBE 5AC-620",
+      txAntennaGain: 29,
+      frecuency: 5,
+      maxDistanceKm: "30 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti Powerbeam PBE 5AC-620.png",
+      checked: false
+    },  
+    {
+      name: "Ubiquiti PowerBeam AC PBE-5AC-300",
+      txAntennaGain: 22,
+      frecuency: 5,
+      maxDistanceKm: "30 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti PowerBeam AC PBE-5AC-300.png",
+      checked: false
+    }, 
+    {
+      name: "Ubiquiti PowerBeam AC PBE-5AC-400",
+      txAntennaGain: 25,
+      frecuency: 5,
+      maxDistanceKm: "30 Km",
+      imgPath: "../../../assets/images/antennas/Ubiquiti PowerBeam AC PBE-5AC-400.png",
+      checked: false
+    },     // {
+    //   name: "AIRMAX U-OMT-DISH-5 2",
+    //   imgPath: "https://www.crsl.es/9909-large_default/ubiquiti-airmax-u-omt-dish-5-antena-dish-de-5ghz-de-27dbi-con-soporte.jpg",
+    //   efficiency: 27,
+    //   frecuency: 5,
+    //   wavelength: 5,
+    //   gain: 5,
+    //   checked: false
+    // }
+];

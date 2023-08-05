@@ -127,7 +127,7 @@ export class GraphicsPage implements OnDestroy {
   
   getUserLinks() {
 
-    this.alertService.showLoading("Obteniendo datos del enlace...");
+    // this.alertService.showLoading("Obteniendo datos del enlace...");
     
     this.settingsService
         .getUserLinks("DSVlv21Tk8ZcPjwwvmrlzzMk2472")

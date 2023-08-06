@@ -7,7 +7,7 @@ import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 import { ModalController } from '@ionic/angular';
 import { AntennaListComponent } from './components/antenna-list/antenna-list.component';
 import { AlertService, SettingsService } from '@shared/services';
-import { LinkSettings } from '@shared/models';
+import { Antenna, AntennaSelected, LinkSettings, antennasList } from '@shared/models';
 
 @Component({
   selector: 'app-power-budget',
@@ -28,7 +28,15 @@ export class PowerBudgetPage {
 
   antennaForm: FormGroup;
   showForm: boolean = false;
-  selectedAntenna: string = "AirMax U-OMT-Dish-5";
+  antennaSelected: Antenna = {
+    name: "No Seleccionada",
+    txAntennaGain: 0,
+    frecuency: 0,
+    maxDistanceKm: "",
+    imgPath: "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y",
+    checked: false
+  };
+  antennasList: Antenna[] = antennasList;
 
   constructor(private deviceOrientation: DeviceOrientation,
               private geolocation: Geolocation,
@@ -64,21 +72,23 @@ export class PowerBudgetPage {
   }
 
   async navToAntennaList() {
-    // this.router.navigate(["/home/power-budget/antenna-list"]);
+
     const modal = await this.modalController.create({
       component: AntennaListComponent,
       cssClass: 'my-custom-class',
+      componentProps: {
+        antennaName: this.antennaSelected.name
+      }
     });
 
-    await modal.present()
-               .then((response) => {
-                console.log("repsonse ", response)
-               })
-               .catch((cancel) => {
-                console.log("cancel ", cancel)
-               })
+    modal.onDidDismiss().then((result) => {
+      if (result.role !== 'cancel') {
+        this.antennaSelected.imgPath = result.data.imgPath;
+        this.antennaSelected.name = result.data.name;
+      }
+    });
 
-
+    await modal.present();
 
   }
 
@@ -97,6 +107,17 @@ export class PowerBudgetPage {
           this.alertService.closeLoading();
           
           this.settingsService.linkSettings = linksSettings[0];
+
+          let antennaSelectedIndex = this.antennasList.findIndex((antenna) => {
+            return antenna.name === this.settingsService.linkSettings.antennaSelected.name
+          });
+    
+          if (antennaSelectedIndex !== -1) {
+    
+            this.antennaSelected.imgPath = this.antennasList[antennaSelectedIndex].imgPath;
+            this.antennaSelected.name = this.antennasList[antennaSelectedIndex].name;
+    
+          }
           
           this.setAntennaForm();
 

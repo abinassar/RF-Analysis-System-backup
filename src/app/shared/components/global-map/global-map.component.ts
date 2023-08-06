@@ -100,8 +100,6 @@ export class GlobalMapComponent implements OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
 
-    console.log("changes ", changes)
-
     if (changes.P1.currentValue
         && changes.P1.currentValue.lng !== 0
         && changes.P1.currentValue.lat !== 0) {

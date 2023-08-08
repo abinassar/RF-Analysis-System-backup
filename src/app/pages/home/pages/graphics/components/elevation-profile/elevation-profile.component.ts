@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, NavController } from '@ionic/angular';
 import { GeoPoint, LinkSettings, defaultPoints } from '@shared/models';
 import { AlertService, LocationService, SettingsService } from '@shared/services';
 import { HomeService } from 'src/app/pages/home/home.service';
@@ -80,7 +80,8 @@ export class ElevationProfileComponent implements OnDestroy {
               public homeService: HomeService,
               private formBuilder: FormBuilder,
               private router: Router,
-              private screenOrientation: ScreenOrientation) { }
+              private screenOrientation: ScreenOrientation,
+              private navCtrl: NavController) { }
   
   ionViewWillEnter() {
 
@@ -187,6 +188,12 @@ export class ElevationProfileComponent implements OnDestroy {
 
     }
 
+  }
+
+  navBack() {
+    // Agregue aquí la lógica personalizada:
+    console.log('Se ha pulsado el botón de retroceso');
+    this.navCtrl.navigateBack('/home/graphics');
   }
   
   generateElevationGraph() {

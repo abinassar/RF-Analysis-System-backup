@@ -80,8 +80,7 @@ export class ElevationProfileComponent implements OnDestroy {
               public homeService: HomeService,
               private formBuilder: FormBuilder,
               private router: Router,
-              private screenOrientation: ScreenOrientation,
-              private navCtrl: NavController) { }
+              private screenOrientation: ScreenOrientation) { }
   
   ionViewWillEnter() {
 
@@ -188,12 +187,6 @@ export class ElevationProfileComponent implements OnDestroy {
 
     }
 
-  }
-
-  navBack() {
-    // Agregue aquí la lógica personalizada:
-    console.log('Se ha pulsado el botón de retroceso');
-    this.navCtrl.navigateBack('/home/graphics');
   }
   
   generateElevationGraph() {

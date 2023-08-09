@@ -74,7 +74,6 @@ export class GraphicsPage implements OnDestroy {
 
   saveLinkSettings() {
 
-    
     if (this.settingsForm.valid) {
       
       this.alertService.showLoading("Guardando datos del enlace...");
@@ -159,6 +158,10 @@ export class GraphicsPage implements OnDestroy {
 
   }
 
+  changeSelectedLink() {
+
+  }
+  
   showFullScreenMap() {
     this.showMap = false;
     setTimeout(() => {

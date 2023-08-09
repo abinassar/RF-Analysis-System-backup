@@ -1,5 +1,10 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="primary" class="ion-text-center">
+      <ion-button (click)="changeSelectedLink()">
+        {{settingsService.linkSettings.linkName}}
+      </ion-button>
+    </ion-buttons>
     <ion-title>Gráficas</ion-title>
   </ion-toolbar>
 </ion-header>

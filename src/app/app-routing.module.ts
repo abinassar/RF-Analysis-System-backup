@@ -21,7 +21,17 @@ const routes: Routes = [
   {
     path: 'home',
     loadChildren: () => import('./pages/home/home.module').then(m => m.HomePageModule)
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./pages/home/pages/dashboard/dashboard.module').then( m => m.DashboardPageModule)
+  },
+  {
+    path: '',
+    redirectTo: '/home/dashboard',
+    pathMatch: 'full'
   }
+
 ];
 @NgModule({
   imports: [

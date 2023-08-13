@@ -19,6 +19,7 @@
     "@angular/forms": "^14.0.0",
     "@angular/platform-browser": "^14.0.0",
     "@angular/platform-browser-dynamic": "^14.0.0",
+    "@angular/pwa": "^0.5.3",
     "@angular/router": "^14.0.0",
     "@awesome-cordova-plugins/core": "^6.3.0",
     "@awesome-cordova-plugins/screen-orientation": "^5.44.0",

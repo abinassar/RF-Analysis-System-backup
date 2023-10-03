@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="primary" class="ion-text-center">
+      <ion-button (click)="signOut()">
+        Cerrar sesión
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Inicio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-card-header>
+    <ion-card-title>
+      Bienvenido!
+    </ion-card-title>
+  </ion-card-header>
+
+  <ion-card [formGroup]="linksForm"
+            *ngIf="showLinkForm">
+
+    <ion-card-header>
+      <ion-card-title>
+        Estos son tus enlaces:
+      </ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ion-select placeholder="Enlaces" 
+                  formControlName="linkSelected"
+                  (ionChange)="onSelectionChange($event)">
+        <ion-select-option *ngFor="let link of settingsService.linkSettingsList" 
+                            value="{{link.linkName}}">{{link.linkName}}</ion-select-option>
+      </ion-select>
+    </ion-card-content>
+    
+
+  </ion-card>
+
+  <ion-card>
+
+    <ion-card-header>
+      <ion-card-title>
+        Gráficas de estudio:
+      </ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ion-button (click)="navToProfileGraph()">
+        Perfil de elevación
+      </ion-button>
+
+      <ion-button (click)="navToAtenuationGraph()">
+        Atenuacion en Aire Seco
+      </ion-button>
+
+      <ion-button (click)="navToAtenuationVaporGraph()">
+        Atenuacion debido a Vapor de Agua
+      </ion-button>
+
+    </ion-card-content>
+
+  </ion-card>
+
+</ion-content>

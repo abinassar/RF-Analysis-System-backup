@@ -1,0 +1,24 @@
+<div class="plot-container">
+  <plotly-plot [data]="data" 
+               [layout]="layout" 
+               [useResizeHandler]="true"
+               [style]="{position: 'relative', width: '100%', height: '100%'}">
+  </plotly-plot>
+  <div class="floating-buttons">
+
+    <button class="floating-button" 
+            (click)="portraitOrientation()">
+    
+            <img src="../../../../../../../assets/icons/phone-portrait-outline.svg"
+                 width="25px">
+            
+    </button>
+    <button class="floating-button mt-10px" 
+            (click)="landscapeOrientation()">
+    
+            <img src="../../../../../../../assets/icons/phone-landscape-outline.svg"
+                 width="25px">
+            
+    </button>
+  </div>
+</div>   

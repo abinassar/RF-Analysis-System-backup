@@ -1,45 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>map</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="navigateToBackPage()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Mapa</ion-title>
   </ion-toolbar>
 </ion-header>
 
+
 <ion-content [fullscreen]="true">
 
-  <div id="map"></div>
-
-  <!-- Floating compass -->
-
-  <ion-fab vertical="bottom" 
-           horizontal="start" 
-           slot="fixed">
-    <!-- <img src="../assets/compass.png" width="60"> -->
-
-    <div id="container" class="compass-container">
-      <img src="assets/compass.png" width="70" [ngStyle]="{'transform': 'rotate('+(qiblaLocation*-1)+'deg)'}">
-    </div>
-
-  </ion-fab>
-
-  <!-- Settings button -->
-  <ion-fab vertical="bottom" 
-           horizontal="end" 
-           slot="fixed">
-    <ion-fab-button *ngIf="createMaker">
-      <ion-icon name="navigate-circle-outline"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-button>
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-list side="top">
-      <ion-button class="left-min-50px" 
-                  color="primary"
-                  (click)="linkConfiguration()">Configuración de enlace</ion-button>
-
-      <ion-button class="left-min-50px" 
-                  color="primary"
-                  (click)="openConfiguration()">Configuracion</ion-button>
-    </ion-fab-list>
-  </ion-fab>
+  <app-global-map *ngIf="homeService.showMap"></app-global-map>
 
 </ion-content>

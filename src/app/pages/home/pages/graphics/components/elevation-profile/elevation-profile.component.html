@@ -7,34 +7,231 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content>
 
-  <button (click)="showObstructions()">
-    showObstructions()
-  </button>
+  <ion-card>
+    <img src="../../../../../../../assets/images/telecom-towers.png" />
+    <ion-card-header>
+      <ion-card-subtitle>Perfil de elevación</ion-card-subtitle>
+      <ion-card-title>Enlaces de microondas</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Un perfil de elevaciones es una herramienta utilizada para diferenciar alturas, 
+      porcentajes de pendientes, medir segmentos de una ruta, una montaña, la cuenca de un río, etc.
+    </ion-card-content>
+  </ion-card>
+  
+  <ion-row class="cellphone-width justify-content-center align-items-center"
+           *ngIf="showMap"
+           class="ion-padding">
+    <ion-col>
+      <app-global-map class="map-container"
+                      (showFullScreenMap)="showFullScreenMap()"
+                      [P1]="P1"
+                      [P2]="P2"
+                      [insideComponent]="true"></app-global-map>
+    </ion-col>
+  </ion-row>
 
-  <div *ngIf="elevationGraph">
-
-    <plotly-plot [data]="elevationData.data"
-                 [layout]="elevationData.layout"
-                 [useResizeHandler]="true"
-                 [style]="{position: 'relative', width: '100%', height: '100%'}">
-    </plotly-plot>
-  </div>
-
-  <ion-grid>
-
-    <ion-row>
-      <h2>
-        Puntos de obstrucción:
-      </h2>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Puntos seleccionados:</ion-card-title>
+    </ion-card-header>
+    <ion-grid>
+  
+    <ion-row class="pt-0px">
+      <ion-col size="3">
+        <h3>
+          <ion-badge slot="start">Punto N°1:</ion-badge>
+          
+        </h3>
+      </ion-col>
+      <ion-col size="9">
+        <p>
+          Latitud: {{settingsService.linkSettings.P1.lat}}
+        </p>
+        <p>
+          Longitud: {{settingsService.linkSettings.P1.lng}}
+        </p>
+      </ion-col>
     </ion-row>
 
-    <ion-row *ngFor="let point of obstructionSelectedPoints; let i=index">
+    <ion-row class="pt-0px">
+      <ion-col size="3">
+        <h3>
+          <ion-badge slot="start">Punto N°2:</ion-badge>
+          
+        </h3>
+      </ion-col>
+      <ion-col size="9">
+        <p>
+          Latitud: {{settingsService.linkSettings.P2.lat}}
+        </p>
+        <p>
+          Longitud: {{settingsService.linkSettings.P2.lng}}
+        </p>
+      </ion-col>
+    </ion-row>
+    
+    <ion-row class="ml-10px">
+      <h3>
+        Altura de antenas
+      </h3>
+    </ion-row>
+  
+      <ion-row class="mb-10px"
+               [formGroup]="settingsForm"
+               *ngIf="showForm">
+        <ion-col>
+          <ion-input fill="outline"
+                     label="Altura antena inicial (mts)"
+                     labelPlacement="floating" 
+                     placeholder="Ingresa Altura" 
+                     type="number"
+                     formControlName="antennaInitialHeight"></ion-input>
+        </ion-col>
+        <ion-col>
+          <ion-input fill="outline"
+                     label="Altura antena final (mts)"
+                     labelPlacement="floating" 
+                     placeholder="Ingresa Altura" 
+                     type="number"
+                     formControlName="antennaFinalHeight"></ion-input>
+        </ion-col>
+  
+      </ion-row>
 
-      {{point.x}} Km
-      
+    </ion-grid>
+  </ion-card>
+
+  <ion-grid>
+    <ion-row class="ion-align-items-center">
+      <ion-col size="12" class="ion-text-center">
+        <ion-button class="center" (click)="generateElevationGraph()">
+          Generar Gráfica
+        </ion-button>
+      </ion-col>
     </ion-row>
   </ion-grid>
 
+  <ion-card>
+
+    <ng-container *ngIf="elevationGraph; else noElevationGraphic"
+                  class="graph-container">
+
+      <ion-card-header>
+        <ion-card-title>
+          Gráfico de elevación
+        </ion-card-title>
+      </ion-card-header>    
+
+      <app-plotly-graphic [inputData]="elevationData.data"
+                          [inputLayout]="elevationData.layout"
+                          [insideComponent]="true"
+                          (showFullScreenGraphic)="showFullScreenGraphic()">
+
+      </app-plotly-graphic>
+      
+      <!-- <div class="plot-container">
+        <plotly-plot [data]="elevationData.data" 
+                     [layout]="elevationData.layout" 
+                     [useResizeHandler]="true"
+                     [style]="{position: 'relative', width: '100%', height: '100%'}">
+        </plotly-plot>
+        <div class="floating-buttons">
+
+          <button class="floating-button" 
+                  (click)="showPortraitGraphic()">
+          
+                  <img src="../../../../../../../assets/icons/phone-portrait-outline.svg"
+                       width="25px">
+                  
+          </button>
+          <button class="floating-button mt-10px" 
+                  (click)="showLandscapeGraphic()">
+          
+                  <img src="../../../../../../../assets/icons/phone-landscape-outline.svg"
+                       width="25px">
+                  
+          </button>
+        </div>
+      </div>       -->
+      <!-- <plotly-plot [data]="elevationData.data" 
+                   [layout]="elevationData.layout" 
+                   [useResizeHandler]="true"
+                   [style]="{position: 'relative', width: '100%', height: '100%'}">
+      </plotly-plot> -->
+
+    </ng-container>
+    <ng-template #noElevationGraphic>
+
+      <ion-card-header>
+        <ion-card-title>
+          Procedimiento:
+        </ion-card-title>
+        <ion-card-subtitle>Generar gráfica</ion-card-subtitle>
+      </ion-card-header> 
+
+      <ion-card-content>
+        <ul>
+          <li>
+            <p class="fs-20">
+              1.- Selecciona los dos puntos en el mapa donde quieres graficar el
+              perfil de elevación.
+            </p>
+          </li>
+          <li>
+            <p class="fs-20">
+              2.- Seleccionados los puntos, presiona el botón "Generar gráfica"
+              para obtener mostrar el gráfico.
+            </p>
+          </li>
+        </ul>
+      </ion-card-content>      
+    </ng-template>
+
+  </ion-card>
+
+  <ion-card *ngIf="elevationGraph
+                   && obstructionFieldPoints.length > 0">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-badge color="warning">IMPORTANTE</ion-badge>
+        Puntos de obstrucción: 
+      </ion-card-title>
+      <ion-card-subtitle>
+        Es importante que revises la configuracion del enlace, ya que existen puntos de obstruccion en 
+        el 60% de la primera zona de fresnel, por lo que esta afectada la factilidad del radienlace.
+        
+      </ion-card-subtitle>
+    </ion-card-header>
+    <ion-grid>
+  
+      <ion-row class="ion-padding pt-0px"
+               *ngFor="let obstructionPoint of obstructionFieldPoints; let i=index">
+        <ion-col>
+          <h3>
+            <ion-badge slot="start">N°{{i + 1}}:</ion-badge>
+            <span>
+              Distancia: {{obstructionPoint.distance / 1000 | truncate: 7}} Km (aprox.) ; Lat: {{obstructionPoint.lat | truncate: 10}} - Lng: {{obstructionPoint.lng | truncate: 10}}
+            </span>
+          </h3>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+
 </ion-content>
+
+<ion-fab slot="fixed" 
+          vertical="bottom" 
+          horizontal="end">
+  <ion-fab-button>
+    <ion-icon name="settings-outline"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-list side="top">
+    <ion-fab-button (click)="saveLinkSettings()">
+      <ion-icon name="save"></ion-icon>
+    </ion-fab-button>
+  </ion-fab-list>
+</ion-fab>

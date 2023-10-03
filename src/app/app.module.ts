@@ -14,6 +14,22 @@ import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 
+// Firebase
+
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { environment } from "../environments/environment";
+
+// Http modules
+
+import { HttpBackend, 
+         HttpXhrBackend } from '@angular/common/http';
+import { NativeHttpModule, 
+         NativeHttpBackend, 
+         NativeHttpFallback } from 'ionic-native-http-connection-backend';
+import { Platform } from '@ionic/angular';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -21,7 +37,11 @@ import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
     IonicModule.forRoot(), 
     AppRoutingModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireAuthModule,
+    AngularFirestoreModule,
+    NativeHttpModule
   ],
   providers: [{ 
     provide: RouteReuseStrategy, 
@@ -29,7 +49,16 @@ import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
     },
     DeviceOrientation,
     Geolocation,
-    NativeGeocoder
+    NativeGeocoder,
+    {
+      provide: HttpBackend, 
+      useClass: NativeHttpFallback, 
+      deps: [
+        Platform, 
+        NativeHttpBackend, 
+        HttpXhrBackend
+      ]
+    }
   ],
   bootstrap: [AppComponent],
 })

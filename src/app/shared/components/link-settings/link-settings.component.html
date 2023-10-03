@@ -1,0 +1,102 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Selección de Enlace</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()">Confirm</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form [formGroup]="linkSettingsForm">
+    <ion-grid class="ion-align-items-center ion-justify-content-center">
+      <ion-row *ngFor="let link of linkSettingsList; let index=index"
+               formArrayName="linkSelected">
+  
+        <ion-col size="1"
+                  class="m-auto"
+                  [formGroupName]="index">
+
+          <ion-checkbox (ionChange)="changedLink($event, index)"
+                        formControlName="checked"
+                        [ngClass]="{'disable-checkbox': index === linkSelectedIndex}">
+
+          </ion-checkbox>
+
+        </ion-col>
+  
+        <ion-col>
+          <ion-accordion-group>
+            <ion-accordion>
+        
+              <ion-item slot="header" color="light">
+                
+                <!-- <ion-avatar slot="start"> 
+                  <img src="{{antenna.imgPath}}">
+                </ion-avatar> -->
+                <ion-label>
+                  <h2>{{link.linkName}}</h2>
+                  <!-- <p>{{antenna.frecuency}} Ghz, Ganancia: {{antenna.txAntennaGain}}</p> -->
+                </ion-label>
+              </ion-item>
+        
+              <div class="ion-padding" 
+                   slot="content">
+                <ion-grid>
+                  <ion-row>
+                    <ion-col>
+                      Frecuencia:
+                    </ion-col>
+                    <ion-col>2</ion-col>
+                  </ion-row>
+                </ion-grid>
+              </div>
+            </ion-accordion>
+          </ion-accordion-group>
+        
+        </ion-col>
+
+        <ion-col size="1">
+          <ion-icon (click)="deleteLink(index)" 
+                    name="trash"
+                    size="large"></ion-icon>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+
+  <ion-grid class="ion-justify-content-center ion-align-items-center">
+    <ion-row *ngIf="!createLink"
+             class="ion-align-items-center">
+      <ion-col size="12" class="ion-text-center">
+        <ion-button class="center" (click)="newLink()">
+          Agregar nuevo enlace
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="createLink"
+             size="12">
+      <form [formGroup]="linkForm">
+
+        <ion-input fill="outline"
+                  formControlName="linkName"
+                  labelPlacement="floating" 
+                  label="Nombre"
+                  placeholder="Nombre"
+                  class="mb-10px"></ion-input>
+
+        <ion-button class="center"
+                    (click)="createLinkSettings()">
+          Crear Enlace
+        </ion-button>
+      </form>
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

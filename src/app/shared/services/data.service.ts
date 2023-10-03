@@ -4,6 +4,9 @@ import { HttpClient,
           HttpHeaders, 
           HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AntennaSelected, LinkSettings, defaultLinkSettings } from '@shared/models';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
+import { User } from 'firebase/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +14,9 @@ import { Observable } from 'rxjs';
 
 export class DataService {
 
-  constructor( private http: HttpClient ) { }
+  constructor( private http: HttpClient,
+               private db: AngularFirestore,
+               public afs: AngularFirestore ) { }
 
     // Http service
 
@@ -40,5 +45,32 @@ export class DataService {
                                       headers, 
                                       params
                                     });
-  }  
+
+  }
+
+  updateUserAntenna(_id:any, antennaSelected: AntennaSelected) {
+    return this.db.doc(`users/${_id}`).update({antennaSelected});
+  }
+
+  updateUserLinkSettings(_id:any, linkSettings: LinkSettings) {
+    return this.db.doc(`LinkSettings/${_id}`).update({linkSettings});
+  }
+
+  setLinkData(user: User) {
+    
+    const userRef: AngularFirestoreDocument<any> = this.afs.doc(
+      `LinkSettings/${user.uid}`
+      );
+      
+    const linkData: any = {
+      linkSettings: [
+        defaultLinkSettings
+      ]
+    };
+
+    return userRef.set(linkData, {
+      merge: true,
+    });
+
+  }
 }

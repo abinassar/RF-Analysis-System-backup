@@ -7,21 +7,237 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true"
-             class="ion-padding">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true">
 
-  <div *ngIf="atenuationGraph">
+  <ion-card>
+    <img src="../../../../../../../assets/images/storm.jpg" />
+    <ion-card-header>
+      <ion-card-subtitle>Atenuación debido a vapor de agua</ion-card-subtitle>
+      <ion-card-title>Enlaces de microondas</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      La atenuación debido a vapor de agua es un fenómeno que afecta 
+      las señales de radiofrecuencia y microondas en la atmósfera terrestre, 
+      en particular cuando éstas se propagan a través de regiones con alta humedad.
+    </ion-card-content>
+  </ion-card>
 
-      <plotly-plot [data]="elevationData.data"
-                   [layout]="elevationData.layout"
-                   [useResizeHandler]="true"
-                   [style]="{position: 'relative', width: '100%', height: '100%'}">
-      </plotly-plot>
-  </div>
+  <ion-row class="cellphone-width justify-content-center align-items-center"
+           *ngIf="showMap"
+           class="ion-padding">
+    <ion-col>
+      <app-global-map class="map-container"
+                      (showFullScreenMap)="showFullScreenMap()"
+                      [P1]="P1"
+                      [P2]="P2"
+                      [insideComponent]="true"></app-global-map>
+    </ion-col>
+  </ion-row>
+
+  <ion-grid>
+    <ion-row class="ion-align-items-center">
+      <ion-col size="12" class="ion-text-center">
+        <ion-button (click)="getLocationData()">
+          Obtener datos atmosféricos
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-card [formGroup]="atmosphericForm"
+            *ngIf="showForm">
+    <ion-card-header>
+      <ion-card-title>Información atmosférica:</ion-card-title>
+    </ion-card-header>
+
+    <ion-grid>
+      <ion-row class="pt-0px" class="ion-justify-content-center ion-align-items-center">
+        <ion-col size="3">
+          <h3>
+            <ion-badge slot="start">Locación:</ion-badge>
+          </h3>
+        </ion-col>
+        <ion-col size="9">
+          <h2 class="m-0">
+            {{settingsService.locationName}}
+          </h2>
+        </ion-col>
+      </ion-row>
+  
+      <ion-row class="ion-padding pt-0px">
+        <ion-col class="vertical-center" size="12">
+          <h3>
+            <ion-badge slot="start">Presión atmosférica (hPa)</ion-badge>
+          </h3>          
+        </ion-col>
+
+        <ion-col size="12">
+          <ion-input fill="outline"
+                      label="Presión atmosférica"
+                      labelPlacement="floating" 
+                      placeholder="Ingresa valor" 
+                      type="number"
+                      formControlName="atmosphericPressure"></ion-input>
+
+          <div *ngIf="atmosphericForm.get('atmosphericPressure').invalid && atmosphericForm.get('atmosphericPressure').touched" 
+                slot="error">Debe ingresar un valor para la presión atmosférica.</div>
+        </ion-col>
+
+        <ion-col class="vertical-center" size="12">
+          <h3>
+            <ion-badge slot="start">Temperatura (C°)</ion-badge>
+          </h3>
+        </ion-col>
+
+        <ion-col size="12">
+          <ion-input fill="outline"
+                      label="Temperatura"
+                      labelPlacement="floating" 
+                      placeholder="Ingresa temperatura" 
+                      type="number"
+                      formControlName="temperature"></ion-input>
+
+          <div *ngIf="atmosphericForm.get('temperature').invalid && atmosphericForm.get('temperature').touched" 
+                slot="error">Debe ingresar un valor de temperatura.</div>
+
+        </ion-col>
+      </ion-row>
+      <ion-row  class="ion-padding pt-0px">
+        <ion-col class="vertical-center" size="12">
+          <h3>
+            <ion-badge slot="start">Densidad del agua</ion-badge>
+          </h3>
+        </ion-col>
+
+        <ion-col size="12">
+            <ion-input fill="outline"
+                        label="Densidad del agua"
+                        labelPlacement="floating" 
+                        placeholder="Ingresa valor" 
+                        type="number"
+                        formControlName="waterDensity"></ion-input>
+
+            <div *ngIf="atmosphericForm.get('waterDensity').invalid && atmosphericForm.get('waterDensity').touched" 
+                 slot="error">Debe ingresar un valor de densidad.</div>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Obtener atenuación en una frecuencia</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-grid [formGroup]="atenuationForm"
+                *ngIf="showForm">
+        <ion-row>
+          <ion-col size="9">
+            <ion-input fill="outline"
+                        label="Frecuencia"
+                        labelPlacement="floating" 
+                        placeholder="Ingresa frecuencia" 
+                        type="number"
+                        formControlName="frecuency"></ion-input>
+          <div *ngIf="atenuationForm.get('frecuency').invalid && atenuationForm.get('frecuency').touched" 
+                slot="error">Debe ingresar un valor de frecuencia.</div>
+
+          </ion-col>
+          <ion-col size="3">
+            <ion-select aria-label="Frecuencia"
+                        formControlName="frecuencyUnit">
+              <ion-select-option *ngFor="let frecuency of frecuenciesUnits" 
+                                 value="{{frecuency}}">
+                                 {{frecuency}}                  
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-justify-content-center ion-align-self-center">
+          <ion-col>
+            <ion-button (click)="getAtenuation()">
+              Obtener atenuación
+            </ion-button>
+          </ion-col>
+
+          <ion-col class="center-container">
+            <h2>
+              {{atenuationByFrecuency}} - (dB/Km)
+            </h2>
+          </ion-col>
+
+        </ion-row>
+      </ion-grid>
+
+
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ng-container *ngIf="atenuationGraph; else noAtenuationGraphic"
+                  class="graph-container">
+
+      <ion-card-header>
+        <ion-card-title>
+          Atenuación por Vapor de Agua
+        </ion-card-title>
+      </ion-card-header>      
+
+      <app-plotly-graphic [inputData]="atenuationData.data"
+                          [inputLayout]="atenuationData.layout"
+                          [insideComponent]="true"
+                          (showFullScreenGraphic)="showFullScreenGraphic()">
+
+      </app-plotly-graphic>
+
+    </ng-container>
+
+    <ng-template #noAtenuationGraphic>
+
+      <ion-card-header>
+        <ion-card-title>
+          Procedimiento:
+        </ion-card-title>
+        <ion-card-subtitle>Generar gráfica</ion-card-subtitle>
+      </ion-card-header> 
+      
+      <ion-card-content>
+        <ul>
+          <li>
+            <p class="fs-20">
+              1.- Selecciona los dos puntos en el mapa donde quieres graficar el
+              perfil de elevación.
+            </p>
+          </li>
+          <li>
+            <p class="fs-20">
+              2.- Seleccionados los puntos, presiona el botón "Generar gráfica"
+              para obtener mostrar el gráfico de atenuación.
+            </p>
+          </li>
+        </ul>
+        <strong>
+          Nota: Para obtener la atenuación en una frecuencia específica es necesario
+          obtener la información de presión atmosférica y temperatura.
+        </strong>
+      </ion-card-content>      
+      
+    </ng-template>
+  </ion-card>
 
 </ion-content>
+
+<ion-fab slot="fixed" 
+          vertical="bottom" 
+          horizontal="end">
+  <ion-fab-button>
+    <ion-icon name="settings-outline"></ion-icon>
+  </ion-fab-button>
+  <ion-fab-list side="top">
+    <ion-fab-button (click)="saveLinkSettings()">
+      <ion-icon name="save"></ion-icon>
+    </ion-fab-button>
+  </ion-fab-list>
+</ion-fab>
